@@ -10,14 +10,26 @@ import UIKit
 
 class TileView: UIView {
 
-    init(x: CGFloat, y: CGFloat){
-        super.init(frame: CGRect(x: x, y: y, width: 100, height: 100))
+    init(sizeAndPositionsDict: [String:CGFloat], tileValue: Int){
+        // calculate where the (0,0) position for a view should be before it is moved onto gameboard
+        
+        let x = sizeAndPositionsDict["gameboardX"]! - sizeAndPositionsDict["tileWidth"]!
+        let y = sizeAndPositionsDict["gameboardY"]! - sizeAndPositionsDict["tileHeight"]!
+        
+        super.init(frame: CGRect(x: x, y: y, width: sizeAndPositionsDict["tileWidth"]!, height: sizeAndPositionsDict["tileHeight"]!))
+        
         backgroundColor = UIColor.green
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: sizeAndPositionsDict["tileWidth"]!, height: sizeAndPositionsDict["tileHeight"]!))
+        label.textAlignment = .center
+        label.text = "\(tileValue)"
+        label.font = label.font.withSize(22)
+        
+        addSubview(label)
     }
     
     required init?(coder aDecoder: NSCoder){
         super.init(coder: aDecoder)
-        //fatalError("NSCoding not supported")
     }
 }
 

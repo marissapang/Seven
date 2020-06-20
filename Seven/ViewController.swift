@@ -12,6 +12,7 @@ class ViewController: UIViewController {
     //MARK: Unchanged properties
     let dimensions : Int = 4
     let tileSpacing : CGFloat = 15
+    var sizeAndPositionsDict = [String:CGFloat]()
     
     //MARK: Modified properties
     var tileValueBoard : Gameboard<Int>
@@ -21,7 +22,9 @@ class ViewController: UIViewController {
     var rowIndexPositionBoard : Gameboard<Int>
     var colIndexPositionBoard : Gameboard<Int>
     
+    var viewsToBeDeleted = [TileView]()
     
+    var nextTileValue : Int = 7
     var direction = Direction.undefined
     
     //MARK: Placeholder swipes
@@ -30,60 +33,43 @@ class ViewController: UIViewController {
         print("swipeUp button clicked")
         direction = .up
         
-        tileAnimationBoard = moveAllTiles(dimensions: dimensions, tileViewBoard: tileViewBoard, tileAnimationBoard: tileAnimationBoard)
+        var newTileViewBoard : Gameboard<TileView?>
+        var newTileValueBoard : Gameboard<Int>
+        var newRowIndexPositionBoard : Gameboard<Int>
+        var newColIndexPositionBoard : Gameboard<Int>
         
-        // test code for animating everyhing on the board
-        var animator : UIViewPropertyAnimator
-        var view : TileView?
+        (tileValueBoard, tileViewBoard, viewsToBeDeleted, rowIndexPositionBoard, colIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
         
-        for i in 0..<dimensions {
-            for j in 0..<dimensions {
-                animator = tileAnimationBoard[i,j]
-                animator.startAnimation()
-            }
-        }
+        animateTiles()
+        deleteOldTiles()
         
-
-        // test code to see if i can animte before showing the subview
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { // Change `2.0` to the desired number of seconds.
-           // Code you want to be delayed
-            for i in 0..<self.dimensions {
-                for j in 0..<self.dimensions {
-                    view = self.tileViewBoard[i,j]
-                    
-                    if let v = view {
-                        self.view.addSubview(v)
-                    }
-                }
-            }
-
-        }
-                
-        // test to see if i can remove a view from a super view from list
-        /* var count : Int = 0
-        for i in 0..<dimensions {
-            for j in 0..<dimensions {
-                if let subview = tileViewBoard[i,j] { //if subview is not nil
-                    count = count+1
-                    print(count)
-                    if count > 1 {
-                        subview.removeFromSuperview()
-                    }
-                }
-            }
-        } */
     }
     @IBAction func swipeDown(_ sender: Any) {
         print("swipeDown button clicked")
         direction = .down
+        
+        (tileValueBoard, tileViewBoard, viewsToBeDeleted, rowIndexPositionBoard, colIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
+        
+        animateTiles()
+        deleteOldTiles()
     }
     @IBAction func swipeLeft(_ sender: Any) {
         print("swipeLeft button clicked")
         direction = .left
+
+        (tileValueBoard, tileViewBoard, viewsToBeDeleted, rowIndexPositionBoard, colIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
+        
+        animateTiles()
+        deleteOldTiles()
     }
     @IBAction func swipeRight(_ sender: Any) {
         print("swipeRight button clicked")
         direction = .right
+
+        (tileValueBoard, tileViewBoard, viewsToBeDeleted, rowIndexPositionBoard, colIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
+        
+        animateTiles()
+        deleteOldTiles()
     }
     
     //MARK: Initialization
@@ -117,28 +103,92 @@ class ViewController: UIViewController {
     
     //MARK: Game Functions
     
-    func drawGameboard(){
-        let superviewWidth = self.view.frame.size.width
-        let superviewHeight = self.view.frame.size.height
-        let sizeAndPositionsDict = calculateViewSizeAndPositions(dimensions: dimensions, superviewWidth: superviewWidth, superviewHeight: superviewHeight, spacing: tileSpacing)
-        
-        print(sizeAndPositionsDict)
+    func drawGameboard(sizeAndPositionsDict:[String:CGFloat]){        
         let gameboardView = GameboardView(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict)
         self.view.addSubview(gameboardView)
         
         
     }
     func startGame(){
-        drawGameboard()
-        (tileValueBoard, tileViewBoard) = addFirstTiles(dimensions: dimensions, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard)
+        let superviewWidth = self.view.frame.size.width
+        let superviewHeight = self.view.frame.size.height
+        sizeAndPositionsDict = calculateViewSizeAndPositions(dimensions: dimensions, superviewWidth: superviewWidth, superviewHeight: superviewHeight, spacing: tileSpacing)
         
-        for i in 0..<dimensions {
-            for j in 0..<dimensions {
-                if let subview = tileViewBoard[i,j] { //if subview is not nil
-                    //self.view.addSubview(subview)
+        drawGameboard(sizeAndPositionsDict: sizeAndPositionsDict)
+        
+        (tileValueBoard, tileViewBoard) = addFirstTiles(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard)
+        
+        (rowIndexPositionBoard, colIndexPositionBoard) = initialUpdateOfIndexPositionBoards(dimensions: dimensions, tileValueBoard : tileValueBoard, rowIndexPositionBoard : rowIndexPositionBoard, colIndexPositionBoard : colIndexPositionBoard)
+                
+        var animator : UIViewPropertyAnimator
+        var rowInd : Int
+        var colInd : Int
+        var xShift : CGFloat
+        var yShift : CGFloat
+        
+        for row in 0..<dimensions {
+            for col in 0..<dimensions {
+                if let subview = tileViewBoard[row,col] { //if subview is not nil
+                    
+                    
+                    rowInd = rowIndexPositionBoard[row, col]
+                    colInd = colIndexPositionBoard[row, col]
+                    
+                    xShift = sizeAndPositionsDict["tileWidth"]! * CGFloat(rowInd) + sizeAndPositionsDict["spacing"]! * CGFloat(rowInd)
+                    
+                    yShift = sizeAndPositionsDict["tileHeight"]! * CGFloat(colInd) + sizeAndPositionsDict["spacing"]! * CGFloat(colInd)
+                    
+                    animator = tileAnimationBoard[row,col]
+                    animator = UIViewPropertyAnimator(duration: 0.01, curve: .easeInOut, animations: {
+                        subview.transform = CGAffineTransform(translationX: xShift, y: yShift)
+                    })
+                    animator.startAnimation()
+                    self.view.addSubview(subview)
                 }
             }
         }
+    }
+    
+    func animateTiles(){
+        var animator : UIViewPropertyAnimator, rowInd : Int, colInd : Int, xShift : CGFloat, yShift : CGFloat
+        
+        for row in 0..<dimensions {
+            for col in 0..<dimensions {
+                if let subview = tileViewBoard[row,col] { //if subview is not nil
+                    
+                    
+                    rowInd = rowIndexPositionBoard[row, col]
+                    colInd = colIndexPositionBoard[row, col]
+                    
+                    xShift = sizeAndPositionsDict["tileWidth"]! * CGFloat(rowInd) + sizeAndPositionsDict["spacing"]! * CGFloat(rowInd)
+                    
+                    yShift = sizeAndPositionsDict["tileHeight"]! * CGFloat(colInd) + sizeAndPositionsDict["spacing"]! * CGFloat(colInd)
+                    
+                    animator = tileAnimationBoard[row,col]
+                    animator = UIViewPropertyAnimator(duration: 2.0, curve: .easeInOut, animations: {
+                        subview.transform = CGAffineTransform(translationX: xShift, y: yShift)
+                    })
+                    animator.startAnimation()
+                    
+                }
+            }
+        }
+        
+    }
+    
+    func deleteOldTiles(){
+        for i in 0..<Int(viewsToBeDeleted.count){
+            viewsToBeDeleted[i].removeFromSuperview()
+        }
+        viewsToBeDeleted = [TileView]()
+    }
+    
+    func moveNextTileToBoard(){
+        
+    }
+    
+    func generateNextTile(){
+        
     }
 
 
