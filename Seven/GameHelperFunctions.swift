@@ -64,8 +64,155 @@ func initialUpdateOfIndexPositionBoards(dimensions: Int, tileValueBoard : Gamebo
 }
 
 //MARK: Add Tile Logic
-func generateTile(){
+
+func calculateHighestTileValue(tileValueBoard: Gameboard<Int>) -> Int {
+    var highestValue = 0
+    for row in 0..<tileValueBoard.dimension {
+        for col in 0..<tileValueBoard.dimension {
+            highestValue = max(highestValue, tileValueBoard[row,col])
+        }
+    }
+    return highestValue
+}
+
+func generateRandTileValue(tileValueBoard: Gameboard<Int>) -> Int {
+    // should return value of 5, 10, 20, etc..
+    var newTileValue : Int
+    var highestTileValue : Int
+    highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
     
+    let freq2 : Double = 0.08
+    let freq5 : Double = 0.06
+    let freq3 : Double = 0.08
+    let freq4 : Double = 0.06
+    var freq14 : Double = 0
+    var freq28 : Double = 0
+    var freq56 : Double = 0
+    var freq112 : Double = 0
+    var freq224 : Double = 0
+    
+    // frequencies change depenign on hfar in we are in the game
+    switch highestTileValue {
+    case let highestTileValue where highestTileValue <= 112:
+        () // change nothing if we are early on in the game
+    case let highestTileValue where highestTileValue <= 224:
+        freq14 = 0.03
+        freq28 = 0.02
+        freq56 = 0.01
+    case let highestTileValue where highestTileValue <= 448:
+        freq14 = 0.04
+        freq28 = 0.03
+        freq56 = 0.02
+        freq112 = 0.01
+    case let highestTileValue where highestTileValue <= 896:
+        freq14 = 0.05
+        freq28 = 0.05
+        freq56 = 0.03
+        freq112 = 0.02
+        freq224 = 0.01
+    default:
+        () // do nothing for now
+    }
+    
+    // user random number generator from 1-100 for 100%
+    let randNumber = Double(Int.random(in: 0..<101))/100
+    
+    // create tile with certain value depending on the frequencies
+    switch randNumber {
+    case let randNumber where randNumber <= freq2:
+        newTileValue = 2
+    case let randNumber where randNumber <= freq2+freq5:
+        newTileValue = 5
+    case let randNumber where randNumber <= freq2+freq5+freq3:
+        newTileValue = 3
+    case let randNumber where randNumber <= freq2+freq5+freq3+freq4:
+        newTileValue = 4
+    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14:
+        newTileValue = 14
+    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14+freq28:
+        newTileValue = 28
+    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14+freq28+freq56:
+        newTileValue = 56
+    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14+freq28+freq56+freq112:
+        newTileValue = 112
+    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14+freq28+freq56+freq112+freq224:
+        newTileValue = 224
+    default:
+        newTileValue = 7 // anything else we generate 7
+    }
+    
+    return newTileValue
+}
+
+
+func getEmptyIndicesFromGameboard(tileValueBoard: Gameboard<Int>) -> [(Int, Int)]{
+    var emptyTileIndices = [(Int, Int)]()
+    for i in 0..<tileValueBoard.dimension {
+        for j in 0..<tileValueBoard.dimension{
+            if tileValueBoard[i,j] == 0 { emptyTileIndices += [(i, j)] }
+        }
+    }
+    return emptyTileIndices
+}
+
+func pickRandIndex(emptyTileIndices: [(Int, Int)], direction: Direction, lastAxis: Int) -> Int {
+    var randIndicesList = [Int]()
+    for (i, j) in emptyTileIndices {
+        if direction == .down || direction == .up {
+            if i == lastAxis {
+               randIndicesList += [j]
+            }
+        } else if direction == .right || direction == .left {
+            if j == lastAxis {
+                randIndicesList += [i]
+            }
+        }
+    }
+    let randNum = Int.random(in: 0..<randIndicesList.count)
+    return randIndicesList[randNum]
+}
+
+func addTile(direction: Direction, tileValueBoard: Gameboard<Int>) -> (Int, Int){
+    
+   var lastAxis: Int
+   let emptyTileIndices = getEmptyIndicesFromGameboard(tileValueBoard: tileValueBoard)
+
+   guard emptyTileIndices.count != 0 else {
+    print("game should end")
+    return (0,0)
+   }
+           
+   // If there are still empty tiles we want to figure out where to add one
+    var row : Int
+    var col : Int
+    var randomIndex : Int
+    
+    switch direction {
+    case .down: // look for top row
+        lastAxis = 0
+        randomIndex = pickRandIndex(emptyTileIndices: emptyTileIndices, direction: direction, lastAxis: lastAxis)
+        row = randomIndex
+        col = lastAxis
+    case .up:
+        lastAxis = Int(tileValueBoard.dimension-1)
+        randomIndex = pickRandIndex(emptyTileIndices: emptyTileIndices, direction: direction, lastAxis: lastAxis)
+        row = randomIndex
+        col = lastAxis
+    case .right:
+        lastAxis = 0
+        randomIndex = pickRandIndex(emptyTileIndices: emptyTileIndices, direction: direction, lastAxis: lastAxis)
+        row = lastAxis
+        col = randomIndex
+    case .left:
+        lastAxis = Int(tileValueBoard.dimension-1)
+        randomIndex = pickRandIndex(emptyTileIndices: emptyTileIndices, direction: direction, lastAxis: lastAxis)
+        row = lastAxis
+        col = randomIndex
+    default:
+        fatalError("Swipe direction not properly accounted for")
+    }
+    
+    return (row, col)
 }
 
 //MARK: Update After Swipe
@@ -105,7 +252,7 @@ func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard:
         for j in 0..<dimensions {
             (row, col, nextRow, nextCol) = processIJs(dimensions: dimensions, direction: direction, increment: increment, i: i, j: j)
             
-            print("row: \(row), col: \(col), nextRow: \(nextRow), nextCol: \(nextCol)")
+            // print("row: \(row), col: \(col), nextRow: \(nextRow), nextCol: \(nextCol)")
             if newTileValueBoard[row, col] == 0 { // if current tile is empty we do nothing
                 () // default is already.stay
             } else if newTileValueBoard[nextRow, nextCol] == 0 { // if next tile is empty (but our current tile isn't), we move
@@ -141,6 +288,7 @@ func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard:
             }
         }
     }
+    
     return (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard)
 }
 

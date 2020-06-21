@@ -9,9 +9,21 @@
 import UIKit
 
 class TileView: UIView {
+    var label : UILabel
+    var value : Int {
+        didSet {
+            label.text = "\(value)"
+        }
+    }
 
     init(sizeAndPositionsDict: [String:CGFloat], tileValue: Int){
         // calculate where the (0,0) position for a view should be before it is moved onto gameboard
+        value = tileValue
+        
+        label = UILabel(frame: CGRect(x: 0, y: 0, width: sizeAndPositionsDict["tileWidth"]!, height: sizeAndPositionsDict["tileHeight"]!))
+        label.textAlignment = .center
+        label.text = "\(tileValue)"
+        label.font = label.font.withSize(22)
         
         let x = sizeAndPositionsDict["gameboardX"]! - sizeAndPositionsDict["tileWidth"]!
         let y = sizeAndPositionsDict["gameboardY"]! - sizeAndPositionsDict["tileHeight"]!
@@ -20,15 +32,13 @@ class TileView: UIView {
         
         backgroundColor = UIColor.green
         
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: sizeAndPositionsDict["tileWidth"]!, height: sizeAndPositionsDict["tileHeight"]!))
-        label.textAlignment = .center
-        label.text = "\(tileValue)"
-        label.font = label.font.withSize(22)
         
         addSubview(label)
     }
     
     required init?(coder aDecoder: NSCoder){
+        value = 0
+        label = UILabel(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
         super.init(coder: aDecoder)
     }
 }
