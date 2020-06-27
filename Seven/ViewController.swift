@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     // Unchanged properties
     let dimensions : Int = 4
     let tileSpacing : CGFloat = 15
+    let smallTileScale : CGFloat = 0.75
     var sizeAndPositionsDict = [String:CGFloat]()
     
     // Properties used to keep track of gameboard
@@ -25,11 +26,28 @@ class ViewController: UIViewController {
     var rowIndexPositionBoard : Gameboard<Int>
     var colIndexPositionBoard : Gameboard<Int>
     
+    
+    // Properties used to keep track of gameboard hint
+    var tileTrackingList = [SmallTileView?]()
+    var nextTileValue : Int = 7
+    var nextNextTileValue : Int = 7
+    var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10)
+    var score : Int = 0
+    var scoreView = ScoreView(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
+    
     // Properties used to keep track of everything not on gameboard
     var viewsToBeDeleted = [TileView]()
-    var nextTileValue : Int = 7
     var direction = Direction.undefined
     
+    // Swipe properties
+    var fractionComplete : CGFloat = 0.0
+    var isReversed : Bool = false
+    var directionForEndState : Direction = .undefined
+    
+    var newTileValueBoard : Gameboard<Int>
+    var newTileViewBoard : Gameboard<TileView?>
+    var newViewsToBeDeleted = [TileView]()
+    var newRowIndexPositionBoard : Gameboard<Int>, newColIndexPositionBoard : Gameboard<Int>
     
     //MARK: Initialization
     init(){
@@ -38,6 +56,11 @@ class ViewController: UIViewController {
         tileAnimationBoard = Gameboard<UIViewPropertyAnimator>(d: dimensions, initialValue: UIViewPropertyAnimator())
         rowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         colIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        
+        newTileValueBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        newTileViewBoard = Gameboard<TileView?>(d: dimensions, initialValue: nil)
+        newRowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -49,6 +72,11 @@ class ViewController: UIViewController {
         rowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         colIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         
+        newTileValueBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        newTileViewBoard = Gameboard<TileView?>(d: dimensions, initialValue: nil)
+        newRowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        
         super.init(coder: aDecoder)
     }
 
@@ -59,11 +87,13 @@ class ViewController: UIViewController {
     }
     
     
-    //MARK: Game Functions
+    //MARK: Start-game Functions
     
     func drawGameboard(sizeAndPositionsDict:[String:CGFloat]){        
         let gameboardView = GameboardView(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict)
+        scoreView = ScoreView(sizeAndPositionsDict: sizeAndPositionsDict)
         self.view.addSubview(gameboardView)
+        self.view.addSubview(scoreView)
         
     }
     
@@ -73,6 +103,12 @@ class ViewController: UIViewController {
         sizeAndPositionsDict = calculateViewSizeAndPositions(dimensions: dimensions, superviewWidth: superviewWidth, superviewHeight: superviewHeight, spacing: tileSpacing)
         
         drawGameboard(sizeAndPositionsDict: sizeAndPositionsDict)
+        
+        addSmallTile()
+        
+        let smallTileHighlight = SmallTileHighlight(sizeAndPositionsDict: sizeAndPositionsDict, smallTileScale: smallTileScale)
+        
+        self.view.addSubview(smallTileHighlight)
         
         (tileValueBoard, tileViewBoard) = addFirstTiles(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard)
         
@@ -103,8 +139,10 @@ class ViewController: UIViewController {
         }
     }
     
-    func animateTiles(direction: Direction){
-        var animator : UIViewPropertyAnimator, rowInd : Int, colInd : Int, xShift : CGFloat, yShift : CGFloat
+    //MARK: In-game functions
+    func animateTiles(direction: Direction, tileViewBoard: Gameboard<TileView?>, rowIndexPositionBoard: Gameboard<Int>, colIndexPositionBoard: Gameboard<Int>) {
+                
+        var animator : UIViewPropertyAnimator , rowInd : Int, colInd : Int, xShift : CGFloat, yShift : CGFloat
         
         var count : Int = 0
         for row in 0..<dimensions {
@@ -119,25 +157,19 @@ class ViewController: UIViewController {
                     
                     yShift = sizeAndPositionsDict["tileHeight"]! * CGFloat(colInd) + sizeAndPositionsDict["spacing"]! * CGFloat(colInd)
                     
-                    animator = tileAnimationBoard[row,col]
-                    animator = UIViewPropertyAnimator(duration: 1.0, curve: .easeInOut, animations: {
+                    animator = UIViewPropertyAnimator(duration: 0.1, curve: .linear, animations: {
                         subview.transform = CGAffineTransform(translationX: xShift, y: yShift)
                     })
                     
-                    animator.startAnimation()
                     
-                    if count == 1 {
-                        animator.addCompletion { _ in
-                            print("inside added completion")
-                            let nextTileView : TileView = self.addNextTileView()
-                            self.addNextTileOntoBoard(direction: direction, nextTileView: nextTileView)
-                        }
-                    }
+                    tileAnimationBoard[row, col] = animator
+                    
+                    animator.startAnimation()
+                    animator.pauseAnimation()
+                    
                 }
             }
         }
-        
-        
     }
     
     func deleteOldTiles(){
@@ -152,8 +184,8 @@ class ViewController: UIViewController {
         let nextTileView = TileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: nextTileValue)
         
         // after creating the view generate the next-up tile value
-        nextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard)
-        
+        nextTileValue = nextNextTileValue
+        nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard)
         return nextTileView
     }
     
@@ -188,10 +220,11 @@ class ViewController: UIViewController {
        
        let yShift = sizeAndPositionsDict["tileHeight"]! * CGFloat(prepCol) + sizeAndPositionsDict["spacing"]! * CGFloat(prepCol)
         
-        let animator = UIViewPropertyAnimator(duration: 3.0, curve: .easeInOut, animations: {
+        let animator = UIViewPropertyAnimator(duration: 1.0, curve: .easeInOut, animations: {
            nextTileView.transform = CGAffineTransform(translationX: xShift, y: yShift)
         })
-       animator.startAnimation()
+        
+        animator.startAnimation()
         
         // 3. animate and move the tile to the correct position
         // 4. add tile to view board, value to value board, col/row index to col/row index board, and maybe add the animation to the animation board but probably unneccessary
@@ -230,21 +263,283 @@ class ViewController: UIViewController {
         }
         
         animator.addCompletion { _ in
-            self.view.addSubview(nextTileView)
+            let delay: TimeInterval = 0.15
             self.tileViewBoard[newTileRow, newTileCol] = nextTileView
             self.tileValueBoard[newTileRow, newTileCol] = nextTileView.value
             self.rowIndexPositionBoard[newTileRow, newTileCol] = newTileRow + 1
             self.colIndexPositionBoard[newTileRow, newTileCol] = newTileCol + 1
-            animator2.startAnimation()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                animator2.startAnimation()
+                self.view.addSubview(nextTileView)
+                self.addSmallTile()
+                // check here if game should end
+                if self.gameShouldEnd() == true {
+                    self.endGame()
+                }
+            }
+            
         }
         
-    
         
+    }
+    
+    
+    //MARK: End-game functions
+    func gameShouldEnd() -> Bool {
+        // game should end only if both of the following conditions are met
+        // 1. there are no empty space on the board AND
+        // 2. there are no movements that are possible from any direction
+        var emptyCount : Int = 0
+        var combinableCount : Int = 0
+       
+        for i in 0..<dimensions {
+            for j in 0..<dimensions {
+                if tileValueBoard[i,j] == 0 {
+                    emptyCount += 1
+                }
+            }
+        }
+        
+        var test1: Bool
+        var test2: Bool
+        
+        for i in 0..<dimensions { // don't loop through the the last col cos we're doing +1
+            for j in 0..<dimensions {
+                if (j != dimensions - 1){
+                    test1 = canBeCombined(v1: tileValueBoard[i,j], v2: tileValueBoard[i, j+1])
+                } else {
+                    test1 = false
+                }
+                
+                if (i != dimensions - 1){
+                    test2 = canBeCombined(v1: tileValueBoard[i,j], v2: tileValueBoard[i+1, j])
+                } else {
+                    test2 = false
+                }
+                
+                if (test1 || test2) == true { combinableCount += 1 }
+       
+            }
+        }
+
+        if emptyCount == 0 && combinableCount == 0 {
+               return true
+           }
+        return false
+    }
+       
+       
+    func endGame() {
+        print("game should end")
+        // create endGame view
+        endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
+        self.view.addSubview(endGamePopupView)
+        let restartButton = RestartButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
+        
+        restartButton.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+        
+        
+        self.view.addSubview(endGamePopupView)
+        self.view.addSubview(restartButton)
+    }
+    
+    @objc func buttonAction(sender: UIButton!) {
+        print("Button tapped")
+        restartGame()
+    }
+    
+    func restartGame(){
+        // ***** delete all views *****
+        
+        self.view.subviews.forEach({ $0.removeFromSuperview() })
+        
+        // **** reassign propertiies to initial state ****
+        tileValueBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        tileViewBoard = Gameboard<TileView?>(d: dimensions, initialValue: nil)
+        tileAnimationBoard = Gameboard<UIViewPropertyAnimator>(d: dimensions, initialValue: UIViewPropertyAnimator())
+        rowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        colIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        
+        newTileValueBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        newTileViewBoard = Gameboard<TileView?>(d: dimensions, initialValue: nil)
+        newRowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        
+        // Properties used to keep track of gameboard hint
+        tileTrackingList = [SmallTileView?]()
+        nextTileValue = 7
+        nextNextTileValue  = 7
+        scoreView.score = 0
+        
+        // Properties used to keep track of everything not on gameboard
+        viewsToBeDeleted = [TileView]()
+        direction = Direction.undefined
+        
+        // Swipe properties
+        fractionComplete = 0.0
+        isReversed = false
+        directionForEndState = .undefined
+        
+        // **** re-setup game ****
+        startGame()
+    }
+    
+    
+    //MARK: Tile Tracking functions
+    func addSmallTile(){
+        // calculate how many small tiles can fit on the bottom, keep that much length + 1 (+1 bc we want the last tile to slide off the screen before getting deleted) in the list before removing
+        let numSmallTiles : Int = Int(ceil(self.view.frame.width / (sizeAndPositionsDict["tileWidth"]! * smallTileScale + tileSpacing) - 0.5)) + Int(1)
+        
+        
+        // if list is empty, add nextNextTile as 0, nextTile as 1. these should be views
+        if tileTrackingList.count == 0 { // if tileTrackingList is empty
+            tileTrackingList = Array(repeating: nil, count: numSmallTiles)
+            
+            tileTrackingList[0] = SmallTileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: nextNextTileValue, smallTileScale: smallTileScale)
+            tileTrackingList[1] = SmallTileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: nextTileValue, smallTileScale: smallTileScale)
+            
+            self.view.addSubview(tileTrackingList[0]!)
+            self.view.addSubview(tileTrackingList[1]!)
+        } else { // if the list is non-empty, shift everything by 1 to the right
+            
+            // except for the last one, which gets deleted
+            if let lastTrackingTile = tileTrackingList[numSmallTiles - 1] {
+                lastTrackingTile.removeFromSuperview()
+            }
+            
+            for i in stride(from: numSmallTiles - 2, through: 0, by: -1){
+                tileTrackingList[i+1] = tileTrackingList[i]
+            }
+            
+            // lastly, add nextNextTile to the first position
+            tileTrackingList[0] = SmallTileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: nextNextTileValue, smallTileScale: smallTileScale)
+            
+            self.view.addSubview(tileTrackingList[0]!)
+            
+            // for the new 3rd subview, make text grey and background dimmer
+            tileTrackingList[2]!.color = UIColor.gray
+            
+        }
+        
+        
+        //after update, animate: y position of view shifts to be a multiple of the index number
+        // also animate to make tiles a little smaller when they have arrived
+        // for the updated list, add greyness to text for everythng after position 1
+
+        var animator : UIViewPropertyAnimator
+        var xShift: CGFloat, yShift: CGFloat
+        var positionTrans: CGAffineTransform, shrinkTrans: CGAffineTransform
+        var transformScale: CGFloat = 1
+        for i in 0..<numSmallTiles {
+            if let subview = tileTrackingList[i] { // if tracking tile exists
+                xShift = sizeAndPositionsDict["tileWidth"]! * smallTileScale * CGFloat(i) + tileSpacing * CGFloat(i)
+                
+                yShift = 0
+                
+                
+                switch i {
+                case 0:
+                    transformScale = 0.9
+                case 1:
+                    transformScale = 1
+                case 2..<numSmallTiles:
+                    transformScale = 0.9
+                default:
+                    transformScale = 1
+                }
+                
+                shrinkTrans = CGAffineTransform(scaleX: transformScale, y: transformScale)
+                positionTrans = CGAffineTransform(translationX: xShift, y: yShift)
+                
+                
+                animator = UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut, animations: {
+                    subview.transform = shrinkTrans.concatenating(positionTrans)
+                })
+                
+//                animator = UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut, animations: {
+//                    subview.transform = CGAffineTransform(translationX: xShift, y: yShift)
+//                })
+                
+                animator.startAnimation()
+            }
+        }
     }
         
     //MARK: Swipe-related functions
     
-   
+    @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
+        
+        var direction : Direction
+
+        var animator : UIViewPropertyAnimator
+
+        switch recognizer.state {
+        case .began:
+            direction = directionFromVelocity(recognizer.velocity(in: self.view))
+            directionForEndState = direction
+
+            (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
+
+            animateTiles(direction: direction, tileViewBoard: newTileViewBoard, rowIndexPositionBoard: newRowIndexPositionBoard, colIndexPositionBoard: newColIndexPositionBoard)
+
+        case .changed:
+            switch directionForEndState {
+            case .left:
+                fractionComplete = -recognizer.translation(in: self.view).x / (tileSpacing + sizeAndPositionsDict["tileWidth"]!)
+            case .right:
+                fractionComplete = recognizer.translation(in: self.view).x / (tileSpacing + sizeAndPositionsDict["tileWidth"]!)
+            case .up:
+                fractionComplete = -recognizer.translation(in: self.view).y / (tileSpacing + sizeAndPositionsDict["tileHeight"]!)
+            case .down:
+                fractionComplete = recognizer.translation(in: self.view).y / (tileSpacing + sizeAndPositionsDict["tileHeight"]!)
+            default:
+                ()
+            }
+            
+
+            for row in 0..<dimensions {
+                for col in 0..<dimensions {
+                    animator = tileAnimationBoard[row, col]
+                    animator.fractionComplete = fractionComplete
+                }
+            }
+        case .ended:
+            
+             if fractionComplete < 0.2 {
+                 isReversed = true
+             } else {
+                 isReversed = false
+             }
+
+             for row in 0..<dimensions {
+                 for col in 0..<dimensions {
+                     animator = tileAnimationBoard[row, col]
+                     animator.isReversed = isReversed
+                     animator.continueAnimation(withTimingParameters: nil, durationFactor: 0)
+                 }
+             }
+            
+            if isReversed == false {
+                tileValueBoard = newTileValueBoard
+                tileViewBoard = newTileViewBoard
+                viewsToBeDeleted = newViewsToBeDeleted
+                rowIndexPositionBoard = newRowIndexPositionBoard
+                colIndexPositionBoard = newColIndexPositionBoard
+                
+                let nextTileView : TileView = addNextTileView()
+                addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                scoreView.score = calculateScores(tileValueBoard: tileValueBoard)
+                deleteOldTiles()
+                
+            }
+            
+            isReversed = false
+
+        default:
+            ()
+        }
+    }
     
     private func directionFromVelocity(_ velocity: CGPoint) -> Direction {
         guard velocity != .zero else { return .undefined }
@@ -258,54 +553,7 @@ class ViewController: UIViewController {
         return derivedDirection
     }
     
-    private lazy var panRecognizer: UIPanGestureRecognizer = {
-        let recognizer = UIPanGestureRecognizer()
-        recognizer.addTarget(self, action: #selector(handlePan(recognizer:)))
-        return recognizer
-    }()
-    
-    //MARK: Placeholder swipes
-    
-    @IBAction func swipeUp(_ sender: Any) {
-        print("swipeUp button clicked")
-        direction = .up
-        
-        (tileValueBoard, tileViewBoard, viewsToBeDeleted, rowIndexPositionBoard, colIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
-        
-        
-        animateTiles(direction: direction)
-        deleteOldTiles()
-    }
-    
-    @IBAction func swipeDown(_ sender: Any) {
-        print("swipeDown button clicked")
-        direction = .down
-        
-        (tileValueBoard, tileViewBoard, viewsToBeDeleted, rowIndexPositionBoard, colIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
-        
-        animateTiles(direction: direction)
-        deleteOldTiles()
-    }
-        
-    @IBAction func swipeLeft(_ sender: Any) {
-        print("swipeLeft button clicked")
-        direction = .left
-
-        (tileValueBoard, tileViewBoard, viewsToBeDeleted, rowIndexPositionBoard, colIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
-        animateTiles(direction: direction)
-        deleteOldTiles()
-    }
-    
-    @IBAction func swipeRight(_ sender: Any) {
-        print("swipeRight button clicked")
-        direction = .right
-
-        (tileValueBoard, tileViewBoard, viewsToBeDeleted, rowIndexPositionBoard, colIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
-        
-        animateTiles(direction: direction)
-        deleteOldTiles()
-    }
-
-
 }
+
+
 

@@ -49,3 +49,13 @@ enum Direction {
     case up, down, left, right, undefined
 }
 
+struct swipeTracker {
+    var directionAtStart: Direction
+    var fractionComplete: CGFloat
+    
+    init(){
+        directionAtStart =  .undefined
+        fractionComplete = 0.0
+    }
+}
+

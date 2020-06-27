@@ -149,7 +149,7 @@ func getEmptyIndicesFromGameboard(tileValueBoard: Gameboard<Int>) -> [(Int, Int)
     var emptyTileIndices = [(Int, Int)]()
     for i in 0..<tileValueBoard.dimension {
         for j in 0..<tileValueBoard.dimension{
-            if tileValueBoard[i,j] == 0 { emptyTileIndices += [(i, j)] }
+            if tileValueBoard[j,i] == 0 { emptyTileIndices += [(i, j)] }
         }
     }
     return emptyTileIndices
@@ -157,6 +157,7 @@ func getEmptyIndicesFromGameboard(tileValueBoard: Gameboard<Int>) -> [(Int, Int)
 
 func pickRandIndex(emptyTileIndices: [(Int, Int)], direction: Direction, lastAxis: Int) -> Int {
     var randIndicesList = [Int]()
+        
     for (i, j) in emptyTileIndices {
         if direction == .down || direction == .up {
             if i == lastAxis {
@@ -178,7 +179,6 @@ func addTile(direction: Direction, tileValueBoard: Gameboard<Int>) -> (Int, Int)
    let emptyTileIndices = getEmptyIndicesFromGameboard(tileValueBoard: tileValueBoard)
 
    guard emptyTileIndices.count != 0 else {
-    print("game should end")
     return (0,0)
    }
            
@@ -252,7 +252,6 @@ func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard:
         for j in 0..<dimensions {
             (row, col, nextRow, nextCol) = processIJs(dimensions: dimensions, direction: direction, increment: increment, i: i, j: j)
             
-            // print("row: \(row), col: \(col), nextRow: \(nextRow), nextCol: \(nextCol)")
             if newTileValueBoard[row, col] == 0 { // if current tile is empty we do nothing
                 () // default is already.stay
             } else if newTileValueBoard[nextRow, nextCol] == 0 { // if next tile is empty (but our current tile isn't), we move
@@ -305,6 +304,41 @@ func canBeCombined(v1: Int, v2: Int) -> Bool {
     }
     return false
 }
+
+func canBeCombined2(v1: Int, v2: Int) -> (Bool, String) {
+    if (v1 == 2 && v2 == 5) || (v1 == 5 && v2 == 2) { // 5+2 makes 7
+        return (true, "case 1")
+    } else if (v1 == 3 && v2 == 4) || (v1 == 4 && v2 == 3) { // 3+4 makes 7
+        return (true, "case 2")
+    } else if v1 == 2 && v2 == 2 { // 2+2 makes 4
+        return (true, "case 3")
+    } else if (v1 != 5 && v1 != 3 && v1 != 4) && v1==v2 {
+        return (true, "case 4")
+    }
+    return (false, "nocase")
+}
+
+func calculateScores(tileValueBoard: Gameboard<Int>) -> Int{
+    var value: Int
+    var score : Int = 0
+    for i in 0..<tileValueBoard.dimension {
+        for j in 0..<tileValueBoard.dimension {
+            value = tileValueBoard[i,j]
+            switch value {
+            case 0, 2, 3, 4, 5, 7:
+                score += value
+            default:
+                score += value
+                // score += 7 * Int(pow(Double(2.00), Double(value/7)))
+
+            }
+        }
+    }
+    return score
+
+}
+
+
 
 //MARK: Counting helpers
 func getStartStopIndicesForSwipeFunctions(dimensions: Int, direction: Direction) -> (Int, Int, Int){
