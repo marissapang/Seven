@@ -18,6 +18,7 @@
 		185FF90024937A9600FD52A0 /* GameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185FF8FF24937A9600FD52A0 /* GameViews.swift */; };
 		185FF90224937C4300FD52A0 /* GameHelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185FF90124937C4300FD52A0 /* GameHelperFunctions.swift */; };
 		185FF904249665E800FD52A0 /* AnimationFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185FF903249665E800FD52A0 /* AnimationFunctions.swift */; };
+		18EEF46D24A7624C00D129B8 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EEF46C24A7624C00D129B8 /* MenuViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 		185FF8FF24937A9600FD52A0 /* GameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViews.swift; sourceTree = "<group>"; };
 		185FF90124937C4300FD52A0 /* GameHelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHelperFunctions.swift; sourceTree = "<group>"; };
 		185FF903249665E800FD52A0 /* AnimationFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationFunctions.swift; sourceTree = "<group>"; };
+		18EEF46C24A7624C00D129B8 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 			children = (
 				185FF8DB249375F700FD52A0 /* AppDelegate.swift */,
 				185FF8DD249375F700FD52A0 /* SceneDelegate.swift */,
+				18EEF46C24A7624C00D129B8 /* MenuViewController.swift */,
 				185FF8DF249375F700FD52A0 /* ViewController.swift */,
 				185FF90124937C4300FD52A0 /* GameHelperFunctions.swift */,
 				185FF903249665E800FD52A0 /* AnimationFunctions.swift */,
@@ -219,6 +222,7 @@
 				185FF90024937A9600FD52A0 /* GameViews.swift in Sources */,
 				185FF8DC249375F700FD52A0 /* AppDelegate.swift in Sources */,
 				185FF8DE249375F700FD52A0 /* SceneDelegate.swift in Sources */,
+				18EEF46D24A7624C00D129B8 /* MenuViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

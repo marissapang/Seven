@@ -14,13 +14,40 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lpf-Um-Qic">
+                                <rect key="frame" x="321" y="64" width="73" height="55"/>
+                                <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="30"/>
+                                <state key="normal" title="Menu"/>
+                                <connections>
+                                    <segue destination="BbZ-pN-OAJ" kind="popoverPresentation" popoverAnchorView="lpf-Um-Qic" id="zDr-fv-RXG">
+                                        <popoverArrowDirection key="popoverArrowDirection" right="YES"/>
+                                    </segue>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gyb-LI-Cm1">
+                                <rect key="frame" x="20" y="64" width="101" height="55"/>
+                                <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="30"/>
+                                <state key="normal" title="Restart"/>
+                                <connections>
+                                    <action selector="pauseAndRestart:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ZIm-L1-SbP"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="lpf-Um-Qic" secondAttribute="trailing" constant="20" id="19K-fB-zDJ"/>
+                            <constraint firstItem="Gyb-LI-Cm1" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="5Mb-db-l1P"/>
+                            <constraint firstItem="Gyb-LI-Cm1" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="DmN-12-fYt"/>
+                            <constraint firstItem="lpf-Um-Qic" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="FdX-V5-I4u"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="uzl-YI-65P" appends="YES" id="O6f-GA-kDM"/>
                         </connections>
                     </view>
+                    <navigationItem key="navigationItem" id="IGy-9Z-5Gc"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
                 <panGestureRecognizer minimumNumberOfTouches="1" id="uzl-YI-65P">
@@ -30,6 +57,39 @@
                 </panGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="137.68115942028987" y="126.5625"/>
+        </scene>
+        <!--Menu View Controller-->
+        <scene sceneID="FZr-g3-mG1">
+            <objects>
+                <viewController id="BbZ-pN-OAJ" customClass="MenuViewController" customModule="Seven" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Apr-DK-fTl">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UPh-B1-sTo">
+                                <rect key="frame" x="20" y="20" width="63" height="55"/>
+                                <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="30"/>
+                                <state key="normal" title="Back">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <segue destination="vgZ-wo-teQ" kind="unwind" unwindAction="unwindToRootViewControllerWithSegue:" id="hvx-f8-wRB"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemTealColor" red="0.35294117650000001" green="0.7843137255" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="UPh-B1-sTo" firstAttribute="leading" secondItem="GJX-tC-0Zt" secondAttribute="leading" constant="20" id="ea5-Y6-pxF"/>
+                            <constraint firstItem="UPh-B1-sTo" firstAttribute="top" secondItem="GJX-tC-0Zt" secondAttribute="top" constant="20" id="lrg-8h-0jg"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="GJX-tC-0Zt"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="h6N-tw-XbD"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FxD-RO-iip" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="vgZ-wo-teQ" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="786" y="124"/>
         </scene>
     </scenes>
 </document>

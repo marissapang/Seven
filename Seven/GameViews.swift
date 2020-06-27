@@ -232,9 +232,7 @@ class RestartButton : UIButton {
         let restartButtonHeight = labelHeight * 0.7
         let restartButtonX = labelX + (labelWidth - restartButtonWidth)/2
         let restartButtonY = labelY + labelHeight + superviewHeight*0.05
-        
-        print(restartButtonX, restartButtonY, restartButtonWidth, restartButtonHeight)
-        
+                
         super.init(frame: CGRect(x: restartButtonX, y: restartButtonY, width: restartButtonWidth, height: restartButtonHeight))
         
         backgroundColor = UIColor.init(red: 97.0/255.0, green: 56.0/255.0, blue: 20.0/255.0, alpha: 1.0)

@@ -10,6 +10,10 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    @IBAction func unwindToRootViewController(segue: UIStoryboardSegue) {
+        print("Unwind to Root View Controller")
+    }
+    
     
     //MARK: Properties
     
@@ -137,6 +141,8 @@ class ViewController: UIViewController {
                 }
             }
         }
+        
+        scoreView.score = calculateScores(tileValueBoard: tileValueBoard)
     }
     
     //MARK: In-game functions
@@ -263,12 +269,14 @@ class ViewController: UIViewController {
         }
         
         animator.addCompletion { _ in
-            let delay: TimeInterval = 0.15
+            let delay: TimeInterval = 0.01
             self.tileViewBoard[newTileRow, newTileCol] = nextTileView
             self.tileValueBoard[newTileRow, newTileCol] = nextTileView.value
             self.rowIndexPositionBoard[newTileRow, newTileCol] = newTileRow + 1
             self.colIndexPositionBoard[newTileRow, newTileCol] = newTileCol + 1
+            self.scoreView.score = calculateScores(tileValueBoard: self.tileValueBoard)
             
+            // print(self.tileValueBoard)
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 animator2.startAnimation()
                 self.view.addSubview(nextTileView)
@@ -281,7 +289,7 @@ class ViewController: UIViewController {
             
         }
         
-        
+    
     }
     
     
@@ -345,12 +353,15 @@ class ViewController: UIViewController {
     }
     
     @objc func buttonAction(sender: UIButton!) {
-        print("Button tapped")
         restartGame()
     }
     
+    @IBAction func pauseAndRestart(_ sender: Any) {
+        restartGame()
+    }
     func restartGame(){
         // ***** delete all views *****
+        
         
         self.view.subviews.forEach({ $0.removeFromSuperview() })
         
@@ -511,6 +522,7 @@ class ViewController: UIViewController {
              } else {
                  isReversed = false
              }
+             
 
              for row in 0..<dimensions {
                  for col in 0..<dimensions {
@@ -521,18 +533,34 @@ class ViewController: UIViewController {
              }
             
             if isReversed == false {
+                
+                
+                // if gameboard didn't change it means we swiped in an un-viable way so a new tile shouldn't be added
+                var gameboardChanged : Int = 0
+                for i in 0..<dimensions {
+                    for j in 0..<dimensions {
+                        if tileValueBoard[i,j] != newTileValueBoard[i,j] {
+                            gameboardChanged += 1
+                        }
+                    }
+                }
+                
                 tileValueBoard = newTileValueBoard
                 tileViewBoard = newTileViewBoard
                 viewsToBeDeleted = newViewsToBeDeleted
                 rowIndexPositionBoard = newRowIndexPositionBoard
                 colIndexPositionBoard = newColIndexPositionBoard
                 
-                let nextTileView : TileView = addNextTileView()
-                addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                // if gameboard didn't change it means we swiped in an un-viable way so a new tile shouldn't be added
+                if gameboardChanged != 0 {
+                    let nextTileView : TileView = addNextTileView()
+                    addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                    
+                }
                 scoreView.score = calculateScores(tileValueBoard: tileValueBoard)
                 deleteOldTiles()
-                
             }
+            
             
             isReversed = false
 
