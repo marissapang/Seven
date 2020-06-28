@@ -284,6 +284,29 @@ class ScoreView : UIView {
     }
 }
 
+//MARK: Navigation
+class navButton : UIButton {
+    init(sizeAndPositionsDict: [String: CGFloat], x: CGFloat, labelText: String){
+        let y = sizeAndPositionsDict["gameboardY"]! * 0.2
+        let width = sizeAndPositionsDict["gameboardWidth"]! * 0.3
+        let height = sizeAndPositionsDict["gameboardY"]! * 0.25
+        
+        super.init(frame: CGRect(x: x, y: y, width: width, height: height))
+        
+        backgroundColor = UIColor.init(red: 133.0/255.0, green: 180.0/255.0, blue: 255.0/255.0, alpha: 1)
+        
+        
+        setTitle(labelText, for: [])
+        titleLabel?.font = UIFont(name: "Chalkboard SE", size: 25)!
+        titleLabel?.textColor = UIColor.white
+        layer.cornerRadius = 15
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
+
 
 
 

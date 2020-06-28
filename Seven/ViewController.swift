@@ -9,12 +9,6 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
-    @IBAction func unwindToRootViewController(segue: UIStoryboardSegue) {
-        print("Unwind to Root View Controller")
-    }
-    
-    
     //MARK: Properties
     
     // Unchanged properties
@@ -96,9 +90,17 @@ class ViewController: UIViewController {
     func drawGameboard(sizeAndPositionsDict:[String:CGFloat]){        
         let gameboardView = GameboardView(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict)
         scoreView = ScoreView(sizeAndPositionsDict: sizeAndPositionsDict)
+        
+        let restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.05, labelText: "Restart")
+        restartButton.addTarget(self, action:#selector(restartButtonClicked), for: .touchUpInside)
+        
+        let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.95 - sizeAndPositionsDict["gameboardWidth"]!*0.3, labelText: "Menu")
+        menuButton.addTarget(self, action:#selector(menuButtonClicked), for: .touchUpInside)
+        
         self.view.addSubview(gameboardView)
         self.view.addSubview(scoreView)
-        
+        self.view.addSubview(restartButton)
+        self.view.addSubview(menuButton)
     }
     
     func startGame(){
@@ -477,6 +479,27 @@ class ViewController: UIViewController {
         }
     }
         
+    //MARK: Click-related functions
+    
+    
+    @IBAction func unwindToRootViewController(segue: UIStoryboardSegue) {
+        print("Unwind to Root View Controller")
+    }
+    
+    @objc func restartButtonClicked(){
+        restartGame()
+    }
+    
+    @objc func menuButtonClicked(){
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        // Instantiate the desired view controller from the storyboard using the view controllers identifier
+        // Cast is as the custom view controller type you created in order to access it's properties and methods
+        let menuViewController = storyboard.instantiateViewController(withIdentifier: "menuViewController") as!MenuViewController
+        present(menuViewController, animated: true, completion: nil)
+    }
+    
+    
     //MARK: Swipe-related functions
     
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
