@@ -24,6 +24,8 @@ class ViewController: UIViewController {
     var rowIndexPositionBoard : Gameboard<Int>
     var colIndexPositionBoard : Gameboard<Int>
     
+    var lastXTiles = [Int]()
+    
     
     // Properties used to keep track of gameboard hint
     var tileTrackingList = [SmallTileView?]()
@@ -91,16 +93,20 @@ class ViewController: UIViewController {
         let gameboardView = GameboardView(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict)
         scoreView = ScoreView(sizeAndPositionsDict: sizeAndPositionsDict)
         
-        let restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.05, labelText: "Restart")
+        let restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: "Restart")
         restartButton.addTarget(self, action:#selector(restartButtonClicked), for: .touchUpInside)
         
-        let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.95 - sizeAndPositionsDict["gameboardWidth"]!*0.3, labelText: "Menu")
+        let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.25, labelText: "Menu")
         menuButton.addTarget(self, action:#selector(menuButtonClicked), for: .touchUpInside)
+        
+        let tileTrackingStrip = TileTrackingStrip(sizeAndPositionsDict: sizeAndPositionsDict, superviewWidth: self.view.frame.width, smallTileScale: smallTileScale)
         
         self.view.addSubview(gameboardView)
         self.view.addSubview(scoreView)
         self.view.addSubview(restartButton)
         self.view.addSubview(menuButton)
+        self.view.addSubview(tileTrackingStrip)
+        
     }
     
     func startGame(){
@@ -193,7 +199,13 @@ class ViewController: UIViewController {
         
         // after creating the view generate the next-up tile value
         nextTileValue = nextNextTileValue
-        nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard)
+        nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard, lastXTiles: lastXTiles)
+        
+        lastXTiles += [nextNextTileValue]
+        if lastXTiles.count > 15 {
+            lastXTiles.removeFirst(1)
+        }
+        
         return nextTileView
     }
     
@@ -378,6 +390,8 @@ class ViewController: UIViewController {
         newTileViewBoard = Gameboard<TileView?>(d: dimensions, initialValue: nil)
         newRowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
+        
+        lastXTiles = [Int]()
         
         // Properties used to keep track of gameboard hint
         tileTrackingList = [SmallTileView?]()

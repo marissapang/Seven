@@ -17,7 +17,7 @@ class GameboardView: UIView {
                                  height: sizeAndPositionsDict["gameboardHeight"]!)
         )
         layer.cornerRadius = 10.0
-        backgroundColor = UIColor.init(red: 66.0/255.0, green: 57.0/255.0, blue: 50.0/255.0, alpha: 1)
+        backgroundColor = UIColor.init(red: 47.0/255.0, green: 58.0/255.0, blue: 61.0/255.0, alpha: 0.95)
         
         // add a background grey view for each tile on the gameboard
         var tileView : UIView
@@ -30,7 +30,8 @@ class GameboardView: UIView {
                 
                 tileView = UIView(frame: CGRect(x: x, y: y, width: sizeAndPositionsDict["tileWidth"]!, height: sizeAndPositionsDict["tileHeight"]!))
                 
-                tileView.backgroundColor = UIColor.lightGray
+                tileView.backgroundColor = UIColor.init(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 0.5)
+                // tileView.backgroundColor = UIColor.init(red: 233.0/255.0, green: 226.0/255.0, blue: 227.0/255.0, alpha: 0.5)
                 tileView.layer.cornerRadius = 6.0
                 
                 addSubview(tileView)
@@ -53,6 +54,7 @@ class TileView: UIView {
             // add in something to change tile color
             backgroundColor = appearance.tileColor(value)
             label.font = appearance.font(value)
+            layer.borderColor = appearance.borderColor(value)
         }
     }
 
@@ -64,6 +66,7 @@ class TileView: UIView {
         label.textAlignment = .center
         label.text = "\(tileValue)"
         label.font = appearance.font(value)
+        label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
         let x = sizeAndPositionsDict["gameboardX"]! - sizeAndPositionsDict["tileWidth"]!
         let y = sizeAndPositionsDict["gameboardY"]! - sizeAndPositionsDict["tileHeight"]!
@@ -72,6 +75,8 @@ class TileView: UIView {
         
         backgroundColor = appearance.tileColor(value)
         layer.cornerRadius = 6.0
+        layer.borderWidth = 4
+        layer.borderColor = appearance.borderColor(value)
         
         
         addSubview(label)
@@ -85,6 +90,26 @@ class TileView: UIView {
 }
 
 //MARK: Tile Tracking
+
+class TileTrackingStrip: UIView {
+    init(sizeAndPositionsDict: [String:CGFloat], superviewWidth: CGFloat, smallTileScale: CGFloat){
+
+
+        // create frame parameters
+        let tileHeight = sizeAndPositionsDict["tileHeight"]! * smallTileScale
+        let y = (sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.75)
+        
+        // create frame
+        super.init(frame: CGRect(x: 0, y: y*0.95, width: superviewWidth, height: tileHeight + y * 0.08))
+        
+        backgroundColor = UIColor.init(red: 10.0/255.0, green: 86.0/255.0, blue: 111.0/255.0, alpha: 0.3)
+    }
+    
+    required init?(coder aDecoder: NSCoder){
+        super.init(coder: aDecoder)
+    }
+}
+
 class SmallTileView: UIView {
     let appearance = Appearance()
     var label : UILabel
@@ -94,6 +119,7 @@ class SmallTileView: UIView {
             // add in something to change tile color
             backgroundColor = appearance.tileColor(value)
             label.font = appearance.font(value)
+            layer.borderColor = appearance.borderInactiveColor(value)
         }
     }
     var color : UIColor {
@@ -106,7 +132,7 @@ class SmallTileView: UIView {
     init(sizeAndPositionsDict: [String:CGFloat], tileValue: Int, smallTileScale: CGFloat){
         
         value = tileValue
-        color = UIColor.black
+        color = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
 
         // create frame parameters
         let tileWidth = sizeAndPositionsDict["tileWidth"]! * smallTileScale
@@ -119,6 +145,7 @@ class SmallTileView: UIView {
         label.textAlignment = .center
         label.text = "\(tileValue)"
         label.font = appearance.fontSmallTile(value)
+        label.textColor = color
         
         
         // create frame
@@ -126,6 +153,8 @@ class SmallTileView: UIView {
         
         backgroundColor = appearance.tileColor(value)
         layer.cornerRadius = 6.0 * smallTileScale
+        layer.borderWidth = 4.0
+        layer.borderColor = appearance.borderColor(value)
     
         addSubview(label)
     }
@@ -151,10 +180,10 @@ class SmallTileHighlight : UIView {
     
         
         // create and format label
-        let label = UILabel(frame: CGRect(x: 0, y: -40, width: tileWidth*3, height: tileHeight))
+        let label = UILabel(frame: CGRect(x: 0, y: -tileHeight*0.45, width: tileWidth*3, height: tileHeight*0.45))
         label.textAlignment = .left
         label.text = "Next Tile"
-        label.textColor = UIColor.init(red: 252.0/255.0, green: 157.0/255.0, blue: 3.0/255.0, alpha: 1)
+        label.textColor = UIColor.init(red: 244.0/255.0, green: 181.0/255.0, blue: 80.0/255.0, alpha: 1)
         label.font = UIFont(name: "Chalkboard SE", size: 16)!
         
         
@@ -163,7 +192,7 @@ class SmallTileHighlight : UIView {
         
         backgroundColor = UIColor.clear
         layer.borderWidth = 4
-        layer.borderColor = UIColor.init(red: 252.0/255.0, green: 157.0/255.0, blue: 3.0/255.0, alpha: 1).cgColor
+        layer.borderColor = UIColor.init(red: 244.0/255.0, green: 181.0/255.0, blue: 80.0/255.0, alpha: 1).cgColor
         layer.cornerRadius = 6.0 * smallTileScale * 1.1
     
         addSubview(label)
@@ -259,19 +288,20 @@ class ScoreView : UIView {
     
     init(sizeAndPositionsDict: [String: CGFloat]) {
         let width = sizeAndPositionsDict["gameboardWidth"]! * 0.6
-        let height = sizeAndPositionsDict["gameboardY"]! * 0.4
+        let height = sizeAndPositionsDict["gameboardY"]! * 0.45
         let x = sizeAndPositionsDict["gameboardX"]! + (sizeAndPositionsDict["gameboardWidth"]! - width)/2
-        let y = sizeAndPositionsDict["gameboardY"]! * 0.5
+        let y = sizeAndPositionsDict["gameboardY"]! * 0.45
         
         label = UILabel(frame: CGRect(x: 0, y:0, width: width, height: height))
         label.text = "\(score)"
         label.textAlignment = .center
         label.font = UIFont(name: "Chalkboard SE", size: 48)!
+        label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
         
         
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
-        backgroundColor = UIColor.init(red: 255.0/255.0, green: 221.0/255.0, blue: 153.0/255.0, alpha: 1)
+        backgroundColor = UIColor.init(red: 207.0/255.0, green: 233.0/255.0, blue: 240.0/255.0, alpha: 1)
         layer.cornerRadius = 15
         
         addSubview(label)
@@ -288,18 +318,18 @@ class ScoreView : UIView {
 class navButton : UIButton {
     init(sizeAndPositionsDict: [String: CGFloat], x: CGFloat, labelText: String){
         let y = sizeAndPositionsDict["gameboardY"]! * 0.2
-        let width = sizeAndPositionsDict["gameboardWidth"]! * 0.3
+        let width = sizeAndPositionsDict["gameboardWidth"]! * 0.25
         let height = sizeAndPositionsDict["gameboardY"]! * 0.25
         
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         
-        backgroundColor = UIColor.init(red: 133.0/255.0, green: 180.0/255.0, blue: 255.0/255.0, alpha: 1)
+        backgroundColor = UIColor.init(red: 253.0/255.0, green: 124.0/255.0, blue: 101.0/255.0, alpha: 1)
         
         
         setTitle(labelText, for: [])
-        titleLabel?.font = UIFont(name: "Chalkboard SE", size: 25)!
-        titleLabel?.textColor = UIColor.white
-        layer.cornerRadius = 15
+        titleLabel?.font = UIFont(name: "Chalkboard SE", size: 20)!
+        titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        layer.cornerRadius = 10
     }
     
     required init?(coder aDecoder: NSCoder) {

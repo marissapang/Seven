@@ -75,70 +75,111 @@ func calculateHighestTileValue(tileValueBoard: Gameboard<Int>) -> Int {
     return highestValue
 }
 
-func generateRandTileValue(tileValueBoard: Gameboard<Int>) -> Int {
+func adjustTileFreq(lastXTiles: [Int]) -> [Int: Double]{
+    let startingFreq : [Int: Double] =
+    [2: 0.08, 5: 0.06, 3: 0.08, 4: 0.06, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
+    
+    // we only care about non-7 frequencies, so we filter out all the 7s
+    let filteredLastXTiles = lastXTiles.filter{$0 != 7}
+    
+    guard filteredLastXTiles.count >= 5 else {
+        return startingFreq
+    }
+    
+    var runningCount: [Int: Int] = [2: 0, 5: 0, 3: 0, 4: 0, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
+
+    for value in filteredLastXTiles {
+        runningCount[value] = runningCount[value]! + 1
+    }
+    
+    var runningFreq = [Int: Double]()
+    for (value, count) in runningCount {
+        runningFreq[value] = Double(count)/Double(filteredLastXTiles.count)
+    }
+    
+    var adjustedFreq = [Int: Double]()
+    for (value, freq) in runningFreq {
+        adjustedFreq[value] = min(max(0, startingFreq[value]! + (startingFreq[value]! - freq)), 0.25)
+    }
+    
+    return adjustedFreq
+}
+
+func generateRandTileValue(tileValueBoard: Gameboard<Int>, lastXTiles: [Int]) -> Int {
     // should return value of 5, 10, 20, etc..
-    var newTileValue : Int
+    var newTileValue = 7
     var highestTileValue : Int
     highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
-    
-    let freq2 : Double = 0.08
-    let freq5 : Double = 0.06
-    let freq3 : Double = 0.08
-    let freq4 : Double = 0.06
-    var freq14 : Double = 0
-    var freq28 : Double = 0
-    var freq56 : Double = 0
-    var freq112 : Double = 0
-    var freq224 : Double = 0
+    var freq : [Int: Double] = [2: 0.08, 5: 0.06, 3: 0.08, 4: 0.06, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
     
     // frequencies change depenign on hfar in we are in the game
     switch highestTileValue {
     case let highestTileValue where highestTileValue <= 112:
         () // change nothing if we are early on in the game
     case let highestTileValue where highestTileValue <= 224:
-        freq14 = 0.03
-        freq28 = 0.02
-        freq56 = 0.01
+        freq[14] = 0.03
+        freq[28] = 0.02
+        freq[56] = 0.01
     case let highestTileValue where highestTileValue <= 448:
-        freq14 = 0.04
-        freq28 = 0.03
-        freq56 = 0.02
-        freq112 = 0.01
+        freq[14] = 0.04
+        freq[28] = 0.03
+        freq[56] = 0.02
+        freq[112] = 0.01
     case let highestTileValue where highestTileValue <= 896:
-        freq14 = 0.05
-        freq28 = 0.05
-        freq56 = 0.03
-        freq112 = 0.02
-        freq224 = 0.01
+        freq[14] = 0.05
+        freq[28] = 0.05
+        freq[56] = 0.03
+        freq[112] = 0.02
+        freq[224] = 0.01
     default:
         () // do nothing for now
     }
     
-    // user random number generator from 1-100 for 100%
-    let randNumber = Double(Int.random(in: 0..<101))/100
+
+    // now adjust frequency based on what has appeared in the past
+    if lastXTiles.count >= 5 {
+        freq = adjustTileFreq(lastXTiles: lastXTiles)
+    }
     
-    // create tile with certain value depending on the frequencies
-    switch randNumber {
-    case let randNumber where randNumber <= freq2:
-        newTileValue = 2
-    case let randNumber where randNumber <= freq2+freq5:
-        newTileValue = 5
-    case let randNumber where randNumber <= freq2+freq5+freq3:
-        newTileValue = 3
-    case let randNumber where randNumber <= freq2+freq5+freq3+freq4:
-        newTileValue = 4
-    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14:
-        newTileValue = 14
-    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14+freq28:
-        newTileValue = 28
-    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14+freq28+freq56:
-        newTileValue = 56
-    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14+freq28+freq56+freq112:
-        newTileValue = 112
-    case let randNumber where randNumber <= freq2+freq5+freq3+freq4+freq14+freq28+freq56+freq112+freq224:
-        newTileValue = 224
-    default:
-        newTileValue = 7 // anything else we generate 7
+    // we want to avoid the sceanior where multiple things of the same value (unless it's 7) comes out in a row
+    var validValue = false
+    var randNumber : Double
+    
+    while validValue == false {
+        // user random number generator from 1-100 for 100%
+        randNumber = Double(Int.random(in: 0..<101))/100
+        
+        // create tile with certain value depending on the frequencies
+        switch randNumber {
+        case let randNumber where randNumber <= freq[2]!:
+            newTileValue = 2
+        case let randNumber where randNumber <= freq[2]!+freq[5]!:
+            newTileValue = 5
+        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!:
+            newTileValue = 3
+        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!:
+            newTileValue = 4
+        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!:
+            newTileValue = 14
+        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!:
+            newTileValue = 28
+        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!+freq[56]!:
+            newTileValue = 56
+        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!+freq[56]!+freq[112]!:
+            newTileValue = 112
+        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!+freq[56]!+freq[112]!+freq[224]!:
+            newTileValue = 224
+        default:
+            newTileValue = 7 // anything else we generate 7
+        }
+        
+        if lastXTiles.count < 4 {
+            validValue = true
+        } else {
+            if !(newTileValue == lastXTiles[lastXTiles.count-1] && newTileValue == lastXTiles[lastXTiles.count-2] && newTileValue != 7) {
+                    validValue = true
+            }
+        }
     }
     
     return newTileValue

@@ -41,26 +41,60 @@ class Appearance {
     func tileColor(_ value: Int) -> UIColor {
         switch value {
         case 0: // when empty
-            return UIColor.init(red: 143.0/255.0, green: 135.0/255.0, blue: 129.0/255.0, alpha: 1)
+            return UIColor.init(red: 183.0/255.0, green: 232.0/255.0, blue: 248.0/255.0, alpha: 1)
         case 2, 5:
-            return UIColor.init(red: 181.0/255.0, green: 226.0/255.0, blue: 221.0/255.0, alpha: 1)
+            return UIColor.init(red: 246.0/255.0, green: 179.0/255.0, blue: 162.0/255.0, alpha: 1)
         case 3, 4:
-            return UIColor.init(red: 255.0/255.0, green: 180.0/255.0, blue: 105.0/255.0, alpha: 1)
+            return UIColor.init(red: 183.0/255.0, green: 232.0/255.0, blue: 248.0/255.0, alpha: 1)
         default:
-            return UIColor.init(red: 255.0/255.0, green: 250.0/255.0, blue: 245.0/255.0, alpha: 1)
+            return UIColor.init(red: 254.0/255.0, green: 241.0/255.0, blue: 235.0/255.0, alpha: 1)
+        }
+    }
+    
+    func borderColor(_ value: Int) -> CGColor {
+        switch value {
+        case 56:
+            return UIColor.init(red: 174.0/255.0, green: 233.0/255.0, blue: 226.0/255.0, alpha: 1).cgColor
+        case 112:
+            return UIColor.init(red: 78.0/255.0, green: 178.0/255.0, blue: 204.0/255.0, alpha: 1).cgColor
+        case 224:
+            return UIColor.init(red: 17.0/255.0, green: 138.0/255.0, blue: 178.0/255.0, alpha: 1).cgColor
+        case 448:
+            return UIColor.init(red: 245.0/255.0, green: 191.0/255.0, blue: 104.0/255.0, alpha: 1).cgColor
+        case 896:
+            return UIColor.init(red: 252.0/255.0, green: 184.0/255.0, blue: 153.0/255.0, alpha: 1).cgColor
+        default:
+            return UIColor.clear.cgColor
+        }
+    }
+    
+    func borderInactiveColor(_ value: Int) -> CGColor {
+        switch value {
+        case 56:
+            return UIColor.init(red: 174.0/255.0, green: 233.0/255.0, blue: 226.0/255.0, alpha: 0.8).cgColor
+        case 112:
+            return UIColor.init(red: 78.0/255.0, green: 178.0/255.0, blue: 204.0/255.0, alpha: 0.8).cgColor
+        case 224:
+            return UIColor.init(red: 17.0/255.0, green: 138.0/255.0, blue: 178.0/255.0, alpha: 0.8).cgColor
+        case 448:
+            return UIColor.init(red: 245.0/255.0, green: 191.0/255.0, blue: 104.0/255.0, alpha: 0.8).cgColor
+        case 896:
+            return UIColor.init(red: 252.0/255.0, green: 184.0/255.0, blue: 153.0/255.0, alpha: 0.8).cgColor
+        default:
+            return UIColor.clear.cgColor
         }
     }
     
     func tileInactiveColor(_ value: Int) -> UIColor{
         switch value {
         case 0: // when empty
-            return UIColor.init(red: 143.0/255.0, green: 135.0/255.0, blue: 129.0/255.0, alpha: 0.5)
+            return UIColor.init(red: 183.0/255.0, green: 232.0/255.0, blue: 248.0/255.0, alpha: 0.85)
         case 2, 5:
-            return UIColor.init(red: 181.0/255.0, green: 226.0/255.0, blue: 221.0/255.0, alpha: 0.5)
+            return UIColor.init(red: 246.0/255.0, green: 179.0/255.0, blue: 162.0/255.0, alpha: 0.85)
         case 3, 4:
-            return UIColor.init(red: 255.0/255.0, green: 180.0/255.0, blue: 105.0/255.0, alpha: 0.5)
+            return UIColor.init(red: 183.0/255.0, green: 232.0/255.0, blue: 248.0/255.0, alpha: 0.85)
         default:
-            return UIColor.init(red: 255.0/255.0, green: 250.0/255.0, blue: 245.0/255.0, alpha: 0.5)
+            return UIColor.init(red: 254.0/255.0, green: 241.0/255.0, blue: 235.0/255.0, alpha: 0.85)
         }
     }
     
