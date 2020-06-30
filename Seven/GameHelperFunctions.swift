@@ -75,17 +75,17 @@ func calculateHighestTileValue(tileValueBoard: Gameboard<Int>) -> Int {
     return highestValue
 }
 
-func adjustTileFreq(lastXTiles: [Int]) -> [Int: Double]{
+func adjustTileFreq(lastXTiles: [Int], tileValueBoard: Gameboard<Int>) -> [Int: Double]{
     let startingFreq : [Int: Double] =
     [2: 0.08, 5: 0.06, 3: 0.08, 4: 0.06, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
     
     // we only care about non-7 frequencies, so we filter out all the 7s
     let filteredLastXTiles = lastXTiles.filter{$0 != 7}
     
-    guard filteredLastXTiles.count >= 5 else {
-        return startingFreq
-    }
-    
+//    guard filteredLastXTiles.count >= 5 else {
+//        return startingFreq
+//    }
+    var adjustedFreq = [Int: Double]()
     var runningCount: [Int: Int] = [2: 0, 5: 0, 3: 0, 4: 0, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
 
     for value in filteredLastXTiles {
@@ -97,11 +97,46 @@ func adjustTileFreq(lastXTiles: [Int]) -> [Int: Double]{
         runningFreq[value] = Double(count)/Double(filteredLastXTiles.count)
     }
     
-    var adjustedFreq = [Int: Double]()
-    for (value, freq) in runningFreq {
-        adjustedFreq[value] = min(max(0, startingFreq[value]! + (startingFreq[value]! - freq)), 0.25)
+    if filteredLastXTiles.count >= 5 {
+        for (value, freq) in runningFreq {
+            adjustedFreq[value] = min(max(0, startingFreq[value]! + (startingFreq[value]! - freq)), 0.25)
+        }
+    } else {
+        for (value, _) in runningFreq {
+            adjustedFreq[value] = startingFreq[value]!
+        }
     }
     
+    // find the most common value on the board out of 2, 3, 4, and 5 and give on that has the most a leg up at resolution
+    var boardCount: [Int: Int] = [2: 0, 3: 0, 4: 0, 5:0]
+    var tileValue: Int
+    for i in 0..<tileValueBoard.dimension {
+        for j in 0..<tileValueBoard.dimension{
+            tileValue = tileValueBoard[i,j]
+            if tileValue == 2 || tileValue == 3 || tileValue == 4 || tileValue == 5 {
+                boardCount[tileValue] = boardCount[tileValue]! + 1
+            }
+        }
+    }
+    
+    // find maximum out of boardCount
+    let maxValue = boardCount.max {a, b in a.value < b.value}
+    
+    if maxValue!.value >= 2 {
+        switch maxValue!.key {
+        case 2:
+            adjustedFreq[5]! += 0.1
+        case 5:
+            adjustedFreq[2]! += 0.1
+        case 3:
+            adjustedFreq[4]! += 0.08
+            adjustedFreq[2]! += 0.04
+        case 4:
+            adjustedFreq[3]! += 0.1
+        default:
+            ()
+        }
+    }
     return adjustedFreq
 }
 
@@ -138,7 +173,7 @@ func generateRandTileValue(tileValueBoard: Gameboard<Int>, lastXTiles: [Int]) ->
 
     // now adjust frequency based on what has appeared in the past
     if lastXTiles.count >= 5 {
-        freq = adjustTileFreq(lastXTiles: lastXTiles)
+        freq = adjustTileFreq(lastXTiles: lastXTiles, tileValueBoard: tileValueBoard)
     }
     
     // we want to avoid the sceanior where multiple things of the same value (unless it's 7) comes out in a row

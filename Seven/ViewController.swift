@@ -26,6 +26,7 @@ class ViewController: UIViewController {
     
     var lastXTiles = [Int]()
     
+    @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer!
     
     // Properties used to keep track of gameboard hint
     var tileTrackingList = [SmallTileView?]()
@@ -34,6 +35,8 @@ class ViewController: UIViewController {
     var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10)
     var score : Int = 0
     var scoreView = ScoreView(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
+    var restartAtEndButton = RestartButton(superviewWidth: 100, superviewHeight: 100)
+    var closeEndGameButton = CloseEndGameButton(superviewWidth: 100, superviewHeight: 100)
     
     // Properties used to keep track of everything not on gameboard
     var viewsToBeDeleted = [TileView]()
@@ -96,7 +99,7 @@ class ViewController: UIViewController {
         let restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: "Restart")
         restartButton.addTarget(self, action:#selector(restartButtonClicked), for: .touchUpInside)
         
-        let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.25, labelText: "Menu")
+        let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.25, labelText: "Stats")
         menuButton.addTarget(self, action:#selector(menuButtonClicked), for: .touchUpInside)
         
         let tileTrackingStrip = TileTrackingStrip(sizeAndPositionsDict: sizeAndPositionsDict, superviewWidth: self.view.frame.width, smallTileScale: smallTileScale)
@@ -353,26 +356,23 @@ class ViewController: UIViewController {
        
        
     func endGame() {
-        print("game should end")
         // create endGame view
         endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
         self.view.addSubview(endGamePopupView)
-        let restartButton = RestartButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
+        restartAtEndButton = RestartButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
+        closeEndGameButton = CloseEndGameButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
         
-        restartButton.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+        restartAtEndButton.addTarget(self, action: #selector(restartAtEnd), for: .touchUpInside)
+        closeEndGameButton.addTarget(self, action: #selector(closeEndGameButtonClicked), for: .touchUpInside)
+        
         
         
         self.view.addSubview(endGamePopupView)
-        self.view.addSubview(restartButton)
+        self.view.addSubview(restartAtEndButton)
+        self.view.addSubview(closeEndGameButton)
     }
     
-    @objc func buttonAction(sender: UIButton!) {
-        restartGame()
-    }
     
-    @IBAction func pauseAndRestart(_ sender: Any) {
-        restartGame()
-    }
     func restartGame(){
         // ***** delete all views *****
         
@@ -409,6 +409,7 @@ class ViewController: UIViewController {
         directionForEndState = .undefined
         
         // **** re-setup game ****
+        panGestureRecognizer.isEnabled = true
         startGame()
     }
     
@@ -484,9 +485,6 @@ class ViewController: UIViewController {
                     subview.transform = shrinkTrans.concatenating(positionTrans)
                 })
                 
-//                animator = UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut, animations: {
-//                    subview.transform = CGAffineTransform(translationX: xShift, y: yShift)
-//                })
                 
                 animator.startAnimation()
             }
@@ -495,13 +493,29 @@ class ViewController: UIViewController {
         
     //MARK: Click-related functions
     
+    // restart
+    @objc func restartAtEnd(sender: UIButton!) {
+        restartGame()
+    }
+    
+//    @IBAction func pauseAndRestart(_ sender: Any) {
+//        restartGame()
+//    }
     
     @IBAction func unwindToRootViewController(segue: UIStoryboardSegue) {
-        print("Unwind to Root View Controller")
+        
     }
+    
     
     @objc func restartButtonClicked(){
         restartGame()
+    }
+    
+    @objc func closeEndGameButtonClicked(){
+        endGamePopupView.removeFromSuperview()
+        restartAtEndButton.removeFromSuperview()
+        closeEndGameButton.removeFromSuperview()
+        panGestureRecognizer.isEnabled = false
     }
     
     @objc func menuButtonClicked(){
@@ -510,6 +524,13 @@ class ViewController: UIViewController {
         // Instantiate the desired view controller from the storyboard using the view controllers identifier
         // Cast is as the custom view controller type you created in order to access it's properties and methods
         let menuViewController = storyboard.instantiateViewController(withIdentifier: "menuViewController") as!MenuViewController
+        
+       
+        
+        
+        menuViewController.modalPresentationStyle = .fullScreen
+        menuViewController.modalTransitionStyle = .flipHorizontal
+
         present(menuViewController, animated: true, completion: nil)
     }
     

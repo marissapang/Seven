@@ -223,14 +223,19 @@ class EndGamePopupView : UIView {
         backgroundColor = UIColor.init(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 0.5)
         
         
+        
         let popupView = UIView(frame: CGRect(x: popupX, y: popupY, width: popupWidth, height: popupHeight))
         
         let popupLabel = UILabel(frame: CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight))
         
         
-        popupView.backgroundColor = UIColor.init(red: 102.0/255.0, green: 179.0/255.0, blue: 255.0/255.0, alpha: 0.97)
+        // popupView.backgroundColor = UIColor.init(red: 102.0/255.0, green: 179.0/255.0, blue: 255.0/255.0, alpha: 0.97)
+        // popupView.backgroundColor = UIColor.init(red: 110.0/255.0, green: 209.0/255.0, blue: 242.0/255.0, alpha: 0.95)
+        popupView.backgroundColor = UIColor.init(red: 20.0/255.0, green: 165.0/255.0, blue: 213.0/255.0, alpha: 0.95)
+
+        
         popupView.layer.cornerRadius = 15
-        popupLabel.text = "Noo you're out of moves! "
+        popupLabel.text = "Nooo you're out of moves :'( "
         popupLabel.textAlignment = .center
         popupLabel.font = UIFont(name: "Chalkboard SE", size: 32)!
         popupLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
@@ -265,10 +270,39 @@ class RestartButton : UIButton {
         super.init(frame: CGRect(x: restartButtonX, y: restartButtonY, width: restartButtonWidth, height: restartButtonHeight))
         
         backgroundColor = UIColor.init(red: 97.0/255.0, green: 56.0/255.0, blue: 20.0/255.0, alpha: 1.0)
+        backgroundColor = UIColor.init(red: 240.0/255.0, green: 121.0/255.0, blue: 92.0/255.0, alpha: 1.0)
+        backgroundColor = UIColor.init(red: 253.0/255.0, green: 138.0/255.0, blue: 115.0/255.0, alpha: 1.0)
+        
         setTitle("Play Again!", for: [])
         titleLabel?.font = UIFont(name: "Chalkboard SE", size: 32)!
         titleLabel?.textColor = UIColor.white
         layer.cornerRadius = 15
+    }
+
+    
+    required init?(coder aDecoder: NSCoder){
+        super.init(coder: aDecoder)
+    }
+}
+
+class CloseEndGameButton : UIButton {
+    init(superviewWidth: CGFloat, superviewHeight: CGFloat){
+        // copy paste from endGamePopup view, helps with calculation
+        let popupWidth = superviewWidth * 0.95
+        let popupHeight = superviewHeight * 0.4
+        let popupX = (superviewWidth - popupWidth)/2
+        let popupY = (superviewHeight - popupHeight)/2
+        
+        let closeButtonWidth = popupWidth * 0.15
+        let closeButtonHeight = closeButtonWidth
+        let closeButtonX = popupWidth+popupX - closeButtonWidth*0.8
+        let closeButtonY = popupY - closeButtonWidth*0.15
+        
+        super.init(frame: CGRect(x: closeButtonX, y: closeButtonY, width: closeButtonWidth, height: closeButtonHeight))
+        
+        // backgroundColor = UIColor.init(red: 97.0/255.0, green: 56.0/255.0, blue: 20.0/255.0, alpha: 1.0)
+        setImage(UIImage(named:"closeButton"), for: [])
+        // layer.cornerRadius = 15
     }
 
     
@@ -302,6 +336,8 @@ class ScoreView : UIView {
         
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         backgroundColor = UIColor.init(red: 207.0/255.0, green: 233.0/255.0, blue: 240.0/255.0, alpha: 1)
+        
+
         layer.cornerRadius = 15
         
         addSubview(label)
@@ -323,7 +359,9 @@ class navButton : UIButton {
         
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         
-        backgroundColor = UIColor.init(red: 253.0/255.0, green: 124.0/255.0, blue: 101.0/255.0, alpha: 1)
+        // backgroundColor = UIColor.init(red: 253.0/255.0, green: 124.0/255.0, blue: 101.0/255.0, alpha: 1)
+        
+         backgroundColor = UIColor.init(red: 244.0/255.0, green: 160.0/255.0, blue: 138.0/255.0, alpha: 1)
         
         
         setTitle(labelText, for: [])
