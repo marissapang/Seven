@@ -18,6 +18,7 @@
 		185FF90024937A9600FD52A0 /* GameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185FF8FF24937A9600FD52A0 /* GameViews.swift */; };
 		185FF90224937C4300FD52A0 /* GameHelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185FF90124937C4300FD52A0 /* GameHelperFunctions.swift */; };
 		185FF904249665E800FD52A0 /* AnimationFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185FF903249665E800FD52A0 /* AnimationFunctions.swift */; };
+		18D67CB024AC860D0085E116 /* MenuViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D67CAF24AC860D0085E116 /* MenuViews.swift */; };
 		18EEF46D24A7624C00D129B8 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EEF46C24A7624C00D129B8 /* MenuViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +48,7 @@
 		185FF8FF24937A9600FD52A0 /* GameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViews.swift; sourceTree = "<group>"; };
 		185FF90124937C4300FD52A0 /* GameHelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHelperFunctions.swift; sourceTree = "<group>"; };
 		185FF903249665E800FD52A0 /* AnimationFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationFunctions.swift; sourceTree = "<group>"; };
+		18D67CAF24AC860D0085E116 /* MenuViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViews.swift; sourceTree = "<group>"; };
 		18EEF46C24A7624C00D129B8 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -96,6 +98,7 @@
 				185FF90124937C4300FD52A0 /* GameHelperFunctions.swift */,
 				185FF903249665E800FD52A0 /* AnimationFunctions.swift */,
 				185FF8FF24937A9600FD52A0 /* GameViews.swift */,
+				18D67CAF24AC860D0085E116 /* MenuViews.swift */,
 				185FF8FD2493761600FD52A0 /* GameModel.swift */,
 				185FF8E1249375F700FD52A0 /* Main.storyboard */,
 				185FF8E4249375FE00FD52A0 /* Assets.xcassets */,
@@ -221,6 +224,7 @@
 				185FF904249665E800FD52A0 /* AnimationFunctions.swift in Sources */,
 				185FF90024937A9600FD52A0 /* GameViews.swift in Sources */,
 				185FF8DC249375F700FD52A0 /* AppDelegate.swift in Sources */,
+				18D67CB024AC860D0085E116 /* MenuViews.swift in Sources */,
 				185FF8DE249375F700FD52A0 /* SceneDelegate.swift in Sources */,
 				18EEF46D24A7624C00D129B8 /* MenuViewController.swift in Sources */,
 			);

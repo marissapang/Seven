@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import os.log
 
 // Gameboard structure to store tile views, values, and movements
 struct Gameboard<T> {
@@ -57,5 +58,50 @@ struct swipeTracker {
         directionAtStart =  .undefined
         fractionComplete = 0.0
     }
+}
+
+struct PropertyKey {
+    static let highScore = "highScore"
+    static let tileCount = "tileCount"
+    static let totalGamesPlayed = "totalGamesPlayed"
+
+}
+
+class ScoreBoard: NSObject, NSCoding {
+    //MARK: Properties
+    var highScore: Int
+    var tileCount: [Int:Int]
+    var totalGamesPlayed: Int
+        
+    
+    
+    //MARK: Archiving Paths
+    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let ArchiveURL = DocumentsDirectory.appendingPathComponent("highScore")
+    
+    
+    //MARK: Initialization
+    override init(){
+        self.highScore = 0
+        self.tileCount = [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0]
+        self.totalGamesPlayed = 0
+    }
+    
+    
+    //MARK: NSCoding
+    
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(highScore, forKey: PropertyKey.highScore)
+        aCoder.encode(tileCount, forKey: PropertyKey.tileCount)
+        aCoder.encode(totalGamesPlayed, forKey: PropertyKey.totalGamesPlayed)
+    }
+    
+    required convenience init?(coder aDecoder: NSCoder){
+        self.init()
+        
+        
+        
+    }
+    
 }
 

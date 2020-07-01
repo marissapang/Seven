@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import os.log
 
 class ViewController: UIViewController {
     //MARK: Properties
@@ -32,11 +33,13 @@ class ViewController: UIViewController {
     var tileTrackingList = [SmallTileView?]()
     var nextTileValue : Int = 7
     var nextNextTileValue : Int = 7
-    var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10)
+    var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, newHighScore: false)
     var score : Int = 0
     var scoreView = ScoreView(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
     var restartAtEndButton = RestartButton(superviewWidth: 100, superviewHeight: 100)
     var closeEndGameButton = CloseEndGameButton(superviewWidth: 100, superviewHeight: 100)
+    
+    var scoreBoard = ScoreBoard()
     
     // Properties used to keep track of everything not on gameboard
     var viewsToBeDeleted = [TileView]()
@@ -356,8 +359,31 @@ class ViewController: UIViewController {
        
        
     func endGame() {
+        // update stats
+        if let savedScoreBoard = loadScores() {
+            scoreBoard = savedScoreBoard
+        }
+        
+        // increment num of games played by 1
+        scoreBoard.totalGamesPlayed += 1
+        
+        // update high score if new score is a record
+        var newHighScore = false
+        if score > scoreBoard.highScore {
+            scoreBoard.highScore = score
+            newHighScore = true
+        }
+        
+        // update highest tile value if the highest tile is equal or greater than 112
+        let highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
+        if highestTileValue >= 112 {
+            scoreBoard.tileCount[highestTileValue]! += 1
+        }
+        
+        saveScores()
+        
         // create endGame view
-        endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
+        endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height,  newHighScore: newHighScore )
         self.view.addSubview(endGamePopupView)
         restartAtEndButton = RestartButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
         closeEndGameButton = CloseEndGameButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
@@ -372,6 +398,19 @@ class ViewController: UIViewController {
         self.view.addSubview(closeEndGameButton)
     }
     
+    private func saveScores() {
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(scoreBoard, toFile: ScoreBoard.ArchiveURL.path)
+        
+        if isSuccessfulSave {
+            os_log("Scoreboard successfully updated.", log: OSLog.default, type: .debug)
+        } else {
+            os_log("Failed to update scoreboard D:", log: OSLog.default, type: .error)
+        }
+    }
+    
+    private func loadScores() -> ScoreBoard? {
+        return NSKeyedUnarchiver.unarchiveObject(withFile: ScoreBoard.ArchiveURL.path) as? ScoreBoard
+    }
     
     func restartGame(){
         // ***** delete all views *****

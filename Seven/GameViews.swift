@@ -205,7 +205,7 @@ class SmallTileHighlight : UIView {
 
 //MARK: Endgame
 class EndGamePopupView : UIView {
-    init(superviewWidth: CGFloat, superviewHeight: CGFloat){
+    init(superviewWidth: CGFloat, superviewHeight: CGFloat, newHighScore: Bool){
         
         let popupWidth = superviewWidth * 0.95
         let popupHeight = superviewHeight * 0.4
@@ -235,8 +235,14 @@ class EndGamePopupView : UIView {
 
         
         popupView.layer.cornerRadius = 15
-        popupLabel.text = "Nooo you're out of moves :'( "
+        if newHighScore == true {
+            popupLabel.text = "Nice! You just got a new high score!"
+        } else {
+            popupLabel.text = "Nooo - you're out of moves :'( "
+
+        }
         popupLabel.textAlignment = .center
+        popupLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         popupLabel.font = UIFont(name: "Chalkboard SE", size: 32)!
         popupLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         popupLabel.numberOfLines = 0
