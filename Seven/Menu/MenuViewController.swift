@@ -16,9 +16,6 @@ class MenuViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        print(scoreBoard.tileCount)
-
         self.view.backgroundColor = UIColor.init(red: 164/255, green: 215/255, blue: 228/255, alpha: 1)
         
         // Load saved scores, if none, everything should be zero
@@ -30,13 +27,25 @@ class MenuViewController: UIViewController {
         drawMenu()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.view.subviews.forEach({ $0.removeFromSuperview() })
+        
+        if let savedScoreBoard = loadScores() {
+            scoreBoard = savedScoreBoard
+        }
+        drawMenu()
+    }
+    
     func drawMenu() {
         let w = self.view.frame.width
         let h = self.view.frame.height
-        let topGapPct : CGFloat = 0.05
+        let highScoreViewWidth = w * 0.7
+        let topGapPct : CGFloat = 0.1
         let highScoreViewPct : CGFloat = 0.2
         let secondGapPct : CGFloat = 0.0
-        let tileCountViewPct : CGFloat = 0.65
+        let tileCountViewPct : CGFloat = 0.6
         let thirdGapPct : CGFloat = 0.02
         let bottomGapPct : CGFloat = 0.02
         let footerPct : CGFloat = 1 - (topGapPct + highScoreViewPct + secondGapPct + tileCountViewPct + thirdGapPct + bottomGapPct)
@@ -45,16 +54,34 @@ class MenuViewController: UIViewController {
             fatalError("footer pct is negative")
         }
         
-        let menuHighScoreView = MenuHighScoreView(x: 0, y: h * topGapPct, width: w, height: h * highScoreViewPct, highScore: scoreBoard.highScore)
+        let backButton = UIButton(frame: CGRect(x: 10, y: 15, width: w*0.1, height: h * topGapPct))
+        backButton.setTitle("Back", for: [])
+        backButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 20)!
+        backButton.titleLabel?.textColor = UIColor.white
+        backButton.addTarget(self, action:#selector(backButtonClicked), for: .touchUpInside)
+        
+        let menuHighScoreView = MenuHighScoreView(x: (w - highScoreViewWidth)/2, y: h * topGapPct, width: highScoreViewWidth, height: h * highScoreViewPct, highScore: scoreBoard.runningStats["highScore"]!, totalGamesPlayed: scoreBoard.runningStats["totalGamesPlayed"]!)
         let menuTileCountView = MenuTileCountView(x: 0, y: h * (topGapPct + highScoreViewPct + secondGapPct), width: w, height: h*tileCountViewPct, tileCountDict: scoreBoard.tileCount)
         let menuFooterView = MenuFooterView(x: 0, y: h * (topGapPct + highScoreViewPct + secondGapPct + tileCountViewPct + thirdGapPct), width: w, height: h*footerPct)
         
+        menuFooterView.clearHistoryButton.addTarget(self, action:#selector(clearHistoryButtonClicked), for: .touchUpInside)
         
+        self.view.addSubview(backButton)
         self.view.addSubview(menuHighScoreView)
         self.view.addSubview(menuTileCountView)
         self.view.addSubview(menuFooterView)
+        
     }
     
+    @objc func backButtonClicked() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func clearHistoryButtonClicked() {
+        let clearHistoryViewController = ClearHistoryViewController()
+        clearHistoryViewController.modalPresentationStyle = .fullScreen
+        present(clearHistoryViewController, animated: false, completion: nil)
+    }
     
     private func clearScores() {
         scoreBoard = ScoreBoard()

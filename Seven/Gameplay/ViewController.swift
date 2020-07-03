@@ -99,18 +99,28 @@ class ViewController: UIViewController {
         let gameboardView = GameboardView(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict)
         scoreView = ScoreView(sizeAndPositionsDict: sizeAndPositionsDict)
         
-        let restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: "Restart")
+        let restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: "RESTART")
         restartButton.addTarget(self, action:#selector(restartButtonClicked), for: .touchUpInside)
         
-        let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.25, labelText: "Stats")
+        let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.25, labelText: "STATS")
         menuButton.addTarget(self, action:#selector(menuButtonClicked), for: .touchUpInside)
         
+        let helpButton = UIButton(frame: CGRect(x: self.view.frame.width/2, y: 20, width: 80, height: 80))
+        helpButton.setTitle("?", for: [])
+        helpButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 24)!
+        helpButton.backgroundColor = UIColor.blue
+        helpButton.titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        helpButton.layer.cornerRadius = 40
+
+        
         let tileTrackingStrip = TileTrackingStrip(sizeAndPositionsDict: sizeAndPositionsDict, superviewWidth: self.view.frame.width, smallTileScale: smallTileScale)
+        
         
         self.view.addSubview(gameboardView)
         self.view.addSubview(scoreView)
         self.view.addSubview(restartButton)
         self.view.addSubview(menuButton)
+        self.view.addSubview(helpButton)
         self.view.addSubview(tileTrackingStrip)
         
     }
@@ -296,7 +306,6 @@ class ViewController: UIViewController {
             self.colIndexPositionBoard[newTileRow, newTileCol] = newTileCol + 1
             self.scoreView.score = calculateScores(tileValueBoard: self.tileValueBoard)
             
-            // print(self.tileValueBoard)
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 animator2.startAnimation()
                 self.view.addSubview(nextTileView)
@@ -365,12 +374,12 @@ class ViewController: UIViewController {
         }
         
         // increment num of games played by 1
-        scoreBoard.totalGamesPlayed += 1
+        scoreBoard.runningStats["totalGamesPlayed"]! = scoreBoard.runningStats["totalGamesPlayed"]! + 1
         
         // update high score if new score is a record
         var newHighScore = false
-        if score > scoreBoard.highScore {
-            scoreBoard.highScore = score
+        if scoreView.score > scoreBoard.runningStats["highScore"]! {
+            scoreBoard.runningStats["highScore"]! = scoreView.score
             newHighScore = true
         }
         
@@ -402,10 +411,11 @@ class ViewController: UIViewController {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(scoreBoard, toFile: ScoreBoard.ArchiveURL.path)
         
         if isSuccessfulSave {
-            os_log("Scoreboard successfully updated.", log: OSLog.default, type: .debug)
+            os_log("Scoreboard successfully updated in View Controller.", log: OSLog.default, type: .debug)
         } else {
             os_log("Failed to update scoreboard D:", log: OSLog.default, type: .error)
         }
+                
     }
     
     private func loadScores() -> ScoreBoard? {

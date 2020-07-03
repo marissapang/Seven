@@ -1,5 +1,5 @@
 //
-//  AnimationFunctions.swift
+//  AppearanceHelpers.swift
 //  Seven
 //
 //  Created by apple on 6/14/20.
@@ -53,16 +53,16 @@ class Appearance {
     
     func borderColor(_ value: Int) -> CGColor {
         switch value {
-        case 56:
-            return UIColor.init(red: 174.0/255.0, green: 233.0/255.0, blue: 226.0/255.0, alpha: 1).cgColor
-        case 112:
-            return UIColor.init(red: 78.0/255.0, green: 178.0/255.0, blue: 204.0/255.0, alpha: 1).cgColor
         case 224:
-            return UIColor.init(red: 17.0/255.0, green: 138.0/255.0, blue: 178.0/255.0, alpha: 1).cgColor
+            return UIColor.init(red: 124.0/255.0, green: 131.0/255.0, blue: 141.0/255.0, alpha: 1).cgColor
         case 448:
-            return UIColor.init(red: 245.0/255.0, green: 191.0/255.0, blue: 104.0/255.0, alpha: 1).cgColor
+            return UIColor.init(red: 99.0/255.0, green: 200.0/255.0, blue: 231.0/255.0, alpha: 1).cgColor
         case 896:
-            return UIColor.init(red: 252.0/255.0, green: 184.0/255.0, blue: 153.0/255.0, alpha: 1).cgColor
+            return UIColor.init(red: 21.0/255.0, green: 173.0/255.0, blue: 224.0/255.0, alpha: 1).cgColor
+        case 1792:
+             return UIColor.init(red: 16.0/255.0, green: 119.0/255.0, blue: 173.0/255.0, alpha: 1).cgColor
+        case 3584:
+            return UIColor.init(red: 9.0/255.0, green: 85.0/255.0, blue: 134.0/255.0, alpha: 1).cgColor
         default:
             return UIColor.clear.cgColor
         }
@@ -70,16 +70,16 @@ class Appearance {
     
     func borderInactiveColor(_ value: Int) -> CGColor {
         switch value {
-        case 56:
-            return UIColor.init(red: 174.0/255.0, green: 233.0/255.0, blue: 226.0/255.0, alpha: 0.8).cgColor
-        case 112:
-            return UIColor.init(red: 78.0/255.0, green: 178.0/255.0, blue: 204.0/255.0, alpha: 0.8).cgColor
         case 224:
-            return UIColor.init(red: 17.0/255.0, green: 138.0/255.0, blue: 178.0/255.0, alpha: 0.8).cgColor
+            return UIColor.init(red: 124.0/255.0, green: 131.0/255.0, blue: 141.0/255.0, alpha: 0.7).cgColor
         case 448:
-            return UIColor.init(red: 245.0/255.0, green: 191.0/255.0, blue: 104.0/255.0, alpha: 0.8).cgColor
+            return UIColor.init(red: 99.0/255.0, green: 200.0/255.0, blue: 231.0/255.0, alpha: 0.7).cgColor
         case 896:
-            return UIColor.init(red: 252.0/255.0, green: 184.0/255.0, blue: 153.0/255.0, alpha: 0.8).cgColor
+            return UIColor.init(red: 21.0/255.0, green: 173.0/255.0, blue: 224.0/255.0, alpha: 0.7).cgColor
+        case 1792:
+            return UIColor.init(red: 16.0/255.0, green: 119.0/255.0, blue: 173.0/255.0, alpha: 0.7).cgColor
+        case 3584:
+            return UIColor.init(red: 9.0/255.0, green: 85.0/255.0, blue: 134.0/255.0, alpha: 0.7).cgColor
         default:
             return UIColor.clear.cgColor
         }

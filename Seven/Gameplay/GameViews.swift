@@ -184,7 +184,7 @@ class SmallTileHighlight : UIView {
         label.textAlignment = .left
         label.text = "Next Tile"
         label.textColor = UIColor.init(red: 244.0/255.0, green: 181.0/255.0, blue: 80.0/255.0, alpha: 1)
-        label.font = UIFont(name: "Chalkboard SE", size: 16)!
+        label.font = UIFont(name: "TallBasic-Regular", size: 16)!
         
         
         // create frame
@@ -243,7 +243,7 @@ class EndGamePopupView : UIView {
         }
         popupLabel.textAlignment = .center
         popupLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        popupLabel.font = UIFont(name: "Chalkboard SE", size: 32)!
+        popupLabel.font = UIFont(name: "TallBasic-Regular", size: 32)!
         popupLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         popupLabel.numberOfLines = 0
         
@@ -275,12 +275,10 @@ class RestartButton : UIButton {
                 
         super.init(frame: CGRect(x: restartButtonX, y: restartButtonY, width: restartButtonWidth, height: restartButtonHeight))
         
-        backgroundColor = UIColor.init(red: 97.0/255.0, green: 56.0/255.0, blue: 20.0/255.0, alpha: 1.0)
-        backgroundColor = UIColor.init(red: 240.0/255.0, green: 121.0/255.0, blue: 92.0/255.0, alpha: 1.0)
         backgroundColor = UIColor.init(red: 253.0/255.0, green: 138.0/255.0, blue: 115.0/255.0, alpha: 1.0)
         
         setTitle("Play Again!", for: [])
-        titleLabel?.font = UIFont(name: "Chalkboard SE", size: 32)!
+        titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 32)!
         titleLabel?.textColor = UIColor.white
         layer.cornerRadius = 15
     }
@@ -335,7 +333,7 @@ class ScoreView : UIView {
         label = UILabel(frame: CGRect(x: 0, y:0, width: width, height: height))
         label.text = "\(score)"
         label.textAlignment = .center
-        label.font = UIFont(name: "Chalkboard SE", size: 48)!
+        label.font = UIFont(name: "TallBasic-Regular", size: 48)!
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
         
@@ -371,7 +369,7 @@ class navButton : UIButton {
         
         
         setTitle(labelText, for: [])
-        titleLabel?.font = UIFont(name: "Chalkboard SE", size: 20)!
+        titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 20)!
         titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         layer.cornerRadius = 10
     }

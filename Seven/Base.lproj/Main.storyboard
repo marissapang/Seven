@@ -42,23 +42,7 @@
                     <view key="view" contentMode="scaleToFill" id="Apr-DK-fTl">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UPh-B1-sTo">
-                                <rect key="frame" x="10" y="44" width="63" height="55"/>
-                                <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="30"/>
-                                <state key="normal" title="Back">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <segue destination="vgZ-wo-teQ" kind="unwind" unwindAction="unwindToRootViewControllerWithSegue:" id="hvx-f8-wRB"/>
-                                </connections>
-                            </button>
-                        </subviews>
                         <color key="backgroundColor" systemColor="systemTealColor" red="0.35294117650000001" green="0.7843137255" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="UPh-B1-sTo" firstAttribute="leading" secondItem="GJX-tC-0Zt" secondAttribute="leading" constant="10" id="abp-yV-CSj"/>
-                            <constraint firstItem="UPh-B1-sTo" firstAttribute="top" secondItem="GJX-tC-0Zt" secondAttribute="top" id="ppH-lq-LI1"/>
-                        </constraints>
                         <viewLayoutGuide key="safeArea" id="GJX-tC-0Zt"/>
                     </view>
                     <navigationItem key="navigationItem" id="h6N-tw-XbD"/>
@@ -69,7 +53,6 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <viewLayoutGuide key="safeArea" id="UvD-vD-G6r"/>
                 </stackView>
-                <exit id="vgZ-wo-teQ" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="786" y="124"/>
         </scene>

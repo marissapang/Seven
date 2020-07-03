@@ -9,7 +9,7 @@
 import UIKit
 
 class MenuHighScoreView : UIView {
-    init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, highScore: Int){
+    init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, highScore: Int, totalGamesPlayed: Int) {
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         
         let paddingPct : CGFloat = 0.02
@@ -22,9 +22,9 @@ class MenuHighScoreView : UIView {
         let highScoreLabel = UILabel(frame: CGRect(x: width*0.15, y: highScoreView.frame.minY, width: width*0.65, height: highScoreView.frame.height))
         let commentLabel = UILabel(frame: CGRect(x: width*0.1, y: height*(paddingPct*2 + titleLabelPct + highScoreViewPct), width: width*0.8, height: height*commentLabelPct))
         
-        titleLabel.text = "Your high score:"
+        titleLabel.text = "YOUR HIGH SCORE:"
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont(name: "Chalkboard SE", size: 36)!
+        titleLabel.font = UIFont(name: "TallBasic-Regular", size: 36)!
         titleLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
         highScoreView.backgroundColor = UIColor.init(red: 251.0/255.0, green: 217.0/255.0, blue: 208.0/255.0, alpha: 1)
@@ -32,12 +32,12 @@ class MenuHighScoreView : UIView {
         
         highScoreLabel.text = "\(highScore)"
         highScoreLabel.textAlignment = .center
-        highScoreLabel.font = UIFont(name: "Chalkboard SE", size: 44)!
+        highScoreLabel.font = UIFont(name: "TallBasic-Regular", size: 44)!
         highScoreLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
-        commentLabel.text = "Your high score is in the 85th percentile among all our players!"
+        commentLabel.text = "(You've played \(totalGamesPlayed) games of Seven)"
         commentLabel.textAlignment = .center
-        commentLabel.font = UIFont(name: "Chalkboard SE", size: 14)!
+        commentLabel.font = UIFont(name: "TallBasic-Regular", size: 14)!
         commentLabel.textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
         commentLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         commentLabel.numberOfLines = 0
@@ -64,7 +64,7 @@ class TileCountRowView : UIView {
         let widthPctOfHeight : CGFloat = 0.8
         
         // parmeter for vertical positions
-        let numRows : CGFloat = 6
+        let numRows : CGFloat = 5
         let numGaps : CGFloat = numRows
         let titleLabelPct : CGFloat = 1/(numRows+1)
         let gapPct : CGFloat = 0.015
@@ -84,7 +84,7 @@ class TileCountRowView : UIView {
         
         tileCountLabel.text = "\(tileCount)"
         tileCountLabel.textAlignment = .left
-        tileCountLabel.font = UIFont(name: "Chalkboard SE", size: 28)!
+        tileCountLabel.font = UIFont(name: "TallBasic-Regular", size: 28)!
         tileCountLabel.textColor = UIColor.white
         
         addSubview(tileView)
@@ -104,23 +104,23 @@ class MenuTileCountView : UIView {
                 
         // 1. Make title label
         let w : CGFloat = width*0.9
-        let numRows : CGFloat = 6
+        let numRows : CGFloat = 5
         let titleLabelPct : CGFloat = 1/(numRows+1)
         let titleLabel = UILabel(frame: CGRect(x: (width - w)/2, y: 0, width: width, height: height*titleLabelPct))
         titleLabel.text = "Count of highest tile achieved:"
         titleLabel.textAlignment = .left
-        titleLabel.font = UIFont(name: "Chalkboard SE", size: 34)!
+        titleLabel.font = UIFont(name: "TallBasic-Regular", size: 34)!
         titleLabel.textColor = UIColor.white
         
-        let row112 = TileCountRowView(width: width, height: height, rowIndex: 0, tileValue: 112, tileCount: tileCountDict[112]!)
-        let row224 = TileCountRowView(width: width, height: height, rowIndex: 1, tileValue: 224, tileCount: tileCountDict[224]!)
-        let row448 = TileCountRowView(width: width, height: height, rowIndex: 2, tileValue: 448, tileCount: tileCountDict[448]!)
-        let row896 = TileCountRowView(width: width, height: height, rowIndex: 3, tileValue: 896, tileCount: tileCountDict[896]!)
-        let row1792 = TileCountRowView(width: width, height: height, rowIndex: 4, tileValue: 1792, tileCount: tileCountDict[1792]!)
-        let row3584 = TileCountRowView(width: width, height: height, rowIndex: 5, tileValue: 3584, tileCount: tileCountDict[3584]!)
+        // let row112 = TileCountRowView(width: width, height: height, rowIndex: 0, tileValue: 112, tileCount: tileCountDict[112]!)
+        let row224 = TileCountRowView(width: width, height: height, rowIndex: 0, tileValue: 224, tileCount: tileCountDict[224]!)
+        let row448 = TileCountRowView(width: width, height: height, rowIndex: 1, tileValue: 448, tileCount: tileCountDict[448]!)
+        let row896 = TileCountRowView(width: width, height: height, rowIndex: 2, tileValue: 896, tileCount: tileCountDict[896]!)
+        let row1792 = TileCountRowView(width: width, height: height, rowIndex: 3, tileValue: 1792, tileCount: tileCountDict[1792]!)
+        let row3584 = TileCountRowView(width: width, height: height, rowIndex: 4, tileValue: 3584, tileCount: tileCountDict[3584]!)
         
         addSubview(titleLabel)
-        addSubview(row112)
+        // addSubview(row112)
         addSubview(row224)
         addSubview(row448)
         addSubview(row896)
@@ -135,27 +135,30 @@ class MenuTileCountView : UIView {
 }
 
 class MenuFooterView : UIView {
+    var clearHistoryButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+    
     init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
         let w : CGFloat = width*0.9
         let h : CGFloat = height*0.8
         let buttonWidthPct : CGFloat = 0.3
         super.init(frame: CGRect(x: (width-w)/2, y: y, width: w, height: height))
         
-        let clearHistoryButton = UIButton(frame: CGRect(x: 0, y: 0, width: w * buttonWidthPct, height: h))
+        clearHistoryButton = UIButton(frame: CGRect(x: 0, y: 0, width: w * buttonWidthPct, height: h))
         let contactUsButton = UIButton(frame: CGRect(x: w - w*buttonWidthPct, y: 0, width: w * buttonWidthPct, height: h))
         
         clearHistoryButton.setTitle("Clear history", for: [])
-        clearHistoryButton.titleLabel?.font = UIFont(name: "Chalkboard SE", size: 16)!
+        clearHistoryButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 16)!
         clearHistoryButton.titleLabel?.textColor = UIColor.white
         clearHistoryButton.backgroundColor = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
         clearHistoryButton.layer.cornerRadius = 10
+        // clearHistoryButton.addTarget(self, action:#selector(clearHistoryWarning), for: .touchUpInside)
         
         contactUsButton.setTitle("Contact Us", for: [])
-        contactUsButton.titleLabel?.font = UIFont(name: "Chalkboard SE", size: 16)!
+        contactUsButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 16)!
         contactUsButton.titleLabel?.textColor = UIColor.white
         contactUsButton.backgroundColor = UIColor.init(red: 14.0/255.0, green: 120.0/255.0, blue: 155.0/255.0, alpha: 1.0)
         contactUsButton.layer.cornerRadius = 10
-        
+            
         addSubview(clearHistoryButton)
         addSubview(contactUsButton)
     }
@@ -165,5 +168,16 @@ class MenuFooterView : UIView {
     required init?(coder aDecoder: NSCoder){
         super.init(coder: aDecoder)
     }
+    
+//    @objc func clearHistoryWarning(){
+//        print("inside clear history warning")
+//        let clearHistoryViewController = ClearHistoryViewController()
+//        clearHistoryViewController.modalPresentationStyle = .fullScreen
+//        // menuViewController.modalTransitionStyle = .flipHorizontal
+//
+//        present(clearHistoryViewController, animated: true, completion: nil)
+//    }
 }
+
+
 

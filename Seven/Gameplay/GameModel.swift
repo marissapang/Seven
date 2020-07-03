@@ -61,17 +61,15 @@ struct swipeTracker {
 }
 
 struct PropertyKey {
-    static let highScore = "highScore"
     static let tileCount = "tileCount"
-    static let totalGamesPlayed = "totalGamesPlayed"
+    static let runningStats = "runningStats"
 
 }
 
 class ScoreBoard: NSObject, NSCoding {
     //MARK: Properties
-    var highScore: Int
-    var tileCount: [Int:Int]
-    var totalGamesPlayed: Int
+    var tileCount: [Int : Int]
+    var runningStats: [String : Int]
         
     
     
@@ -81,27 +79,26 @@ class ScoreBoard: NSObject, NSCoding {
     
     
     //MARK: Initialization
-    override init(){
-        self.highScore = 0
+    required init(coder aDecoder: NSCoder){
+        runningStats = aDecoder.decodeObject(forKey: PropertyKey.runningStats) as? [String : Int] ?? ["highScore":0, "totalGamesPlayed":0]
+        
+        tileCount = aDecoder.decodeObject(forKey: PropertyKey.tileCount) as? [Int:Int] ?? [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0]
+    }
+    
+    override init (){
         self.tileCount = [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0]
-        self.totalGamesPlayed = 0
+        self.runningStats = ["highScore":0, "totalGamesPlayed":0]
     }
     
     
     //MARK: NSCoding
     
     func encode(with aCoder: NSCoder) {
-        aCoder.encode(highScore, forKey: PropertyKey.highScore)
         aCoder.encode(tileCount, forKey: PropertyKey.tileCount)
-        aCoder.encode(totalGamesPlayed, forKey: PropertyKey.totalGamesPlayed)
+        aCoder.encode(runningStats, forKey: PropertyKey.runningStats)
     }
     
-    required convenience init?(coder aDecoder: NSCoder){
-        self.init()
-        
-        
-        
-    }
+    
     
 }
 
