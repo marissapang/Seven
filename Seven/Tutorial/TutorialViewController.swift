@@ -33,13 +33,13 @@ class TutorialViewController: UIViewController {
         let labelWidth = width * 0.9
         
         let topPaddingPct : CGFloat = 0.01
-        let titleLabelPct : CGFloat = 0.15
+        let titleLabelPct : CGFloat = 0.1
         let secondPaddingPct : CGFloat = 0.01
-        let descriptionLabel1Pct : CGFloat = 0.15
+        let descriptionLabel1Pct : CGFloat = 0.1
         let thirdPaddingPct : CGFloat = 0.01
         let descriptionLabel2Pct : CGFloat = 0.1
-        let fourthPaddingPct : CGFloat = 0.02
-        let bottomPaddingPct : CGFloat = 0.02
+        let fourthPaddingPct : CGFloat = 0.03
+        let bottomPaddingPct : CGFloat = 0.03
         let tileRulesPct : CGFloat = 1 - (topPaddingPct + titleLabelPct + secondPaddingPct + descriptionLabel1Pct + thirdPaddingPct + descriptionLabel2Pct + fourthPaddingPct + bottomPaddingPct)
         
         guard tileRulesPct > 0 else{
@@ -55,6 +55,10 @@ class TutorialViewController: UIViewController {
         let popupView = UIView(frame: CGRect(x: (superviewWidth - width)/2, y: (superviewHeight - height)/2, width: width, height: height))
         popupView.backgroundColor = UIColor.init(red: 218/255, green: 239/255, blue: 244/255, alpha: 0.98)
         popupView.backgroundColor = UIColor.init(red: 192/255, green: 195/255, blue: 210/255, alpha: 0.97)
+        popupView.layer.shadowColor = UIColor.lightGray.cgColor
+        popupView.layer.shadowOpacity = 1
+        popupView.layer.shadowOffset = .zero
+        popupView.layer.shadowRadius = 5
 
         popupView.layer.cornerRadius = 12
         self.view.addSubview(popupView)

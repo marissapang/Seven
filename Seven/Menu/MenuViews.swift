@@ -19,12 +19,13 @@ class MenuHighScoreView : UIView {
         
         let titleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: height*titleLabelPct))
         let highScoreView = UIView(frame: CGRect(x: width*0.15, y: height*(paddingPct + titleLabelPct), width: width*0.7, height: height*highScoreViewPct))
-        let highScoreLabel = UILabel(frame: CGRect(x: width*0.15, y: highScoreView.frame.minY, width: width*0.65, height: highScoreView.frame.height))
+        let highScoreLabel = UILabel(frame: CGRect(x: width*0.15, y: highScoreView.frame.minY+5, width: width*0.65, height: highScoreView.frame.height))
         let commentLabel = UILabel(frame: CGRect(x: width*0.1, y: height*(paddingPct*2 + titleLabelPct + highScoreViewPct), width: width*0.8, height: height*commentLabelPct))
         
         titleLabel.text = "YOUR HIGH SCORE:"
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont(name: "TallBasic-Regular", size: 36)!
+        titleLabel.font = UIFont(name: "TallBasic20-Regular", size: 46)!
+        titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
         highScoreView.backgroundColor = UIColor.init(red: 251.0/255.0, green: 217.0/255.0, blue: 208.0/255.0, alpha: 1)
@@ -32,15 +33,15 @@ class MenuHighScoreView : UIView {
         
         highScoreLabel.text = "\(highScore)"
         highScoreLabel.textAlignment = .center
-        highScoreLabel.font = UIFont(name: "TallBasic-Regular", size: 44)!
+        highScoreLabel.font = UIFont(name: "TallBasic20-Regular", size: 62)!
         highScoreLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        highScoreLabel.adjustsFontSizeToFitWidth = true
         
         commentLabel.text = "(You've played \(totalGamesPlayed) games of Seven)"
         commentLabel.textAlignment = .center
-        commentLabel.font = UIFont(name: "TallBasic-Regular", size: 14)!
+        commentLabel.font = UIFont(name: "TallBasic20-Regular", size: 20)!
         commentLabel.textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
-        commentLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-        commentLabel.numberOfLines = 0
+        commentLabel.adjustsFontSizeToFitWidth = true
         
         addSubview(titleLabel)
         addSubview(highScoreView)
@@ -66,7 +67,7 @@ class TileCountRowView : UIView {
         // parmeter for vertical positions
         let numRows : CGFloat = 5
         let numGaps : CGFloat = numRows
-        let titleLabelPct : CGFloat = 1/(numRows+1)
+        let titleLabelPct : CGFloat = 1/(numRows+1) * 0.6
         let gapPct : CGFloat = 0.015
         let rowPct : CGFloat = (1 - titleLabelPct - numGaps*gapPct)/numRows
         
@@ -77,14 +78,33 @@ class TileCountRowView : UIView {
         // Create tileView
         let tileView = TileView(sizeAndPositionsDict: dummySizeAndPositionsDict, tileValue: tileValue)
         tileView.frame = CGRect(x: 0, y: 0, width: height*rowPct*widthPctOfHeight, height: height*rowPct)
-        tileView.label.frame = CGRect(x: 0, y: 0, width: height*rowPct*widthPctOfHeight, height: height*rowPct)
+        
+        let tileViewLabelWidth = tileView.frame.width * 0.75
+        tileView.label.frame = CGRect(x: (tileView.frame.width-tileViewLabelWidth)/2, y: 2, width: tileViewLabelWidth, height: height*rowPct)
+        tileView.label.font = UIFont(name: "TallBasic20-Regular", size: 32)!
+        tileView.label.adjustsFontSizeToFitWidth = true
+        
+        tileView.layer.shadowColor = UIColor.white.cgColor
+        tileView.layer.shadowOpacity = 0.8
+        tileView.layer.shadowOffset = .zero
+        tileView.layer.shadowOffset = CGSize(width: 2.0, height: 3)
+        tileView.layer.shadowRadius = 3
+        
         
         // Create numberLabel
         let tileCountLabel = UILabel(frame: CGRect(x: tileView.frame.width + w*widthGapPct, y: 0, width: w - w*widthGapPct - widthPctOfHeight*height*rowPct, height: height * rowPct))
         
-        tileCountLabel.text = "\(tileCount)"
+        if tileCount == 0 {
+            tileCountLabel.text = "None"
+        } else if tileCount == 1 {
+            tileCountLabel.text = "\(tileCount) game"
+        } else {
+            tileCountLabel.text = "\(tileCount) games"
+        }
+        
         tileCountLabel.textAlignment = .left
-        tileCountLabel.font = UIFont(name: "TallBasic-Regular", size: 28)!
+        tileCountLabel.font = UIFont(name: "TallBasic20-Regular", size: 34)!
+        tileCountLabel.adjustsFontSizeToFitWidth = true
         tileCountLabel.textColor = UIColor.white
         
         addSubview(tileView)
@@ -105,12 +125,14 @@ class MenuTileCountView : UIView {
         // 1. Make title label
         let w : CGFloat = width*0.9
         let numRows : CGFloat = 5
-        let titleLabelPct : CGFloat = 1/(numRows+1)
+        let titleLabelPct : CGFloat = 1/(numRows+1) * 0.6
         let titleLabel = UILabel(frame: CGRect(x: (width - w)/2, y: 0, width: width, height: height*titleLabelPct))
-        titleLabel.text = "Count of highest tile achieved:"
+        titleLabel.text = "HIGH-TILE ACHIEVEMENTS:"
         titleLabel.textAlignment = .left
-        titleLabel.font = UIFont(name: "TallBasic-Regular", size: 34)!
+        titleLabel.font = UIFont(name: "TallBasic20-Regular", size: 34)!
+        titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textColor = UIColor.white
+        titleLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
         // let row112 = TileCountRowView(width: width, height: height, rowIndex: 0, tileValue: 112, tileCount: tileCountDict[112]!)
         let row224 = TileCountRowView(width: width, height: height, rowIndex: 0, tileValue: 224, tileCount: tileCountDict[224]!)
@@ -136,7 +158,7 @@ class MenuTileCountView : UIView {
 
 class MenuFooterView : UIView {
     var clearHistoryButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
-    
+    var contactUsButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
         let w : CGFloat = width*0.9
         let h : CGFloat = height*0.8
@@ -144,17 +166,17 @@ class MenuFooterView : UIView {
         super.init(frame: CGRect(x: (width-w)/2, y: y, width: w, height: height))
         
         clearHistoryButton = UIButton(frame: CGRect(x: 0, y: 0, width: w * buttonWidthPct, height: h))
-        let contactUsButton = UIButton(frame: CGRect(x: w - w*buttonWidthPct, y: 0, width: w * buttonWidthPct, height: h))
+        contactUsButton = UIButton(frame: CGRect(x: w - w*buttonWidthPct, y: 0, width: w * buttonWidthPct, height: h))
         
         clearHistoryButton.setTitle("Clear history", for: [])
-        clearHistoryButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 16)!
+        clearHistoryButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 16)!
         clearHistoryButton.titleLabel?.textColor = UIColor.white
         clearHistoryButton.backgroundColor = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
         clearHistoryButton.layer.cornerRadius = 10
         // clearHistoryButton.addTarget(self, action:#selector(clearHistoryWarning), for: .touchUpInside)
         
         contactUsButton.setTitle("Contact Us", for: [])
-        contactUsButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 16)!
+        contactUsButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 16)!
         contactUsButton.titleLabel?.textColor = UIColor.white
         contactUsButton.backgroundColor = UIColor.init(red: 14.0/255.0, green: 120.0/255.0, blue: 155.0/255.0, alpha: 1.0)
         contactUsButton.layer.cornerRadius = 10

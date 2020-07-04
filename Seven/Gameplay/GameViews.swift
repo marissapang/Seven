@@ -17,6 +17,11 @@ class GameboardView: UIView {
                                  height: sizeAndPositionsDict["gameboardHeight"]!)
         )
         layer.cornerRadius = 10.0
+        layer.shadowColor = UIColor.lightGray.cgColor
+        layer.shadowOpacity = 1
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 4
+        
         backgroundColor = UIColor.init(red: 47.0/255.0, green: 58.0/255.0, blue: 61.0/255.0, alpha: 0.95)
         
         // add a background grey view for each tile on the gameboard
@@ -31,7 +36,6 @@ class GameboardView: UIView {
                 tileView = UIView(frame: CGRect(x: x, y: y, width: sizeAndPositionsDict["tileWidth"]!, height: sizeAndPositionsDict["tileHeight"]!))
                 
                 tileView.backgroundColor = UIColor.init(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 0.5)
-                // tileView.backgroundColor = UIColor.init(red: 233.0/255.0, green: 226.0/255.0, blue: 227.0/255.0, alpha: 0.5)
                 tileView.layer.cornerRadius = 6.0
                 
                 addSubview(tileView)
@@ -62,10 +66,12 @@ class TileView: UIView {
         // calculate where the (0,0) position for a view should be before it is moved onto gameboard
         value = tileValue
         
-        label = UILabel(frame: CGRect(x: 0, y: 0, width: sizeAndPositionsDict["tileWidth"]!, height: sizeAndPositionsDict["tileHeight"]!))
+        let labelWidth = sizeAndPositionsDict["tileWidth"]!*0.75
+        label = UILabel(frame: CGRect(x: (sizeAndPositionsDict["tileWidth"]!-labelWidth)/2, y: 3, width: labelWidth, height: sizeAndPositionsDict["tileHeight"]!))
         label.textAlignment = .center
         label.text = "\(tileValue)"
         label.font = appearance.font(value)
+        label.adjustsFontSizeToFitWidth = true
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
         let x = sizeAndPositionsDict["gameboardX"]! - sizeAndPositionsDict["tileWidth"]!
@@ -77,6 +83,12 @@ class TileView: UIView {
         layer.cornerRadius = 6.0
         layer.borderWidth = 4
         layer.borderColor = appearance.borderColor(value)
+        
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.9
+        layer.shadowOffset = CGSize(width: 1.3, height: 2)
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 4
         
         
         addSubview(label)
@@ -179,20 +191,25 @@ class SmallTileHighlight : UIView {
         let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.75 - sizeAndPositionsDict["spacing"]!/2
     
         
-        // create and format label
-        let label = UILabel(frame: CGRect(x: 0, y: -tileHeight*0.45, width: tileWidth*3, height: tileHeight*0.45))
-        label.textAlignment = .left
-        label.text = "Next Tile"
-        label.textColor = UIColor.init(red: 244.0/255.0, green: 181.0/255.0, blue: 80.0/255.0, alpha: 1)
-        label.font = UIFont(name: "TallBasic-Regular", size: 16)!
+        
         
         
         // create frame
         super.init(frame: CGRect(x: x, y: y, width: tileWidth + sizeAndPositionsDict["spacing"]!, height: tileHeight + sizeAndPositionsDict["spacing"]!))
         
+        // create and format label
+        let label = UILabel(frame: CGRect(x: -self.frame.width*0.25, y: -tileHeight*0.45+3, width: self.frame.width*1.5, height: tileHeight*0.45))
+        label.textAlignment = .center
+        label.text = "Next Tile"
+        label.textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
+        label.font = UIFont(name: "TallBasic20-Regular", size: 28)!
+        label.adjustsFontSizeToFitWidth = true
+        
+        
         backgroundColor = UIColor.clear
         layer.borderWidth = 4
-        layer.borderColor = UIColor.init(red: 244.0/255.0, green: 181.0/255.0, blue: 80.0/255.0, alpha: 1).cgColor
+        // layer.borderColor = UIColor.init(red: 244.0/255.0, green: 181.0/255.0, blue: 80.0/255.0, alpha: 1).cgColor
+        layer.borderColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1).cgColor
         layer.cornerRadius = 6.0 * smallTileScale * 1.1
     
         addSubview(label)
@@ -243,7 +260,7 @@ class EndGamePopupView : UIView {
         }
         popupLabel.textAlignment = .center
         popupLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        popupLabel.font = UIFont(name: "TallBasic-Regular", size: 32)!
+        popupLabel.font = UIFont(name: "TallBasic20-Regular", size: 32)!
         popupLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         popupLabel.numberOfLines = 0
         
@@ -278,7 +295,7 @@ class RestartButton : UIButton {
         backgroundColor = UIColor.init(red: 253.0/255.0, green: 138.0/255.0, blue: 115.0/255.0, alpha: 1.0)
         
         setTitle("Play Again!", for: [])
-        titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 32)!
+        titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 32)!
         titleLabel?.textColor = UIColor.white
         layer.cornerRadius = 15
     }
@@ -328,10 +345,11 @@ class ScoreView : UIView {
         let x = sizeAndPositionsDict["gameboardX"]! + (sizeAndPositionsDict["gameboardWidth"]! - width)/2
         let y = sizeAndPositionsDict["gameboardY"]! * 0.45
         
-        label = UILabel(frame: CGRect(x: 0, y:0, width: width, height: height))
+        label = UILabel(frame: CGRect(x: 0, y:3, width: width, height: height))
         label.text = "\(score)"
         label.textAlignment = .center
-        label.font = UIFont(name: "TallBasic-Regular", size: 48)!
+        label.font = UIFont(name: "TallBasic20-Regular", size: 62)!
+        label.adjustsFontSizeToFitWidth = true
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
         
@@ -339,8 +357,13 @@ class ScoreView : UIView {
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         backgroundColor = UIColor.init(red: 207.0/255.0, green: 233.0/255.0, blue: 240.0/255.0, alpha: 1)
         
+        
 
         layer.cornerRadius = 15
+        layer.shadowColor = UIColor.init(red: 207.0/255.0, green: 233.0/255.0, blue: 240.0/255.0, alpha: 1).cgColor
+        layer.shadowOpacity = 0.7
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 1
         
         addSubview(label)
         
@@ -361,13 +384,18 @@ class navButton : UIButton {
         
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
                 
-         backgroundColor = UIColor.init(red: 244.0/255.0, green: 160.0/255.0, blue: 138.0/255.0, alpha: 1)
+        backgroundColor = UIColor.init(red: 244.0/255.0, green: 160.0/255.0, blue: 138.0/255.0, alpha: 1)
         
-        
+        titleEdgeInsets = UIEdgeInsets(top: 3,left: 3,bottom: 0,right: 3)
         setTitle(labelText, for: [])
-        titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 20)!
+        titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 24)!
+        titleLabel?.adjustsFontSizeToFitWidth = true
         titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         layer.cornerRadius = 10
+        layer.shadowColor = UIColor.lightGray.cgColor
+        layer.shadowOpacity = 0.9
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 3
     }
     
     required init?(coder aDecoder: NSCoder) {

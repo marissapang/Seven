@@ -99,28 +99,29 @@ class Appearance {
     }
     
     func font(_ value: Int) -> UIFont {
-        switch value {
-        case 10..<100:
-            return UIFont(name: "Chalkboard SE", size: 30)!
-        case 100..<1000:
-            return UIFont(name: "Chalkboard SE", size: 24)!
-        case 1000..<10000:
-            return UIFont(name: "Chalkboard SE", size: 18)!
-        default:
-            return UIFont(name: "Chalkboard SE", size: 34)!
-        }
+        return UIFont(name: "TallBasic20-Regular", size: 42)!
+//        switch value {
+//        case 10..<100:
+//            return UIFont(name: "TallBasic20-Regular", size: 30)!
+//        case 100..<1000:
+//            return UIFont(name: "TallBasic20-Regular", size: 24)!
+//        case 1000..<10000:
+//            return UIFont(name: "TallBasic20-Regular", size: 18)!
+//        default:
+//            return UIFont(name: "TallBasic20-Regular", size: 34)!
+//        }
     }
     
     func fontSmallTile(_ value: Int) -> UIFont {
         switch value {
         case 10..<100:
-            return UIFont(name: "Chalkboard SE", size: 24)!
+            return UIFont(name: "TallBasic20-Regular", size: 24)!
         case 100..<1000:
-            return UIFont(name: "Chalkboard SE", size: 18)!
+            return UIFont(name: "TallBasic20-Regular", size: 18)!
         case 1000..<10000:
-            return UIFont(name: "Chalkboard SE", size: 12)!
+            return UIFont(name: "TallBasic20-Regular", size: 12)!
         default:
-            return UIFont(name: "Chalkboard SE", size: 28)!
+            return UIFont(name: "TallBasic20-Regular", size: 28)!
         }
     }
     

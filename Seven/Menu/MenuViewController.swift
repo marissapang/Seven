@@ -44,7 +44,7 @@ class MenuViewController: UIViewController {
         let highScoreViewWidth = w * 0.7
         let topGapPct : CGFloat = 0.1
         let highScoreViewPct : CGFloat = 0.2
-        let secondGapPct : CGFloat = 0.0
+        let secondGapPct : CGFloat = 0.02
         let tileCountViewPct : CGFloat = 0.6
         let thirdGapPct : CGFloat = 0.02
         let bottomGapPct : CGFloat = 0.02
@@ -56,7 +56,7 @@ class MenuViewController: UIViewController {
         
         let backButton = UIButton(frame: CGRect(x: 10, y: 15, width: w*0.1, height: h * topGapPct))
         backButton.setTitle("Back", for: [])
-        backButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 20)!
+        backButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 20)!
         backButton.titleLabel?.textColor = UIColor.white
         backButton.addTarget(self, action:#selector(backButtonClicked), for: .touchUpInside)
         
@@ -65,7 +65,7 @@ class MenuViewController: UIViewController {
         let menuFooterView = MenuFooterView(x: 0, y: h * (topGapPct + highScoreViewPct + secondGapPct + tileCountViewPct + thirdGapPct), width: w, height: h*footerPct)
         
         menuFooterView.clearHistoryButton.addTarget(self, action:#selector(clearHistoryButtonClicked), for: .touchUpInside)
-        
+        menuFooterView.contactUsButton.addTarget(self, action:#selector(contactUsButtonClicked), for: .touchUpInside)
         self.view.addSubview(backButton)
         self.view.addSubview(menuHighScoreView)
         self.view.addSubview(menuTileCountView)
@@ -81,6 +81,13 @@ class MenuViewController: UIViewController {
         let clearHistoryViewController = ClearHistoryViewController()
         clearHistoryViewController.modalPresentationStyle = .fullScreen
         present(clearHistoryViewController, animated: false, completion: nil)
+    }
+    
+    @objc func contactUsButtonClicked(){
+        let contactViewController = ContactViewController()
+        contactViewController.modalPresentationStyle = .overFullScreen
+        present(contactViewController, animated: false, completion: nil)
+
     }
     
     private func clearScores() {

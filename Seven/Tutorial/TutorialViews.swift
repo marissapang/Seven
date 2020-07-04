@@ -23,7 +23,7 @@ class TutorialTitleLabel : UILabel {
     init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         text = "Welcome to Seven!"
-        font = UIFont(name: "TallBasic-Regular", size: 38)!
+        font = UIFont(name: "TallBasic20-Regular", size: 38)!
         textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         adjustsFontSizeToFitWidth = true
     }
@@ -37,7 +37,7 @@ class TutorialDescriptionLabel1 : UILabel {
     init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, descriptionText: String){
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         text = descriptionText
-        font = UIFont(name: "TallBasic-Regular", size: 20)!
+        font = UIFont(name: "TallBasic20-Regular", size: 20)!
         adjustsFontSizeToFitWidth = true
         textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         lineBreakMode = .byWordWrapping
@@ -62,17 +62,17 @@ class TutorialTileRulesView : UIView {
         let rowPct = (1 - (label1Pct + label2Pct + gapPct * (numRules-1)))/numRules
         
         let label1 = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: label1Pct*height))
-        label1.text = "For tiles with value >= 7:"
+        label1.text = "For tiles with values of 7 or higher:"
         label1.textColor = UIColor(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        label1.font = UIFont(name: "TallBasic-Regular", size: 22)!
+        label1.font = UIFont(name: "TallBasic20-Regular", size: 22)!
         label1.textAlignment = .left
 
         let row1 = TutorialTileRulesRowView(y: label1Pct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 7, tileValue2: 7)
 
         let label2 = UILabel(frame: CGRect(x: 0, y: row1.frame.maxY + gapPct*height, width: width, height: label1Pct*height))
-        label2.text = "For tiles with value < 7:"
+        label2.text = "For tiles with values less than 7:"
         label2.textColor = UIColor(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        label2.font = UIFont(name: "TallBasic-Regular", size: 22)!
+        label2.font = UIFont(name: "TallBasic20-Regular", size: 22)!
         label2.textAlignment = .left
         
         let row2 = TutorialTileRulesRowView(y: row1.frame.maxY+gapPct*height+label2Pct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 2, tileValue2: 5)
@@ -106,22 +106,43 @@ class TutorialTileRulesRowView: UIView {
         let tile3 = TileView(sizeAndPositionsDict: dummySizeAndPositionsDict, tileValue: tileValue1 + tileValue2)
         
         tile1.frame = CGRect(x: 0, y: 0, width: tileWidth, height: height)
-        tile1.label.frame = tile1.frame
+        tile1.label.frame = CGRect(x: 0, y: 3, width: tileWidth, height: height)
+        tile1.label.font = UIFont(name: "TallBasic20-Regular", size: 37)!
         tile2.frame = CGRect(x: tileWidth * 2, y: 0, width: tileWidth, height: height)
-        tile2.label.frame = CGRect(x: 0, y: 0, width: tileWidth, height: height)
+        tile2.label.frame = CGRect(x: 0, y: 3, width: tileWidth, height: height)
+        tile2.label.font = UIFont(name: "TallBasic20-Regular", size: 37)!
         tile3.frame = CGRect(x: tileWidth * 4, y: 0, width: tileWidth, height: height)
-        tile3.label.frame = CGRect(x: 0, y: 0, width: tileWidth, height: height)
+        tile3.label.frame = CGRect(x: 0, y: 3, width: tileWidth, height: height)
+        tile3.label.font = UIFont(name: "TallBasic20-Regular", size: 37)!
+        
+        tile1.layer.shadowColor = UIColor.lightGray.cgColor
+        tile1.layer.shadowOpacity = 1
+        tile1.layer.shadowOffset = .zero
+        tile1.layer.shadowOffset = CGSize(width: 1.3, height: 2)
+        tile1.layer.shadowRadius = 3
+        
+        tile2.layer.shadowColor = UIColor.lightGray.cgColor
+        tile2.layer.shadowOpacity = 1
+        tile2.layer.shadowOffset = .zero
+        tile2.layer.shadowOffset = CGSize(width: 1.3, height: 2)
+        tile2.layer.shadowRadius = 3
+        
+        tile3.layer.shadowColor = UIColor.lightGray.cgColor
+        tile3.layer.shadowOpacity = 1
+        tile3.layer.shadowOffset = .zero
+        tile3.layer.shadowOffset = CGSize(width: 1.3, height: 2)
+        tile3.layer.shadowRadius = 3
         
         
-        let plusLabel = UILabel(frame: CGRect(x: tileWidth, y: 0, width: tileWidth, height: height))
+        let plusLabel = UILabel(frame: CGRect(x: tileWidth, y: 5, width: tileWidth, height: height))
         plusLabel.text = "+"
         plusLabel.textAlignment = .center
-        plusLabel.font = UIFont(name: "TallBasic-Regular", size: 50)!
+        plusLabel.font = UIFont(name: "TallBasic20-Regular", size: 50)!
         
-        let equalLabel = UILabel(frame: CGRect(x: tileWidth*3, y: 0, width: tileWidth, height: height))
+        let equalLabel = UILabel(frame: CGRect(x: tileWidth*3, y: 5, width: tileWidth, height: height))
         equalLabel.text = "="
         equalLabel.textAlignment = .center
-        equalLabel.font = UIFont(name: "TallBasic-Regular", size: 50)!
+        equalLabel.font = UIFont(name: "TallBasic20-Regular", size: 50)!
         
         if tileValue1 == 7 {
             tile1.label.text = "value"
@@ -129,13 +150,13 @@ class TutorialTileRulesRowView: UIView {
             tile3.label.text = "value + value"
             
             
-            tile1.label.font = UIFont(name: "TallBasic-Regular", size: 18)!
+            tile1.label.font = UIFont(name: "TallBasic20-Regular", size: 18)!
             tile1.label.adjustsFontSizeToFitWidth = true
             
             tile2.label.adjustsFontSizeToFitWidth = true
-            tile2.label.font = UIFont(name: "TallBasic-Regular", size: 18)!
+            tile2.label.font = UIFont(name: "TallBasic20-Regular", size: 18)!
             
-            tile3.label.font = UIFont(name: "TallBasic-Regular", size: 16)!
+            tile3.label.font = UIFont(name: "TallBasic20-Regular", size: 16)!
             tile3.label.lineBreakMode = .byWordWrapping
             tile3.label.numberOfLines = 0
             

@@ -36,34 +36,43 @@ class ClearHistoryPopupView : UIView {
 
         // create background rectangle
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
-        backgroundColor = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
+        // backgroundColor = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
+        // backgroundColor = UIColor.init(red: 253.0/255.0, green: 138.0/255.0, blue: 115.0/255.0, alpha: 1.0)
+        backgroundColor = UIColor.init(red: 244.0/255.0, green: 160.0/255.0, blue: 138.0/255.0, alpha: 1)
+        
         layer.cornerRadius = 12
+        
+        layer.shadowColor = UIColor.lightGray.cgColor
+        layer.shadowOpacity = 1.0
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 5
 
         // create warning message label
         warningMessage = UILabel(frame: CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight))
-        warningMessage.text = "Whoa, you sure you want delete all your game history?"
+        warningMessage.text = "Whoa, you sure you want to delete all your game history?"
         warningMessage.textAlignment = .center
         warningMessage.textColor = UIColor.white
-        warningMessage.font = UIFont(name: "TallBasic-Regular", size: 18)!
+        warningMessage.font = UIFont(name: "TallBasic20-Regular", size: 32)!
         warningMessage.lineBreakMode = NSLineBreakMode.byWordWrapping
-        warningMessage.numberOfLines = 2
+        warningMessage.numberOfLines = 0
         
         // create "No, Keep my data" button
         noKeepButton = UIButton(frame: CGRect(x: buttonXLeft, y: buttonY, width: buttonWidth, height: buttonHeight))
-        noKeepButton.backgroundColor = UIColor.init(red: 253.0/255.0, green: 138.0/255.0, blue: 115.0/255.0, alpha: 1.0)
-        noKeepButton.backgroundColor = UIColor.gray
+        // noKeepButton.backgroundColor = UIColor.init(red: 88.0/255.0, green: 140.0/255.0, blue: 178.0/255.0, alpha: 1.0)
+        noKeepButton.backgroundColor = UIColor.init(red: 14.0/255.0, green: 120.0/255.0, blue: 155.0/255.0, alpha: 1.0)
         noKeepButton.setTitle("NO", for: [])
-        noKeepButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 22)!
+        noKeepButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 22)!
         noKeepButton.titleLabel?.textColor = UIColor.white
-        noKeepButton.layer.cornerRadius = 6
+        noKeepButton.layer.cornerRadius = 18
+        
         
         yesDeleteButton = UIButton(frame: CGRect(x: buttonXRight, y: buttonY, width: buttonWidth, height: buttonHeight))
-        yesDeleteButton.backgroundColor = UIColor.init(red: 253.0/255.0, green: 138.0/255.0, blue: 115.0/255.0, alpha: 1.0)
-        yesDeleteButton.backgroundColor = UIColor.gray
+
+        yesDeleteButton.backgroundColor  = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
         yesDeleteButton.setTitle("YES, DELETE", for: [])
-        yesDeleteButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 22)!
+        yesDeleteButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 22)!
         yesDeleteButton.titleLabel?.textColor = UIColor.white
-        yesDeleteButton.layer.cornerRadius = 6
+        yesDeleteButton.layer.cornerRadius = 18
         
         addSubview(warningMessage)
         addSubview(noKeepButton)
