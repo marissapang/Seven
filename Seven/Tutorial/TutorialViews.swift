@@ -8,12 +8,24 @@
 
 import UIKit
 
+class TutorialCloseButton : UIButton {
+    init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
+        super.init(frame: CGRect(x:x, y:y, width: width, height: height))
+        setImage(UIImage(named:"closeButton"), for: [])
+    }
+    
+    required init?(coder aDecoder: NSCoder){
+        super.init(coder: aDecoder)
+    }
+}
+
 class TutorialTitleLabel : UILabel {
     init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         text = "Welcome to Seven!"
         font = UIFont(name: "TallBasic-Regular", size: 38)!
-        textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
+        textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        adjustsFontSizeToFitWidth = true
     }
     
     required init?(coder aDecoder: NSCoder){
@@ -22,11 +34,14 @@ class TutorialTitleLabel : UILabel {
 }
 
 class TutorialDescriptionLabel1 : UILabel {
-    init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
+    init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, descriptionText: String){
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
-        text = "Swipe to combine tiles and make multiples of 7! A '7' tile will combine with another '7' tile, a '14' tile will combine with another '14' tile... and so on - play to see what the highest tile you can get!"
-        font = UIFont(name: "TallBasic-Regular", size: 24)!
-        textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
+        text = descriptionText
+        font = UIFont(name: "TallBasic-Regular", size: 20)!
+        adjustsFontSizeToFitWidth = true
+        textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        lineBreakMode = .byWordWrapping
+        numberOfLines = 0
     }
     
     required init?(coder aDecoder: NSCoder){
@@ -34,25 +49,44 @@ class TutorialDescriptionLabel1 : UILabel {
     }
 }
 
-class TutorialDescriptionLabel2 : UILabel {
-    init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
-        super.init(frame: CGRect(x: x, y: y, width: width, height: height))
-        text = "When tiles smaller than 7 appear, they combine based on the rules below. Everytime you swipe a new tile will appear, when you have no more spaces to move on the board the game will end!"
-        font = UIFont(name: "TallBasic-Regular", size: 24)!
-        textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
-    }
-    
-    required init?(coder aDecoder: NSCoder){
-        super.init(coder: aDecoder)
-    }
-}
 
 class TutorialTileRulesView : UIView {
     init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
-        backgroundColor = UIColor.red
+        
+        // parameters
+        let label1Pct : CGFloat = 0.1
+        let label2Pct : CGFloat = 0.1
+        let gapPct : CGFloat = 0.05
+        let numRules : CGFloat = 4
+        let rowPct = (1 - (label1Pct + label2Pct + gapPct * (numRules-1)))/numRules
+        
+        let label1 = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: label1Pct*height))
+        label1.text = "For tiles with value >= 7:"
+        label1.textColor = UIColor(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        label1.font = UIFont(name: "TallBasic-Regular", size: 22)!
+        label1.textAlignment = .left
+
+        let row1 = TutorialTileRulesRowView(y: label1Pct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 7, tileValue2: 7)
+
+        let label2 = UILabel(frame: CGRect(x: 0, y: row1.frame.maxY + gapPct*height, width: width, height: label1Pct*height))
+        label2.text = "For tiles with value < 7:"
+        label2.textColor = UIColor(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        label2.font = UIFont(name: "TallBasic-Regular", size: 22)!
+        label2.textAlignment = .left
+        
+        let row2 = TutorialTileRulesRowView(y: row1.frame.maxY+gapPct*height+label2Pct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 2, tileValue2: 5)
+        let row3 = TutorialTileRulesRowView(y: row2.frame.maxY+gapPct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 3, tileValue2: 4)
+        let row4 = TutorialTileRulesRowView(y: row3.frame.maxY+gapPct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 2, tileValue2: 2)
+
+        // add views
+        addSubview(label1)
+        addSubview(label2)
+        addSubview(row1)
+        addSubview(row2)
+        addSubview(row3)
+        addSubview(row4)
     }
-    
     
     
     required init?(coder aDecoder: NSCoder){
@@ -61,8 +95,58 @@ class TutorialTileRulesView : UIView {
 }
 
 class TutorialTileRulesRowView: UIView {
-    init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
-        super.init(frame: CGRect(x: x, y: y, width: width, height: height))
+    init(y: CGFloat, width: CGFloat, height: CGFloat, gapHeight: CGFloat, tileValue1: Int, tileValue2: Int){
+        super.init(frame: CGRect(x: width*0.1, y: y, width: width*0.8, height: height))
+        
+        let dummySizeAndPositionsDict : [String: CGFloat] = ["tileWidth":100, "tileHeight":100, "gameboardWidth":1000, "gameboardHeight":1000, "gameboardX":0, "gameboardY":0, "tileX":0, "tileY":0, "spacing":10]
+        let tileWidth = height * 0.85
+        
+        let tile1 = TileView(sizeAndPositionsDict: dummySizeAndPositionsDict, tileValue: tileValue1)
+        let tile2 = TileView(sizeAndPositionsDict: dummySizeAndPositionsDict, tileValue: tileValue2)
+        let tile3 = TileView(sizeAndPositionsDict: dummySizeAndPositionsDict, tileValue: tileValue1 + tileValue2)
+        
+        tile1.frame = CGRect(x: 0, y: 0, width: tileWidth, height: height)
+        tile1.label.frame = tile1.frame
+        tile2.frame = CGRect(x: tileWidth * 2, y: 0, width: tileWidth, height: height)
+        tile2.label.frame = CGRect(x: 0, y: 0, width: tileWidth, height: height)
+        tile3.frame = CGRect(x: tileWidth * 4, y: 0, width: tileWidth, height: height)
+        tile3.label.frame = CGRect(x: 0, y: 0, width: tileWidth, height: height)
+        
+        
+        let plusLabel = UILabel(frame: CGRect(x: tileWidth, y: 0, width: tileWidth, height: height))
+        plusLabel.text = "+"
+        plusLabel.textAlignment = .center
+        plusLabel.font = UIFont(name: "TallBasic-Regular", size: 50)!
+        
+        let equalLabel = UILabel(frame: CGRect(x: tileWidth*3, y: 0, width: tileWidth, height: height))
+        equalLabel.text = "="
+        equalLabel.textAlignment = .center
+        equalLabel.font = UIFont(name: "TallBasic-Regular", size: 50)!
+        
+        if tileValue1 == 7 {
+            tile1.label.text = "value"
+            tile2.label.text = "value"
+            tile3.label.text = "value + value"
+            
+            
+            tile1.label.font = UIFont(name: "TallBasic-Regular", size: 18)!
+            tile1.label.adjustsFontSizeToFitWidth = true
+            
+            tile2.label.adjustsFontSizeToFitWidth = true
+            tile2.label.font = UIFont(name: "TallBasic-Regular", size: 18)!
+            
+            tile3.label.font = UIFont(name: "TallBasic-Regular", size: 16)!
+            tile3.label.lineBreakMode = .byWordWrapping
+            tile3.label.numberOfLines = 0
+            
+        }
+        
+        addSubview(tile1)
+        addSubview(tile2)
+        addSubview(tile3)
+        addSubview(plusLabel)
+        addSubview(equalLabel)
+        
     }
     
     required init?(coder aDecoder: NSCoder){

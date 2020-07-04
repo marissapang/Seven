@@ -304,9 +304,7 @@ class CloseEndGameButton : UIButton {
         
         super.init(frame: CGRect(x: closeButtonX, y: closeButtonY, width: closeButtonWidth, height: closeButtonHeight))
         
-        // backgroundColor = UIColor.init(red: 97.0/255.0, green: 56.0/255.0, blue: 20.0/255.0, alpha: 1.0)
         setImage(UIImage(named:"closeButton"), for: [])
-        // layer.cornerRadius = 15
     }
 
     
@@ -362,9 +360,7 @@ class navButton : UIButton {
         let height = sizeAndPositionsDict["gameboardY"]! * 0.25
         
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
-        
-        // backgroundColor = UIColor.init(red: 253.0/255.0, green: 124.0/255.0, blue: 101.0/255.0, alpha: 1)
-        
+                
          backgroundColor = UIColor.init(red: 244.0/255.0, green: 160.0/255.0, blue: 138.0/255.0, alpha: 1)
         
         
@@ -372,6 +368,21 @@ class navButton : UIButton {
         titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 20)!
         titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         layer.cornerRadius = 10
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
+
+class HelpButton : UIButton {
+    init(sizeAndPositionsDict: [String: CGFloat]){
+        let width : CGFloat = 65
+        let height: CGFloat = 65
+        let x = sizeAndPositionsDict["gameboardX"]! + sizeAndPositionsDict["gameboardWidth"]! - width/2
+        let y = sizeAndPositionsDict["gameboardY"]! - height*1.05
+        super.init(frame: CGRect(x:x, y:y, width: width, height: height))
+        setImage(UIImage(named:"helpButton"), for: [])
     }
     
     required init?(coder aDecoder: NSCoder) {

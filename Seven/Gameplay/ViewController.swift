@@ -105,12 +105,9 @@ class ViewController: UIViewController {
         let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.25, labelText: "STATS")
         menuButton.addTarget(self, action:#selector(menuButtonClicked), for: .touchUpInside)
         
-        let helpButton = UIButton(frame: CGRect(x: self.view.frame.width/2, y: 20, width: 80, height: 80))
-        helpButton.setTitle("?", for: [])
-        helpButton.titleLabel?.font = UIFont(name: "TallBasic-Regular", size: 24)!
-        helpButton.backgroundColor = UIColor.blue
-        helpButton.titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        helpButton.layer.cornerRadius = 40
+        let helpButton = HelpButton(sizeAndPositionsDict: sizeAndPositionsDict)
+        
+        helpButton.addTarget(self, action: #selector(helpButtonClicked), for: .touchUpInside)
 
         
         let tileTrackingStrip = TileTrackingStrip(sizeAndPositionsDict: sizeAndPositionsDict, superviewWidth: self.view.frame.width, smallTileScale: smallTileScale)
@@ -574,13 +571,16 @@ class ViewController: UIViewController {
         // Cast is as the custom view controller type you created in order to access it's properties and methods
         let menuViewController = storyboard.instantiateViewController(withIdentifier: "menuViewController") as!MenuViewController
         
-       
-        
-        
         menuViewController.modalPresentationStyle = .fullScreen
         menuViewController.modalTransitionStyle = .flipHorizontal
 
         present(menuViewController, animated: true, completion: nil)
+    }
+    
+    @objc func helpButtonClicked(){
+        let tutorialViewController = TutorialViewController()
+        tutorialViewController.modalPresentationStyle = .overFullScreen
+        present(tutorialViewController, animated: false, completion: nil)
     }
     
     
