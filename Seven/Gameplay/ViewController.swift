@@ -99,10 +99,10 @@ class ViewController: UIViewController {
         let gameboardView = GameboardView(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict)
         scoreView = ScoreView(sizeAndPositionsDict: sizeAndPositionsDict)
         
-        let restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: "RESTART")
+        let restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: "RESET")
         restartButton.addTarget(self, action:#selector(restartButtonClicked), for: .touchUpInside)
         
-        let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.25, labelText: "STATS")
+        let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.2, labelText: "STATS")
         menuButton.addTarget(self, action:#selector(menuButtonClicked), for: .touchUpInside)
         
         let helpButton = HelpButton(sizeAndPositionsDict: sizeAndPositionsDict)

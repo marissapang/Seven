@@ -14,14 +14,17 @@ class ClearHistoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // self.view.backgroundColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 0.5)
         self.view.backgroundColor = UIColor.init(red: 164/255, green: 215/255, blue: 228/255, alpha: 1)
-        // Do any additional setup after loading the view.
+        
+        let backgroundCloseButton = UIButton(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
+        backgroundCloseButton.addTarget(self, action: #selector(noKeepButtonClicked), for: .touchUpInside)
+        
         let warning = ClearHistoryPopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
         
         warning.noKeepButton.addTarget(self, action:#selector(noKeepButtonClicked), for: .touchUpInside)
         warning.yesDeleteButton.addTarget(self, action:#selector(yesDeleteButtonClicked), for: .touchUpInside)
-
+        
+        self.view.addSubview(backgroundCloseButton)
         self.view.addSubview(warning)
     }
     
@@ -29,8 +32,8 @@ class ClearHistoryViewController: UIViewController {
         dismiss(animated: false, completion: nil)
         
         
-        
     }
+    
     
     @objc func yesDeleteButtonClicked(){
         let emptyScoreBoard = ScoreBoard()

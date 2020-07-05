@@ -392,23 +392,32 @@ class ScoreView : UIView {
 class navButton : UIButton {
     init(sizeAndPositionsDict: [String: CGFloat], x: CGFloat, labelText: String){
         let y = sizeAndPositionsDict["gameboardY"]! * 0.2
-        let width = sizeAndPositionsDict["gameboardWidth"]! * 0.25
-        let height = sizeAndPositionsDict["gameboardY"]! * 0.25
+        let width = sizeAndPositionsDict["gameboardWidth"]! * 0.2
+        let height = sizeAndPositionsDict["gameboardY"]! * 0.18
         
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
                 
         backgroundColor = UIColor.init(red: 244.0/255.0, green: 160.0/255.0, blue: 138.0/255.0, alpha: 1)
         
-        titleEdgeInsets = UIEdgeInsets(top: 3,left: 3,bottom: 0,right: 3)
-        setTitle(labelText, for: [])
-        titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 24)!
-        titleLabel?.adjustsFontSizeToFitWidth = true
-        titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        
+        
+        if labelText == "STATS" {
+            setImage(UIImage(named:"statsIcon"), for: [])
+            imageEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8,right: 8)
+        } else {
+            titleEdgeInsets = UIEdgeInsets(top: 3,left: 3,bottom: 0,right: 3)
+            setTitle(labelText, for: [])
+            titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 24)!
+            titleLabel?.adjustsFontSizeToFitWidth = true
+            titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        }
+        
+        
         layer.cornerRadius = 10
         layer.shadowColor = UIColor.lightGray.cgColor
-        layer.shadowOpacity = 0.9
+        layer.shadowOpacity = 0.85
         layer.shadowOffset = .zero
-        layer.shadowRadius = 3
+        layer.shadowRadius = 2.5
     }
     
     required init?(coder aDecoder: NSCoder) {
