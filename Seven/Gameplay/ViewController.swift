@@ -36,7 +36,7 @@ class ViewController: UIViewController {
     var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, newHighScore: false)
     var score : Int = 0
     var scoreView = ScoreView(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
-    var restartAtEndButton = RestartButton(superviewWidth: 100, superviewHeight: 100)
+    // var restartAtEndButton = RestartButton(superviewWidth: 100, superviewHeight: 100)
     var closeEndGameButton = CloseEndGameButton(superviewWidth: 100, superviewHeight: 100)
     
     var scoreBoard = ScoreBoard()
@@ -391,16 +391,15 @@ class ViewController: UIViewController {
         // create endGame view
         endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height,  newHighScore: newHighScore )
         self.view.addSubview(endGamePopupView)
-        restartAtEndButton = RestartButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
+
         closeEndGameButton = CloseEndGameButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
         
-        restartAtEndButton.addTarget(self, action: #selector(restartAtEnd), for: .touchUpInside)
+        endGamePopupView.restartButton.addTarget(self, action: #selector(restartAtEnd), for: .touchUpInside)
         closeEndGameButton.addTarget(self, action: #selector(closeEndGameButtonClicked), for: .touchUpInside)
         
         
         
         self.view.addSubview(endGamePopupView)
-        self.view.addSubview(restartAtEndButton)
         self.view.addSubview(closeEndGameButton)
     }
     
@@ -559,7 +558,7 @@ class ViewController: UIViewController {
     
     @objc func closeEndGameButtonClicked(){
         endGamePopupView.removeFromSuperview()
-        restartAtEndButton.removeFromSuperview()
+        // restartAtEndButton.removeFromSuperview()
         closeEndGameButton.removeFromSuperview()
         panGestureRecognizer.isEnabled = false
     }
