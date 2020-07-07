@@ -200,7 +200,7 @@ class SmallTileHighlight : UIView {
         label.textAlignment = .center
         label.text = "Next Tile"
         label.textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
-        label.font = UIFont(name: "TallBasic20-Regular", size: 28)!
+        label.font = UIFont(name: "TallBasic30-Regular", size: 28)!
         label.adjustsFontSizeToFitWidth = true
         
         
@@ -263,7 +263,7 @@ class EndGamePopupView : UIView {
         
         popupLabel.textAlignment = .center
         popupLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        popupLabel.font = UIFont(name: "TallBasic20-Regular", size: 32)!
+        popupLabel.font = UIFont(name: "TallBasic30-Regular", size: 32)!
         popupLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         popupLabel.numberOfLines = 0
         
@@ -272,7 +272,7 @@ class EndGamePopupView : UIView {
         restartButton.backgroundColor = UIColor.init(red: 253.0/255.0, green: 138.0/255.0, blue: 115.0/255.0, alpha: 1.0)
         restartButton.backgroundColor = UIColor.init(red: 250.0/255.0, green: 174.0/255.0, blue: 142.0/255.0, alpha: 1.0)
         restartButton.setTitle("Play Again!", for: [])
-        restartButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 32)!
+        restartButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 32)!
         restartButton.titleLabel?.textColor = UIColor.white
         restartButton.layer.cornerRadius = 15
         
@@ -308,7 +308,7 @@ class RestartButton : UIButton {
         backgroundColor = UIColor.init(red: 253.0/255.0, green: 138.0/255.0, blue: 115.0/255.0, alpha: 1.0)
         
         setTitle("Play Again!", for: [])
-        titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 32)!
+        titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 32)!
         titleLabel?.textColor = UIColor.white
         layer.cornerRadius = 15
     }
@@ -361,7 +361,7 @@ class ScoreView : UIView {
         label = UILabel(frame: CGRect(x: 0, y:3, width: width, height: height))
         label.text = "\(score)"
         label.textAlignment = .center
-        label.font = UIFont(name: "TallBasic20-Regular", size: 62)!
+        label.font = UIFont(name: "TallBasic30-Regular", size: 62)!
         label.adjustsFontSizeToFitWidth = true
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
@@ -407,7 +407,7 @@ class navButton : UIButton {
         } else {
             titleEdgeInsets = UIEdgeInsets(top: 3,left: 3,bottom: 0,right: 3)
             setTitle(labelText, for: [])
-            titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 24)!
+            titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 24)!
             titleLabel?.adjustsFontSizeToFitWidth = true
             titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         }

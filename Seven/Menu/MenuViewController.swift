@@ -59,7 +59,7 @@ class MenuViewController: UIViewController {
         let backButton = UIButton(frame: CGRect(x: 10, y: (h * topGapPct - backButtonHeight)/2, width: backButtonWidth, height: backButtonHeight))
         backButton.setImage(UIImage(named:"backButton"), for: [])
 //        backButton.setTitle("Back", for: [])
-//        backButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 20)!
+//        backButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 20)!
 //        backButton.titleLabel?.textColor = UIColor.white
         backButton.addTarget(self, action:#selector(backButtonClicked), for: .touchUpInside)
         

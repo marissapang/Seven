@@ -52,7 +52,7 @@ class ClearHistoryPopupView : UIView {
         warningMessage.text = "Whoa, you sure you want to delete all your game history?"
         warningMessage.textAlignment = .center
         warningMessage.textColor = UIColor.white
-        warningMessage.font = UIFont(name: "TallBasic20-Regular", size: 32)!
+        warningMessage.font = UIFont(name: "TallBasic30-Regular", size: 32)!
         warningMessage.lineBreakMode = NSLineBreakMode.byWordWrapping
         warningMessage.numberOfLines = 0
         
@@ -61,7 +61,7 @@ class ClearHistoryPopupView : UIView {
         // noKeepButton.backgroundColor = UIColor.init(red: 88.0/255.0, green: 140.0/255.0, blue: 178.0/255.0, alpha: 1.0)
         noKeepButton.backgroundColor = UIColor.init(red: 14.0/255.0, green: 120.0/255.0, blue: 155.0/255.0, alpha: 1.0)
         noKeepButton.setTitle("NO", for: [])
-        noKeepButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 22)!
+        noKeepButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!
         noKeepButton.titleLabel?.textColor = UIColor.white
         noKeepButton.layer.cornerRadius = 18
         
@@ -70,7 +70,7 @@ class ClearHistoryPopupView : UIView {
 
         yesDeleteButton.backgroundColor  = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
         yesDeleteButton.setTitle("YES, DELETE", for: [])
-        yesDeleteButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 22)!
+        yesDeleteButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!
         yesDeleteButton.titleLabel?.textColor = UIColor.white
         yesDeleteButton.layer.cornerRadius = 18
         

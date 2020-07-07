@@ -24,6 +24,7 @@
 		188F8B7424ADED0A00C908B7 /* AlertViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7324ADED0A00C908B7 /* AlertViews.swift */; };
 		188F8B7624AF540900C908B7 /* TutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7524AF540900C908B7 /* TutorialViewController.swift */; };
 		188F8B7B24AF54A800C908B7 /* TutorialViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7A24AF54A800C908B7 /* TutorialViews.swift */; };
+		18BC1E7C24B46CF600E5BF13 /* TallBasic30-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */; };
 		18D67CB024AC860D0085E116 /* MenuViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D67CAF24AC860D0085E116 /* MenuViews.swift */; };
 		18EEF46D24A7624C00D129B8 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EEF46C24A7624C00D129B8 /* MenuViewController.swift */; };
 /* End PBXBuildFile section */
@@ -60,6 +61,7 @@
 		188F8B7324ADED0A00C908B7 /* AlertViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViews.swift; sourceTree = "<group>"; };
 		188F8B7524AF540900C908B7 /* TutorialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialViewController.swift; sourceTree = "<group>"; };
 		188F8B7A24AF54A800C908B7 /* TutorialViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialViews.swift; sourceTree = "<group>"; };
+		18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "TallBasic30-Regular.ttf"; path = "Fonts/TallBasic30-Regular.ttf"; sourceTree = SOURCE_ROOT; };
 		18D67CAF24AC860D0085E116 /* MenuViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViews.swift; sourceTree = "<group>"; };
 		18EEF46C24A7624C00D129B8 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -130,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				18602AF924B08407003EF531 /* TallBasic20-Regular.ttf */,
+				18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -248,6 +251,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18BC1E7C24B46CF600E5BF13 /* TallBasic30-Regular.ttf in Resources */,
 				185FF8E8249375FE00FD52A0 /* LaunchScreen.storyboard in Resources */,
 				185FF8E5249375FE00FD52A0 /* Assets.xcassets in Resources */,
 				185FF8E3249375F700FD52A0 /* Main.storyboard in Resources */,

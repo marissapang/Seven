@@ -36,7 +36,7 @@ class ContactViewController: UIViewController {
         label.text = "You can reach us at: \n seventhegame@outlook.com"
         label.textAlignment = .center
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        label.font = UIFont(name: "TallBasic20-Regular", size: 32)!
+        label.font = UIFont(name: "TallBasic30-Regular", size: 32)!
         label.lineBreakMode = NSLineBreakMode.byWordWrapping
         label.numberOfLines = 2
         

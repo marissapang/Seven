@@ -24,7 +24,7 @@ class MenuHighScoreView : UIView {
         
         titleLabel.text = "YOUR HIGH SCORE:"
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont(name: "TallBasic20-Regular", size: 46)!
+        titleLabel.font = UIFont(name: "TallBasic30-Regular", size: 46)!
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
@@ -33,13 +33,13 @@ class MenuHighScoreView : UIView {
         
         highScoreLabel.text = "\(highScore)"
         highScoreLabel.textAlignment = .center
-        highScoreLabel.font = UIFont(name: "TallBasic20-Regular", size: 62)!
+        highScoreLabel.font = UIFont(name: "TallBasic30-Regular", size: 62)!
         highScoreLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         highScoreLabel.adjustsFontSizeToFitWidth = true
         
         commentLabel.text = "(You've played \(totalGamesPlayed) games of Seven)"
         commentLabel.textAlignment = .center
-        commentLabel.font = UIFont(name: "TallBasic20-Regular", size: 20)!
+        commentLabel.font = UIFont(name: "TallBasic30-Regular", size: 20)!
         commentLabel.textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
         commentLabel.adjustsFontSizeToFitWidth = true
         
@@ -81,7 +81,7 @@ class TileCountRowView : UIView {
         
         let tileViewLabelWidth = tileView.frame.width * 0.75
         tileView.label.frame = CGRect(x: (tileView.frame.width-tileViewLabelWidth)/2, y: 2, width: tileViewLabelWidth, height: height*rowPct)
-        tileView.label.font = UIFont(name: "TallBasic20-Regular", size: 32)!
+        tileView.label.font = UIFont(name: "TallBasic30-Regular", size: 32)!
         tileView.label.adjustsFontSizeToFitWidth = true
         
         tileView.layer.shadowColor = UIColor.white.cgColor
@@ -103,7 +103,7 @@ class TileCountRowView : UIView {
         }
         
         tileCountLabel.textAlignment = .left
-        tileCountLabel.font = UIFont(name: "TallBasic20-Regular", size: 34)!
+        tileCountLabel.font = UIFont(name: "TallBasic30-Regular", size: 34)!
         tileCountLabel.adjustsFontSizeToFitWidth = true
         tileCountLabel.textColor = UIColor.white
         
@@ -129,7 +129,7 @@ class MenuTileCountView : UIView {
         let titleLabel = UILabel(frame: CGRect(x: (width - w)/2, y: 0, width: width, height: height*titleLabelPct))
         titleLabel.text = "HIGH-TILE ACHIEVEMENTS:"
         titleLabel.textAlignment = .left
-        titleLabel.font = UIFont(name: "TallBasic20-Regular", size: 34)!
+        titleLabel.font = UIFont(name: "TallBasic30-Regular", size: 34)!
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textColor = UIColor.white
         titleLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
@@ -169,14 +169,14 @@ class MenuFooterView : UIView {
         contactUsButton = UIButton(frame: CGRect(x: w - w*buttonWidthPct, y: 0, width: w * buttonWidthPct, height: h))
         
         clearHistoryButton.setTitle("Clear history", for: [])
-        clearHistoryButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 16)!
+        clearHistoryButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 16)!
         clearHistoryButton.titleLabel?.textColor = UIColor.white
         clearHistoryButton.backgroundColor = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
         clearHistoryButton.layer.cornerRadius = 10
         // clearHistoryButton.addTarget(self, action:#selector(clearHistoryWarning), for: .touchUpInside)
         
         contactUsButton.setTitle("Contact Us", for: [])
-        contactUsButton.titleLabel?.font = UIFont(name: "TallBasic20-Regular", size: 16)!
+        contactUsButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 16)!
         contactUsButton.titleLabel?.textColor = UIColor.white
         contactUsButton.backgroundColor = UIColor.init(red: 14.0/255.0, green: 120.0/255.0, blue: 155.0/255.0, alpha: 1.0)
         contactUsButton.layer.cornerRadius = 10
