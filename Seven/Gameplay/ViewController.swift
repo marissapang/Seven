@@ -17,7 +17,8 @@ class ViewController: UIViewController {
     let tileSpacing : CGFloat = 15
     let smallTileScale : CGFloat = 0.75
     var sizeAndPositionsDict = [String:CGFloat]()
-    
+    let initialFreq : [Int: Double] = [2: 0.08, 5: 0.06, 3: 0.08, 4: 0.06, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
+
     // Properties used to keep track of gameboard
     var tileValueBoard : Gameboard<Int>
     var tileViewBoard : Gameboard<TileView?>
@@ -26,6 +27,8 @@ class ViewController: UIViewController {
     var colIndexPositionBoard : Gameboard<Int>
     
     var lastXTiles = [Int]()
+    var freqTracking : [Int: Int] = [2: 0, 3: 0, 4: 0, 5: 0]
+    var twoPlusTwoEvent: Int = 0
     
     @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer!
     
@@ -212,7 +215,13 @@ class ViewController: UIViewController {
         
         // after creating the view generate the next-up tile value
         nextTileValue = nextNextTileValue
-        nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard, lastXTiles: lastXTiles)
+        nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard, nextTileValue: nextTileValue, initialFreq: initialFreq, freqTracking: freqTracking)
+        
+        let trackedFreqs : [Int] = [2,3,4,5]
+        if trackedFreqs.contains(nextNextTileValue) {
+            freqTracking[nextNextTileValue]! += 1
+        }
+        
         
         lastXTiles += [nextNextTileValue]
         if lastXTiles.count > 15 {
@@ -437,6 +446,7 @@ class ViewController: UIViewController {
         newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         
         lastXTiles = [Int]()
+        freqTracking = [2: 0, 3: 0, 4: 0, 5: 0]
         
         // Properties used to keep track of gameboard hint
         tileTrackingList = [SmallTileView?]()
@@ -590,14 +600,14 @@ class ViewController: UIViewController {
         var direction : Direction
 
         var animator : UIViewPropertyAnimator
-
+        
         switch recognizer.state {
         case .began:
             direction = directionFromVelocity(recognizer.velocity(in: self.view))
             directionForEndState = direction
 
-            (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
-
+            (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard, twoPlusTwoEvent) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
+            
             animateTiles(direction: direction, tileViewBoard: newTileViewBoard, rowIndexPositionBoard: newRowIndexPositionBoard, colIndexPositionBoard: newColIndexPositionBoard)
 
         case .changed:
@@ -657,6 +667,12 @@ class ViewController: UIViewController {
                 rowIndexPositionBoard = newRowIndexPositionBoard
                 colIndexPositionBoard = newColIndexPositionBoard
                 
+                if twoPlusTwoEvent > 0 {
+                    print("twoPlusTwo event is being noted")
+                    freqTracking[2] = freqTracking[2]! - 2*twoPlusTwoEvent
+                    freqTracking[4] = freqTracking[4]! + twoPlusTwoEvent
+                }
+                
                 // if gameboard didn't change it means we swiped in an un-viable way so a new tile shouldn't be added
                 if gameboardChanged != 0 {
                     let nextTileView : TileView = addNextTileView()
@@ -673,6 +689,7 @@ class ViewController: UIViewController {
         default:
             ()
         }
+        
     }
     
     private func directionFromVelocity(_ velocity: CGPoint) -> Direction {

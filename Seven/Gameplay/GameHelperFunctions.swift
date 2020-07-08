@@ -140,7 +140,164 @@ func adjustTileFreq(lastXTiles: [Int], tileValueBoard: Gameboard<Int>) -> [Int: 
     return adjustedFreq
 }
 
-func generateRandTileValue(tileValueBoard: Gameboard<Int>, lastXTiles: [Int]) -> Int {
+func generateRandTileValue(tileValueBoard: Gameboard<Int>, nextTileValue: Int, initialFreq: [Int: Double], freqTracking: [Int: Int]) -> Int {
+    // first normalize freq tracking so out of 2 and 5 one is 0, and so on
+    let normalizedFreqTracking = normalizeFreqTracking(freqTracking: freqTracking)
+    var (adjustedFreq, freqSum) = adjustInitialFreq(initialFreq: initialFreq, normalizedFreqTracking: normalizedFreqTracking)
+    
+    // adjustedFreq contains frequencies (as decimal probablities) for 2, 5, 3, 4. We will take the leftover probability and spread it along 7, and higher tiles depending on what the current highest tile is
+    let leftoverProb = 1 - freqSum
+    let highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
+    let highTileFreq = calculateHighTileFreq(leftOverProb: leftoverProb, highestTileValue: highestTileValue)
+    
+    let freq = adjustedFreq.merging(highTileFreq) { (current, _) in current }
+    
+    // check that frequencies of everything = 1
+    var checkFreq : Double = 0
+    for (_, value) in freq {
+        checkFreq += value
+    }
+    
+    checkFreq = round(checkFreq)
+    
+    
+    
+    guard checkFreq == 1 else {
+        fatalError("frequencies do not add up to 1 D:")
+    }
+    
+    // user random number generator from 1-100 for 100%
+    let randNumber = Double(Int.random(in: 0..<101))/100
+    var newTileValue : Int
+    
+    // create tile with certain value depending on the frequencies
+    switch randNumber {
+    case let randNumber where randNumber <= freq[2]!:
+        newTileValue = 2
+    case let randNumber where randNumber <= freq[2]!+freq[5]!:
+        newTileValue = 5
+    case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!:
+        newTileValue = 3
+    case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!:
+        newTileValue = 4
+    case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!:
+        newTileValue = 14
+    case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!:
+        newTileValue = 28
+    case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!+freq[56]!:
+        newTileValue = 56
+    case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!+freq[56]!+freq[112]!:
+        newTileValue = 112
+    case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!+freq[56]!+freq[112]!+freq[224]!:
+        newTileValue = 224
+    default:
+        newTileValue = 7 // anything else we generate 7
+    }
+    
+    // let newTileValue = 7
+    return newTileValue
+}
+
+func normalizeFreqTracking(freqTracking: [Int: Int]) -> [Int: Int]{
+    var normalizedFreqTracking = freqTracking
+    // first compare 3 and 4 and subtract accordingly
+    let min34 = min(normalizedFreqTracking[3]!, normalizedFreqTracking[4]!)
+    normalizedFreqTracking[3]! -= min34
+    normalizedFreqTracking[4]! -= min34
+    
+    // then compare 2 and 5
+    let min25 = min(normalizedFreqTracking[2]!, normalizedFreqTracking[5]!)
+    normalizedFreqTracking[2]! -= min25
+    normalizedFreqTracking[5]! -= min25
+    
+    // compare 3 and 2's at a ratio if there is any left over
+    let min23 = min(normalizedFreqTracking[3]!, Int(floor(CGFloat(normalizedFreqTracking[2]!/2))))
+    normalizedFreqTracking[2]! -= min23 * 2
+    normalizedFreqTracking[3]! -= min23
+    
+    return normalizedFreqTracking
+}
+
+func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int: Int]) -> ([Int: Double], Double) {
+    var adjustedFreq = initialFreq
+    
+    if normalizedFreqTracking[4]! > 0 {
+        adjustedFreq[3] =  max(initialFreq[3]! * Double(normalizedFreqTracking[4]!), 0.9)
+        adjustedFreq[4] = initialFreq[4]! / Double(normalizedFreqTracking[4]!)
+    }
+    
+    if normalizedFreqTracking[5]! > 0 {
+        adjustedFreq[2] = max(initialFreq[2]! * Double(normalizedFreqTracking[5]!), 0.9)
+        adjustedFreq[5] = initialFreq[5]! / Double(normalizedFreqTracking[5]!)
+    }
+    
+    if normalizedFreqTracking[3]! > 0 {
+        adjustedFreq[4] = max(initialFreq[4]! * Double(normalizedFreqTracking[3]!), 0.9)
+        adjustedFreq[3] = initialFreq[3]! / Double(normalizedFreqTracking[3]!)
+    }
+    
+    if normalizedFreqTracking[2]! > 0 {
+        adjustedFreq[5] = max(initialFreq[5]! * Double(normalizedFreqTracking[2]!), 0.9)
+        adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!)
+    }
+    
+    // if the sums of the adjusted frequencies are too large (i.e. almost over 1) then lower it down proportionally across the board
+    let freqSum = adjustedFreq[2]! + adjustedFreq[5]! + adjustedFreq[3]! + adjustedFreq[4]!
+     
+    if freqSum > 0.95 {
+        let ratio : Double = 0.95/freqSum
+        for (key, value) in adjustedFreq {
+            adjustedFreq[key] = value * ratio
+        }
+    }
+    
+    let adjustedFreqSum = adjustedFreq[2]! + adjustedFreq[5]! + adjustedFreq[3]! + adjustedFreq[4]!
+        
+    return (adjustedFreq, adjustedFreqSum)
+}
+
+func calculateHighTileFreq(leftOverProb: Double, highestTileValue: Int) -> [Int: Double]{
+    
+    var highTileFreq : [Int: Double] = [7: 0, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
+        
+    // frequencies change depenign on hfar in we are in the game
+    switch highestTileValue {
+    case let highestTileValue where highestTileValue <= 112:
+        () // change nothing if we are early on in the game
+    case let highestTileValue where highestTileValue <= 224:
+        highTileFreq[14] = 0.08
+        highTileFreq[28] = 0.04
+        highTileFreq[56] = 0.02
+    case let highestTileValue where highestTileValue <= 448:
+        highTileFreq[14] = 0.05
+        highTileFreq[28] = 0.05
+        highTileFreq[56] = 0.03
+        highTileFreq[112] = 0.02
+    case let highestTileValue where highestTileValue <= 896:
+        highTileFreq[14] = 0.05
+        highTileFreq[28] = 0.05
+        highTileFreq[56] = 0.04
+        highTileFreq[112] = 0.02
+        highTileFreq[224] = 0.01
+    default:
+        () // do nothing for now
+    }
+    
+    
+    let none7Freq = highTileFreq[14]! + highTileFreq[28]! + highTileFreq[56]! + highTileFreq[112]! + highTileFreq[224]!
+    
+    highTileFreq[7] = 1 - none7Freq
+    
+    // currently the frequencies of these tiles sum to 1, we need them to be adjusted proportionally so tey sum to the leftover probability
+    for (key, value) in highTileFreq {
+        highTileFreq[key] = value * leftOverProb
+    }
+    
+   return highTileFreq
+
+}
+
+/*func generateRandTileValue(tileValueBoard: Gameboard<Int>, lastXTiles: [Int]) -> Int {
     // should return value of 5, 10, 20, etc..
     var newTileValue = 7
     var highestTileValue : Int
@@ -219,6 +376,7 @@ func generateRandTileValue(tileValueBoard: Gameboard<Int>, lastXTiles: [Int]) ->
     
     return newTileValue
 }
+*/
 
 
 func getEmptyIndicesFromGameboard(tileValueBoard: Gameboard<Int>) -> [(Int, Int)]{
@@ -292,7 +450,7 @@ func addTile(direction: Direction, tileValueBoard: Gameboard<Int>) -> (Int, Int)
 }
 
 //MARK: Update After Swipe
-func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard: Gameboard<Int>, tileViewBoard: Gameboard<TileView?>, viewsToBeDeleted: [TileView], rowIndexPositionBoard: Gameboard<Int>, colIndexPositionBoard: Gameboard<Int>) -> (Gameboard<Int>, Gameboard<TileView?>, [TileView], Gameboard<Int>, Gameboard<Int>) {
+func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard: Gameboard<Int>, tileViewBoard: Gameboard<TileView?>, viewsToBeDeleted: [TileView], rowIndexPositionBoard: Gameboard<Int>, colIndexPositionBoard: Gameboard<Int>) -> (Gameboard<Int>, Gameboard<TileView?>, [TileView], Gameboard<Int>, Gameboard<Int>, Int) {
     let (startIndex, endIndex, increment) = getStartStopIndicesForSwipeFunctions(dimensions: dimensions, direction: direction)
     
     var tileMovementBoard = Gameboard(d: tileValueBoard.dimension, initialValue: Movement.stay)
@@ -302,6 +460,8 @@ func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard:
     var newViewsToBeDeleted = viewsToBeDeleted
     var newRowIndexPositionBoard = rowIndexPositionBoard
     var newColIndexPositionBoard = colIndexPositionBoard
+    
+    var twoPlusTwoEvent: Int = 0
     
     var row : Int, col : Int, nextRow : Int, nextCol : Int
     let rowIndexIncr: Int, colIndexIncr : Int
@@ -348,6 +508,10 @@ func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard:
                 tileMovementBoard[nextRow, nextCol] = .delete
                 
                 newTileValueBoard[nextRow, nextCol] = newTileValueBoard[row, col] + newTileValueBoard[nextRow, nextCol]
+                
+                if newTileValueBoard[nextRow, nextCol] == 4 {
+                    twoPlusTwoEvent += 1
+                }
                 newTileValueBoard[row, col] = 0
                 
                 newRowIndexPositionBoard[nextRow, nextCol] = max(min(newRowIndexPositionBoard[row, col] + rowIndexIncr, dimensions), 1)
@@ -364,7 +528,8 @@ func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard:
         }
     }
     
-    return (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard)
+    print("inside helper function, returned twoPlusTwoEvent is: \(twoPlusTwoEvent)")
+    return (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard, twoPlusTwoEvent)
 }
 
 //MARK: Game logic helpers
