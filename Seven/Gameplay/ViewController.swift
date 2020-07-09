@@ -372,8 +372,8 @@ class ViewController: UIViewController {
         return false
     }
        
-       
     func endGame() {
+        
         // update stats
         if let savedScoreBoard = loadScores() {
             scoreBoard = savedScoreBoard
@@ -400,7 +400,7 @@ class ViewController: UIViewController {
         // create endGame view
         endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height,  newHighScore: newHighScore )
         self.view.addSubview(endGamePopupView)
-
+    
         closeEndGameButton = CloseEndGameButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
         
         endGamePopupView.restartButton.addTarget(self, action: #selector(restartAtEnd), for: .touchUpInside)
@@ -410,7 +410,79 @@ class ViewController: UIViewController {
         
         self.view.addSubview(endGamePopupView)
         self.view.addSubview(closeEndGameButton)
+        
+        // add confetti if it's a new high score
+        if newHighScore == true {
+            let confettiTypes: [ConfettiType] = {
+                let confettiColors = [
+                    (r:149,g:58,b:255), (r:255,g:195,b:41), (r:255,g:101,b:26),
+                    (r:123,g:92,b:255), (r:76,g:126,b:255), (r:71,g:192,b:255),
+                    (r:255,g:47,b:39), (r:255,g:91,b:134), (r:233,g:122,b:208)
+                    ].map { UIColor(red: $0.r / 255.0, green: $0.g / 255.0, blue: $0.b / 255.0, alpha: 1) }
+
+                // For each position x shape x color, construct an image
+                return [ConfettiPosition.foreground, ConfettiPosition.background].flatMap { position in
+                    return [ConfettiShape.rectangle, ConfettiShape.circle].flatMap { shape in
+                        return confettiColors.map { color in
+                            return ConfettiType(color: color, shape: shape, position: position)
+                        }
+                    }
+                }
+            }()
+
+            let confettiCells: [CAEmitterCell] = {
+                return confettiTypes.map { confettiType in
+                    let cell = CAEmitterCell()
+
+                    cell.scaleRange = 0.1
+                    cell.beginTime = 0.00001
+                    cell.birthRate = 70
+                    cell.contents = confettiType.image.cgImage
+                    cell.emissionRange = CGFloat(Double.pi)
+                    cell.lifetime = 7
+                    cell.spin = 4
+                    cell.spinRange = 8
+                    cell.velocity = 400
+                    cell.velocityRange = 50
+                    cell.yAcceleration = -2
+                    
+                    
+                    cell.setValue("plane", forKey: "particleType")
+                    cell.setValue(Double.pi, forKey: "orientationRange")
+                    cell.setValue(Double.pi / 2, forKey: "orientationLongitude")
+                    cell.setValue(Double.pi / 2, forKey: "orientationLatitude")
+
+                    return cell
+                }
+            }()
+            
+            let confettiLayer: CAEmitterLayer = {
+                let emitterLayer = CAEmitterLayer()
+
+                emitterLayer.emitterCells = confettiCells
+                emitterLayer.emitterPosition = CGPoint(x: view.bounds.midX, y: view.bounds.minY-150)
+                emitterLayer.emitterSize = CGSize(width: view.bounds.size.width*1.2, height: 100) //view.bounds.size.height)
+                emitterLayer.emitterShape = .rectangle
+                emitterLayer.frame = view.bounds
+
+                emitterLayer.beginTime = CACurrentMediaTime()
+                emitterLayer.lifetime = 2.0
+                return emitterLayer
+            }()
+            
+            
+            endGamePopupView.layer.addSublayer(confettiLayer)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                confettiLayer.birthRate = 0
+            }
+        }
+        
+
+        
     }
+    
+    
+    
     
     private func saveScores() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(scoreBoard, toFile: ScoreBoard.ArchiveURL.path)
@@ -545,7 +617,10 @@ class ViewController: UIViewController {
             }
         }
     }
-        
+    
+    
+
+    
     //MARK: Click-related functions
     
     // restart

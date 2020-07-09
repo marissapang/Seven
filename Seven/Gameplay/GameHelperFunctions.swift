@@ -226,7 +226,7 @@ func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int:
     if normalizedFreqTracking[4]! > 0 {
         print("normalizedFreqTracking[4] is \(normalizedFreqTracking[4]!)")
         print("initalFreq[3]! * Double(normalizedFreqTracking[4]! is: \(initialFreq[3]! * Double(normalizedFreqTracking[4]!))")
-        adjustedFreq[3] =  min(initialFreq[3]! * Double(2+normalizedFreqTracking[4]!), 0.9)
+        adjustedFreq[3] =  min(initialFreq[3]! * Double(2*(1+normalizedFreqTracking[4]!)), 0.9)
         adjustedFreq[4] = initialFreq[4]! / Double(normalizedFreqTracking[4]!)
     }
     
@@ -234,21 +234,21 @@ func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int:
         
         print("normalizedFreqTracking[5] is \(normalizedFreqTracking[5]!)")
         print("initalFreq[2]! * Double(normalizedFreqTracking[5]! is: \(initialFreq[2]! * Double(normalizedFreqTracking[5]!))")
-        adjustedFreq[2] = min(initialFreq[2]! * Double(2+normalizedFreqTracking[5]!), 0.9)
+        adjustedFreq[2] = min(initialFreq[2]! * Double(2*(1+normalizedFreqTracking[5]!)), 0.9)
         adjustedFreq[5] = initialFreq[5]! / Double(normalizedFreqTracking[5]!)
     }
     
     if normalizedFreqTracking[3]! > 0 {
         print("normalizedFreqTracking[3] is \(normalizedFreqTracking[3]!)")
         print("initalFreq[4]! * Double(normalizedFreqTracking[3]! is: \(initialFreq[4]! * Double(normalizedFreqTracking[3]!))")
-        adjustedFreq[4] = min(initialFreq[4]! * Double(2+normalizedFreqTracking[3]!), 0.9)
+        adjustedFreq[4] = min(initialFreq[4]! * Double(2*(1+normalizedFreqTracking[3]!)), 0.9)
         adjustedFreq[3] = initialFreq[3]! / Double(normalizedFreqTracking[3]!)
     }
     
     if normalizedFreqTracking[2]! > 0 {
         print("normalizedFreqTracking[2] is \(normalizedFreqTracking[2]!)")
         print("initalFreq[5]! * Double(normalizedFreqTracking[2]! is: \(initialFreq[5]! * Double(normalizedFreqTracking[2]!))")
-        adjustedFreq[5] = min(initialFreq[5]! * Double(2+normalizedFreqTracking[2]!), 0.9)
+        adjustedFreq[5] = min(initialFreq[5]! * Double(2*(1+normalizedFreqTracking[2]!)), 0.9)
         adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!)
     }
     

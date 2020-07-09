@@ -100,16 +100,6 @@ class Appearance {
     
     func font(_ value: Int) -> UIFont {
         return UIFont(name: "TallBasic30-Regular", size: 42)!
-//        switch value {
-//        case 10..<100:
-//            return UIFont(name: "TallBasic30-Regular", size: 30)!
-//        case 100..<1000:
-//            return UIFont(name: "TallBasic30-Regular", size: 24)!
-//        case 1000..<10000:
-//            return UIFont(name: "TallBasic30-Regular", size: 18)!
-//        default:
-//            return UIFont(name: "TallBasic30-Regular", size: 34)!
-//        }
     }
     
     func fontSmallTile(_ value: Int) -> UIFont {
