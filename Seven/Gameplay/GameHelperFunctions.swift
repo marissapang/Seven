@@ -40,8 +40,8 @@ func addFirstTiles(dimensions: Int, sizeAndPositionsDict: [String:CGFloat], tile
     
     // add new tileView to tileViewBoard
     var newTileViewBoard = tileViewBoard
-        newTileViewBoard[row1, col1] = TileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: 7)
-        newTileViewBoard[row2, col2] = TileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: 7)
+    newTileViewBoard[row1, col1] = TileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: 7)
+    newTileViewBoard[row2, col2] = TileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: 7)
     
     return (newTileValueBoard, newTileViewBoard)
 }
@@ -293,7 +293,6 @@ func calculateHighTileFreq(leftOverProb: Double, highestTileValue: Int) -> [Int:
     default:
         () // do nothing for now
     }
-    
     
     let none7Freq = highTileFreq[14]! + highTileFreq[28]! + highTileFreq[56]! + highTileFreq[112]! + highTileFreq[224]!
     
