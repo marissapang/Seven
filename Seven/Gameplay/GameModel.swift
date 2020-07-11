@@ -99,7 +99,7 @@ class ScoreBoard: NSObject, NSCoding {
 
 class GameboardStorage: NSObject, NSCoding {
     // Properties
-    var tileValueList: [Int]
+    var tileValueList: [String: [Int]]
     
     // Archiving Paths
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -109,12 +109,12 @@ class GameboardStorage: NSObject, NSCoding {
     // Initialization
     required init(coder aDecoder: NSCoder){
         
-        tileValueList = aDecoder.decodeObject(forKey: PropertyKey.tileValueList) as? [Int] ?? []
+        tileValueList = aDecoder.decodeObject(forKey: PropertyKey.tileValueList) as? [String: [Int]] ?? ["tileValueList": [0]]
     }
     
     override init (){
         
-        self.tileValueList = []
+        self.tileValueList = ["tileValueList": [0]]
     }
     
     // NSCoding
