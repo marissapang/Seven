@@ -17,7 +17,8 @@ class ViewController: UIViewController {
     let tileSpacing : CGFloat = 15
     let smallTileScale : CGFloat = 0.75
     var sizeAndPositionsDict = [String:CGFloat]()
-    let initialFreq : [Int: Double] = [2: 0.08, 5: 0.06, 3: 0.08, 4: 0.06, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
+    // let initialFreq : [Int: Double] = [2: 0.08, 5: 0.06, 3: 0.08, 4: 0.06, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
+    let initialFreq : [Int: Double] = [2: 0.06, 5: 0.04, 3: 0.06, 4: 0.04, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
     var tileValueList = [Int]()
 
     // Properties used to keep track of gameboard

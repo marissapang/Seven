@@ -17,8 +17,9 @@ func calculateViewSizeAndPositions(dimensions: Int, superviewWidth: CGFloat, sup
     let verticalShift : CGFloat = 0.6
     
     // find dimensions of a tile
-    let tileWidth = (superviewWidth - numGaps*spacing) / (numTiles + numTileGapWidth)
+    
     let tileHeight = (superviewHeight - numGaps*spacing) / (numTiles + numTileGapHeight)
+    let tileWidth = min((superviewWidth - numGaps*spacing) / (numTiles + numTileGapWidth), tileHeight*0.9)
     
     // find dimensions of gameboard
     let gameboardWidth = numTiles*tileWidth + numGaps*spacing
