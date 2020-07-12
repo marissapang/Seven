@@ -63,7 +63,7 @@ class TutorialViewController: UIViewController {
         popupView.layer.cornerRadius = 12
         self.view.addSubview(popupView)
         
-        let closeButton = TutorialCloseButton(x: popupView.frame.maxX - closeButtonWidth/2, y: popupView.frame.minY - closeButtonWidth/2, width: closeButtonWidth, height: closeButtonWidth)
+        let closeButton = TutorialCloseButton(x: popupView.frame.maxX - closeButtonWidth*0.8, y: popupView.frame.minY - closeButtonWidth*0.2, width: closeButtonWidth, height: closeButtonWidth)
         closeButton.addTarget(self, action: #selector(closeButtonClicked), for: .touchUpInside)
         self.view.addSubview(closeButton)
         

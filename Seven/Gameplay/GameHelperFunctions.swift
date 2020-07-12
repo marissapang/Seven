@@ -75,71 +75,6 @@ func calculateHighestTileValue(tileValueBoard: Gameboard<Int>) -> Int {
     return highestValue
 }
 
-func adjustTileFreq(lastXTiles: [Int], tileValueBoard: Gameboard<Int>) -> [Int: Double]{
-    let startingFreq : [Int: Double] =
-    [2: 0.08, 5: 0.06, 3: 0.08, 4: 0.06, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
-    
-    // we only care about non-7 frequencies, so we filter out all the 7s
-    let filteredLastXTiles = lastXTiles.filter{$0 != 7}
-    
-//    guard filteredLastXTiles.count >= 5 else {
-//        return startingFreq
-//    }
-    var adjustedFreq = [Int: Double]()
-    var runningCount: [Int: Int] = [2: 0, 5: 0, 3: 0, 4: 0, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
-
-    for value in filteredLastXTiles {
-        runningCount[value] = runningCount[value]! + 1
-    }
-    
-    var runningFreq = [Int: Double]()
-    for (value, count) in runningCount {
-        runningFreq[value] = Double(count)/Double(filteredLastXTiles.count)
-    }
-    
-    if filteredLastXTiles.count >= 5 {
-        for (value, freq) in runningFreq {
-            adjustedFreq[value] = min(max(0, startingFreq[value]! + (startingFreq[value]! - freq)), 0.25)
-        }
-    } else {
-        for (value, _) in runningFreq {
-            adjustedFreq[value] = startingFreq[value]!
-        }
-    }
-    
-    // find the most common value on the board out of 2, 3, 4, and 5 and give on that has the most a leg up at resolution
-    var boardCount: [Int: Int] = [2: 0, 3: 0, 4: 0, 5:0]
-    var tileValue: Int
-    for i in 0..<tileValueBoard.dimension {
-        for j in 0..<tileValueBoard.dimension{
-            tileValue = tileValueBoard[i,j]
-            if tileValue == 2 || tileValue == 3 || tileValue == 4 || tileValue == 5 {
-                boardCount[tileValue] = boardCount[tileValue]! + 1
-            }
-        }
-    }
-    
-    // find maximum out of boardCount
-    let maxValue = boardCount.max {a, b in a.value < b.value}
-    
-    if maxValue!.value >= 2 {
-        switch maxValue!.key {
-        case 2:
-            adjustedFreq[5]! += 0.1
-        case 5:
-            adjustedFreq[2]! += 0.1
-        case 3:
-            adjustedFreq[4]! += 0.08
-            adjustedFreq[2]! += 0.04
-        case 4:
-            adjustedFreq[3]! += 0.1
-        default:
-            ()
-        }
-    }
-    return adjustedFreq
-}
-
 func generateRandTileValue(tileValueBoard: Gameboard<Int>, nextTileValue: Int, initialFreq: [Int: Double], freqTracking: [Int: Int]) -> Int {
     // first normalize freq tracking so out of 2 and 5 one is 0, and so on
     let normalizedFreqTracking = normalizeFreqTracking(freqTracking: freqTracking)
@@ -161,8 +96,6 @@ func generateRandTileValue(tileValueBoard: Gameboard<Int>, nextTileValue: Int, i
     }
     
     checkFreq = round(checkFreq)
-    
-    
     
     guard checkFreq == 1 else {
         fatalError("frequencies do not add up to 1 D:")
@@ -224,32 +157,23 @@ func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int:
     var adjustedFreq = initialFreq
     
     if normalizedFreqTracking[4]! > 0 {
-        print("normalizedFreqTracking[4] is \(normalizedFreqTracking[4]!)")
-        print("initalFreq[3]! * Double(normalizedFreqTracking[4]! is: \(initialFreq[3]! * Double(normalizedFreqTracking[4]!))")
-        adjustedFreq[3] =  min(initialFreq[3]! * Double(2*(1+normalizedFreqTracking[4]!)), 0.9)
-        adjustedFreq[4] = initialFreq[4]! / Double(normalizedFreqTracking[4]!)
+        adjustedFreq[3] =  min(initialFreq[3]! * Double(2*(2+normalizedFreqTracking[4]!)), 0.9)
+        adjustedFreq[4] = initialFreq[4]! / Double(normalizedFreqTracking[4]!*2)
     }
     
     if normalizedFreqTracking[5]! > 0 {
-        
-        print("normalizedFreqTracking[5] is \(normalizedFreqTracking[5]!)")
-        print("initalFreq[2]! * Double(normalizedFreqTracking[5]! is: \(initialFreq[2]! * Double(normalizedFreqTracking[5]!))")
-        adjustedFreq[2] = min(initialFreq[2]! * Double(2*(1+normalizedFreqTracking[5]!)), 0.9)
-        adjustedFreq[5] = initialFreq[5]! / Double(normalizedFreqTracking[5]!)
+        adjustedFreq[2] = min(initialFreq[2]! * Double(2*(2+normalizedFreqTracking[5]!)), 0.9)
+        adjustedFreq[5] = initialFreq[5]! / Double(normalizedFreqTracking[5]!*2)
     }
     
     if normalizedFreqTracking[3]! > 0 {
-        print("normalizedFreqTracking[3] is \(normalizedFreqTracking[3]!)")
-        print("initalFreq[4]! * Double(normalizedFreqTracking[3]! is: \(initialFreq[4]! * Double(normalizedFreqTracking[3]!))")
-        adjustedFreq[4] = min(initialFreq[4]! * Double(2*(1+normalizedFreqTracking[3]!)), 0.9)
-        adjustedFreq[3] = initialFreq[3]! / Double(normalizedFreqTracking[3]!)
+        adjustedFreq[4] = min(initialFreq[4]! * Double(2*(2+normalizedFreqTracking[3]!)), 0.9)
+        adjustedFreq[3] = initialFreq[3]! / Double(normalizedFreqTracking[3]!*2)
     }
     
     if normalizedFreqTracking[2]! > 0 {
-        print("normalizedFreqTracking[2] is \(normalizedFreqTracking[2]!)")
-        print("initalFreq[5]! * Double(normalizedFreqTracking[2]! is: \(initialFreq[5]! * Double(normalizedFreqTracking[2]!))")
-        adjustedFreq[5] = min(initialFreq[5]! * Double(2*(1+normalizedFreqTracking[2]!)), 0.9)
-        adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!)
+        adjustedFreq[5] = min(initialFreq[5]! * Double(2*(2+normalizedFreqTracking[2]!)), 0.9)
+        adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!*2)
     }
     
     // if the sums of the adjusted frequencies are too large (i.e. almost over 1) then lower it down proportionally across the board
@@ -276,19 +200,18 @@ func calculateHighTileFreq(leftOverProb: Double, highestTileValue: Int) -> [Int:
     case let highestTileValue where highestTileValue <= 112:
         () // change nothing if we are early on in the game
     case let highestTileValue where highestTileValue <= 224:
-        highTileFreq[14] = 0.08
-        highTileFreq[28] = 0.04
-        highTileFreq[56] = 0.02
-    case let highestTileValue where highestTileValue <= 448:
-        highTileFreq[14] = 0.05
+        highTileFreq[14] = 0.1
         highTileFreq[28] = 0.05
         highTileFreq[56] = 0.03
-        highTileFreq[112] = 0.02
+    case let highestTileValue where highestTileValue <= 448:
+        highTileFreq[14] = 0.12
+        highTileFreq[28] = 0.08
+        highTileFreq[56] = 0.03
     case let highestTileValue where highestTileValue <= 896:
-        highTileFreq[14] = 0.05
-        highTileFreq[28] = 0.05
-        highTileFreq[56] = 0.04
-        highTileFreq[112] = 0.02
+        highTileFreq[14] = 0.1
+        highTileFreq[28] = 0.08
+        highTileFreq[56] = 0.06
+        highTileFreq[112] = 0.03
         highTileFreq[224] = 0.01
     default:
         () // do nothing for now
@@ -306,88 +229,6 @@ func calculateHighTileFreq(leftOverProb: Double, highestTileValue: Int) -> [Int:
    return highTileFreq
 
 }
-
-/*func generateRandTileValue(tileValueBoard: Gameboard<Int>, lastXTiles: [Int]) -> Int {
-    // should return value of 5, 10, 20, etc..
-    var newTileValue = 7
-    var highestTileValue : Int
-    highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
-    var freq : [Int: Double] = [2: 0.08, 5: 0.06, 3: 0.08, 4: 0.06, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
-    
-    // frequencies change depenign on hfar in we are in the game
-    switch highestTileValue {
-    case let highestTileValue where highestTileValue <= 112:
-        () // change nothing if we are early on in the game
-    case let highestTileValue where highestTileValue <= 224:
-        freq[14] = 0.03
-        freq[28] = 0.02
-        freq[56] = 0.01
-    case let highestTileValue where highestTileValue <= 448:
-        freq[14] = 0.04
-        freq[28] = 0.03
-        freq[56] = 0.02
-        freq[112] = 0.01
-    case let highestTileValue where highestTileValue <= 896:
-        freq[14] = 0.05
-        freq[28] = 0.05
-        freq[56] = 0.03
-        freq[112] = 0.02
-        freq[224] = 0.01
-    default:
-        () // do nothing for now
-    }
-    
-
-    // now adjust frequency based on what has appeared in the past
-    if lastXTiles.count >= 5 {
-        freq = adjustTileFreq(lastXTiles: lastXTiles, tileValueBoard: tileValueBoard)
-    }
-    
-    // we want to avoid the sceanior where multiple things of the same value (unless it's 7) comes out in a row
-    var validValue = false
-    var randNumber : Double
-    
-    while validValue == false {
-        // user random number generator from 1-100 for 100%
-        randNumber = Double(Int.random(in: 0..<101))/100
-        
-        // create tile with certain value depending on the frequencies
-        switch randNumber {
-        case let randNumber where randNumber <= freq[2]!:
-            newTileValue = 2
-        case let randNumber where randNumber <= freq[2]!+freq[5]!:
-            newTileValue = 5
-        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!:
-            newTileValue = 3
-        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!:
-            newTileValue = 4
-        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!:
-            newTileValue = 14
-        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!:
-            newTileValue = 28
-        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!+freq[56]!:
-            newTileValue = 56
-        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!+freq[56]!+freq[112]!:
-            newTileValue = 112
-        case let randNumber where randNumber <= freq[2]!+freq[5]!+freq[3]!+freq[4]!+freq[14]!+freq[28]!+freq[56]!+freq[112]!+freq[224]!:
-            newTileValue = 224
-        default:
-            newTileValue = 7 // anything else we generate 7
-        }
-        
-        if lastXTiles.count < 4 {
-            validValue = true
-        } else {
-            if !(newTileValue == lastXTiles[lastXTiles.count-1] && newTileValue == lastXTiles[lastXTiles.count-2] && newTileValue != 7) {
-                    validValue = true
-            }
-        }
-    }
-    
-    return newTileValue
-}
-*/
-
 
 func getEmptyIndicesFromGameboard(tileValueBoard: Gameboard<Int>) -> [(Int, Int)]{
     var emptyTileIndices = [(Int, Int)]()

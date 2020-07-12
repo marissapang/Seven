@@ -116,7 +116,7 @@ class CloseEndGameButton : UIButton {
         let popupX = (superviewWidth - popupWidth)/2
         let popupY = (superviewHeight - popupHeight)/2
         
-        let closeButtonWidth = popupWidth * 0.15
+        let closeButtonWidth = popupWidth * 0.1
         let closeButtonHeight = closeButtonWidth
         let closeButtonX = popupWidth+popupX - closeButtonWidth*0.8
         let closeButtonY = popupY - closeButtonWidth*0.15

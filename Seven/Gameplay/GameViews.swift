@@ -242,12 +242,8 @@ class ScoreView : UIView {
         label.adjustsFontSizeToFitWidth = true
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
-        
-        
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         backgroundColor = UIColor.init(red: 207.0/255.0, green: 233.0/255.0, blue: 240.0/255.0, alpha: 1)
-        
-        
 
         layer.cornerRadius = 15
         layer.shadowColor = UIColor.init(red: 207.0/255.0, green: 233.0/255.0, blue: 240.0/255.0, alpha: 1).cgColor
