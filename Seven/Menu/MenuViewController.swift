@@ -58,9 +58,6 @@ class MenuViewController: UIViewController {
         let backButtonHeight = backButtonWidth * (850/1000)
         let backButton = UIButton(frame: CGRect(x: 10, y: (h * topGapPct - backButtonHeight)/2, width: backButtonWidth, height: backButtonHeight))
         backButton.setImage(UIImage(named:"backButton"), for: [])
-//        backButton.setTitle("Back", for: [])
-//        backButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 20)!
-//        backButton.titleLabel?.textColor = UIColor.white
         backButton.addTarget(self, action:#selector(backButtonClicked), for: .touchUpInside)
         
         let menuHighScoreView = MenuHighScoreView(x: (w - highScoreViewWidth)/2, y: h * topGapPct, width: highScoreViewWidth, height: h * highScoreViewPct, highScore: scoreBoard.runningStats["highScore"]!, totalGamesPlayed: scoreBoard.runningStats["totalGamesPlayed"]!)

@@ -12,53 +12,53 @@ import os.log
 class ViewController: UIViewController {
     //MARK: Properties
     
-    // Unchanged properties
+    /* Appearance */
     let dimensions : Int = 4
     let tileSpacing : CGFloat = 15
     let smallTileScale : CGFloat = 0.75
     var sizeAndPositionsDict = [String:CGFloat]()
-    // let initialFreq : [Int: Double] = [2: 0.08, 5: 0.06, 3: 0.08, 4: 0.06, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
-    let initialFreq : [Int: Double] = [2: 0.06, 5: 0.04, 3: 0.06, 4: 0.04, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0]
+    
+    /* Next tile generation */
+    let initialFreq : [Int: Double] = [2: 0.06, 5: 0.04, 3: 0.06, 4: 0.04]
+    // Currently scores above 28 are calculated based on the rounded value of log base 21 of (7^x) where x is the x such that 2x*7 = score
+    let scoreDict : [Int: Int] = [0: 0, 2: 2, 3: 3, 4: 4, 5: 5, 7:7, 14: 18, 28: 36, 56: 107, 112: 286, 224: 716, 448: 1718, 896: 4009, 1792: 9163, 3584: 20616, 7168: 45814, 14336: 100792, 28672: 219909, 57344: 476469, 114688: 1026242]
+    var freqTracking : [Int: Int] = [2: 0, 3: 0, 4: 0, 5: 0]
+    var twoPlusTwoEvent: Int = 0
+    var nextTileValue : Int = 7
+    var nextNextTileValue : Int = 7
+    
+    /* Gameboard-tracking */
     var tileValueList = [Int]()
-
-    // Properties used to keep track of gameboard
     var tileValueBoard : Gameboard<Int>
     var tileViewBoard : Gameboard<TileView?>
     var tileAnimationBoard : Gameboard<UIViewPropertyAnimator>
     var rowIndexPositionBoard : Gameboard<Int>
     var colIndexPositionBoard : Gameboard<Int>
     
-    var lastXTiles = [Int]()
-    var freqTracking : [Int: Int] = [2: 0, 3: 0, 4: 0, 5: 0]
-    var twoPlusTwoEvent: Int = 0
-    
-    @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer!
-    
-    // Properties used to keep track of gameboard hint
-    var tileTrackingList = [SmallTileView?]()
-    var nextTileValue : Int = 7
-    var nextNextTileValue : Int = 7
-    var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, newHighScore: false)
-    var score : Int = 0
-    var scoreView = ScoreView(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
-    // var restartAtEndButton = RestartButton(superviewWidth: 100, superviewHeight: 100)
-    var closeEndGameButton = CloseEndGameButton(superviewWidth: 100, superviewHeight: 100)
-    
-    var scoreBoard = ScoreBoard()
-    
-    // Properties used to keep track of everything not on gameboard
-    var viewsToBeDeleted = [TileView]()
-    var direction = Direction.undefined
-    
-    // Swipe properties
-    var fractionComplete : CGFloat = 0.0
-    var isReversed : Bool = false
-    var directionForEndState : Direction = .undefined
-    
     var newTileValueBoard : Gameboard<Int>
     var newTileViewBoard : Gameboard<TileView?>
     var newViewsToBeDeleted = [TileView]()
     var newRowIndexPositionBoard : Gameboard<Int>, newColIndexPositionBoard : Gameboard<Int>
+    
+    var viewsToBeDeleted = [TileView]()
+    
+    /* Swipe */
+    var fractionComplete : CGFloat = 0.0
+    var isReversed : Bool = false
+    var directionForEndState : Direction = .undefined
+    var direction = Direction.undefined
+    
+    @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer!
+    
+    /* Other game features*/
+    var tileTrackingList = [SmallTileView?]()
+    
+    var score : Int = 0
+    var scoreView = ScoreView(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
+    
+    var scoreBoard = ScoreBoard()
+    var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, newHighScore: false)
+    var closeEndGameButton = CloseEndGameButton(superviewWidth: 100, superviewHeight: 100)
     
     //MARK: Initialization
     init(){
@@ -93,12 +93,10 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         startGame()
     }
     
-    
-    //MARK: Start-game Functions
+    //MARK: Set-up game functions
     
     func drawGameboard(sizeAndPositionsDict:[String:CGFloat]){        
         let gameboardView = GameboardView(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict)
@@ -111,12 +109,9 @@ class ViewController: UIViewController {
         menuButton.addTarget(self, action:#selector(menuButtonClicked), for: .touchUpInside)
         
         let helpButton = HelpButton(sizeAndPositionsDict: sizeAndPositionsDict)
-        
         helpButton.addTarget(self, action: #selector(helpButtonClicked), for: .touchUpInside)
-
         
         let tileTrackingStrip = TileTrackingStrip(sizeAndPositionsDict: sizeAndPositionsDict, superviewWidth: self.view.frame.width, smallTileScale: smallTileScale)
-        
         
         self.view.addSubview(gameboardView)
         self.view.addSubview(scoreView)
@@ -133,11 +128,9 @@ class ViewController: UIViewController {
         sizeAndPositionsDict = calculateViewSizeAndPositions(dimensions: dimensions, superviewWidth: superviewWidth, superviewHeight: superviewHeight, spacing: tileSpacing)
         
         drawGameboard(sizeAndPositionsDict: sizeAndPositionsDict)
-        
         addSmallTile()
         
         let smallTileHighlight = SmallTileHighlight(sizeAndPositionsDict: sizeAndPositionsDict, smallTileScale: smallTileScale)
-        
         self.view.addSubview(smallTileHighlight)
         
         // if there is a preivous gameboard saved, use that; if not start a new gameboard
@@ -147,8 +140,7 @@ class ViewController: UIViewController {
             tileValueList = [0]
         }
         
-        
-        // if prevSavedBoard has a short length it's the dummy generated by the code
+        // if prevSavedBoard is not of length dxd it's the dummy generated by the code
         let prevSavedBoard : Bool = tileValueList.count == dimensions * dimensions ? true : false
         
         if prevSavedBoard == false { // if we are starting new board this is what we do
@@ -177,13 +169,10 @@ class ViewController: UIViewController {
         for row in 0..<dimensions {
             for col in 0..<dimensions {
                 if let subview = tileViewBoard[row,col] { //if subview is not nil
-                    
-                    
                     rowInd = rowIndexPositionBoard[row, col]
                     colInd = colIndexPositionBoard[row, col]
                     
                     xShift = sizeAndPositionsDict["tileWidth"]! * CGFloat(rowInd) + sizeAndPositionsDict["spacing"]! * CGFloat(rowInd)
-                    
                     yShift = sizeAndPositionsDict["tileHeight"]! * CGFloat(colInd) + sizeAndPositionsDict["spacing"]! * CGFloat(colInd)
                     
                     animator = tileAnimationBoard[row,col]
@@ -195,8 +184,7 @@ class ViewController: UIViewController {
                 }
             }
         }
-        
-        scoreView.score = calculateScores(tileValueBoard: tileValueBoard)
+        scoreView.score = calculateScores(tileValueBoard: tileValueBoard, scoreDict: scoreDict)
     }
     
     //MARK: In-game functions
@@ -221,12 +209,32 @@ class ViewController: UIViewController {
                         subview.transform = CGAffineTransform(translationX: xShift, y: yShift)
                     })
                     
-                    
                     tileAnimationBoard[row, col] = animator
                     
                     animator.startAnimation()
                     animator.pauseAnimation()
+                }
+            }
+        }
+    }
+    
+    func resetAnimationBugFix(){
+        var animator : UIViewPropertyAnimator, rowInd : Int, colInd : Int, xShift : CGFloat, yShift : CGFloat
+        
+        for row in 0..<dimensions {
+            for col in 0..<dimensions {
+                if let subview = tileViewBoard[row,col] { //if subview is not nil
+                    rowInd = rowIndexPositionBoard[row, col]
+                    colInd = colIndexPositionBoard[row, col]
                     
+                    xShift = sizeAndPositionsDict["tileWidth"]! * CGFloat(rowInd) + sizeAndPositionsDict["spacing"]! * CGFloat(rowInd)
+                    yShift = sizeAndPositionsDict["tileHeight"]! * CGFloat(colInd) + sizeAndPositionsDict["spacing"]! * CGFloat(colInd)
+                    
+                    animator = tileAnimationBoard[row,col]
+                    animator = UIViewPropertyAnimator(duration: 0.01, curve: .linear, animations: {
+                        subview.transform = CGAffineTransform(translationX: xShift, y: yShift)
+                    })
+                    animator.startAnimation()
                 }
             }
         }
@@ -240,6 +248,7 @@ class ViewController: UIViewController {
     }
     
     func addNextTileView() -> TileView {
+        // resetAnimationBugFix()
         // generate a tile view based on the value generate for the next time, this tile is currently hidden at (0,0)
         let nextTileView = TileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: nextTileValue)
         
@@ -252,12 +261,6 @@ class ViewController: UIViewController {
             freqTracking[nextNextTileValue]! += 1
         }
         
-        
-        lastXTiles += [nextNextTileValue]
-        if lastXTiles.count > 15 {
-            lastXTiles.removeFirst(1)
-        }
-        
         return nextTileView
     }
     
@@ -266,8 +269,7 @@ class ViewController: UIViewController {
         let (newTileRow, newTileCol) = addTile(direction: direction, tileValueBoard: tileValueBoard)
         
         // 2. animate and move the tile to corresponding side of the board, still not added to subview
-                
-        // noote: newTileRow and newColRow are on a 0 to d-1 scale as oppose to the 0 to d+1 animation scale we're using
+        // note: newTileRow and newColRow are on a 0 to d-1 scale as oppose to the 0 to d+1 animation scale we're using
         let prepRow : Int
         let prepCol : Int
         switch direction {
@@ -289,7 +291,6 @@ class ViewController: UIViewController {
         }
        
        let xShift = sizeAndPositionsDict["tileWidth"]! * CGFloat(prepRow) + sizeAndPositionsDict["spacing"]! * CGFloat(prepRow)
-       
        let yShift = sizeAndPositionsDict["tileHeight"]! * CGFloat(prepCol) + sizeAndPositionsDict["spacing"]! * CGFloat(prepCol)
         
         let animator = UIViewPropertyAnimator(duration: 1.0, curve: .easeInOut, animations: {
@@ -340,7 +341,7 @@ class ViewController: UIViewController {
             self.tileValueBoard[newTileRow, newTileCol] = nextTileView.value
             self.rowIndexPositionBoard[newTileRow, newTileCol] = newTileRow + 1
             self.colIndexPositionBoard[newTileRow, newTileCol] = newTileCol + 1
-            self.scoreView.score = calculateScores(tileValueBoard: self.tileValueBoard)
+            self.scoreView.score = calculateScores(tileValueBoard: self.tileValueBoard, scoreDict: self.scoreDict)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 animator2.startAnimation()
@@ -357,6 +358,24 @@ class ViewController: UIViewController {
         // Update the storage of gameboard values so if app crashes we can go back
         tileValueList = turnTileValueBoardToList(tileValueBoard: tileValueBoard)
         saveTileValueList()
+        
+        // make sure there are no issues by checking # of views = number of values
+        var numViews : Int = 0
+        var numValues : Int = 0
+        for i in 0..<dimensions {
+            for j in 0..<dimensions {
+                if tileValueBoard[i,j] != 0 {
+                    numValues += 1
+                }
+                if let _ = tileViewBoard[i,j] {
+                    numViews += 1
+                }
+            }
+        }
+        guard numViews == numValues else {
+            fatalError("tileValueBoard and tileViewBoard out of sync")
+        }
+
         
     
     }
@@ -444,8 +463,6 @@ class ViewController: UIViewController {
         endGamePopupView.restartButton.addTarget(self, action: #selector(restartAtEnd), for: .touchUpInside)
         closeEndGameButton.addTarget(self, action: #selector(closeEndGameButtonClicked), for: .touchUpInside)
         
-        
-        
         self.view.addSubview(endGamePopupView)
         self.view.addSubview(closeEndGameButton)
         
@@ -520,13 +537,6 @@ class ViewController: UIViewController {
     
     private func saveScores() {
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(scoreBoard, toFile: ScoreBoard.ArchiveURL.path)
-        
-        if isSuccessfulSave {
-            os_log("Scoreboard successfully updated in View Controller.", log: OSLog.default, type: .debug)
-        } else {
-            os_log("Failed to update scoreboard D:", log: OSLog.default, type: .error)
-        }
-                
     }
     
     private func loadScores() -> ScoreBoard? {
@@ -537,11 +547,6 @@ class ViewController: UIViewController {
         let gameboardStorage = GameboardStorage()
         gameboardStorage.tileValueList = ["tileValueList":tileValueList]
         let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(gameboardStorage, toFile: GameboardStorage.ArchiveURL.path)
-        if isSuccessfulSave {
-            os_log("Gameboard is successfullly saved.", log: OSLog.default, type: .debug)
-        } else {
-            os_log("Failed to save gameboard", log: OSLog.default, type: .error)
-        }
     }
     
     private func loadTileValueList() -> GameboardStorage? {
@@ -588,7 +593,6 @@ class ViewController: UIViewController {
         newRowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         
-        lastXTiles = [Int]()
         freqTracking = [2: 0, 3: 0, 4: 0, 5: 0]
         
         tileValueList = [0]
@@ -747,7 +751,6 @@ class ViewController: UIViewController {
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
         
         var direction : Direction
-
         var animator : UIViewPropertyAnimator
         
         switch recognizer.state {
@@ -780,15 +783,13 @@ class ViewController: UIViewController {
                     animator.fractionComplete = fractionComplete
                 }
             }
-        case .ended:
-            
+        case .ended, .cancelled:
              if fractionComplete < 0.2 {
                  isReversed = true
              } else {
                  isReversed = false
              }
              
-
              for row in 0..<dimensions {
                  for col in 0..<dimensions {
                      animator = tileAnimationBoard[row, col]
@@ -798,8 +799,6 @@ class ViewController: UIViewController {
              }
             
             if isReversed == false {
-                
-                
                 // if gameboard didn't change it means we swiped in an un-viable way so a new tile shouldn't be added
                 var gameboardChanged : Int = 0
                 for i in 0..<dimensions {
@@ -827,13 +826,10 @@ class ViewController: UIViewController {
                     addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
                     
                 }
-                scoreView.score = calculateScores(tileValueBoard: tileValueBoard)
+                scoreView.score = calculateScores(tileValueBoard: tileValueBoard, scoreDict: scoreDict)
                 deleteOldTiles()
             }
-            
-            
             isReversed = false
-
         default:
             ()
         }
