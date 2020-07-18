@@ -55,6 +55,8 @@ class ViewController: UIViewController {
     
     var score : Int = 0
     var scoreView = ScoreView(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
+    var winTileAchieved : Bool = false
+    let winTileValue : Int = 3584
     
     var scoreBoard = ScoreBoard()
     var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, newHighScore: false)
@@ -452,6 +454,8 @@ class ViewController: UIViewController {
             scoreBoard.tileCount[highestTileValue]! += 1
         }
         
+        
+        
         saveScores()
         
         // create endGame view
@@ -827,6 +831,23 @@ class ViewController: UIViewController {
                     
                 }
                 scoreView.score = calculateScores(tileValueBoard: tileValueBoard, scoreDict: scoreDict)
+                
+                // if the wintile is achieved then we put a crown on the scroeView
+                let highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
+                if winTileAchieved == false && highestTileValue >= winTileValue {
+                    let crownBotLeftPct : CGFloat = 0.33
+                    let crownBotRightPct : CGFloat = 4.8/8
+                    let crownView = UIImageView(image: UIImage(named: "crownImage"))
+                    let crownHeight = scoreView.frame.height*0.65
+                    let crownWidth = crownHeight*2642/2048
+                    
+                    crownView.frame = CGRect(x: scoreView.frame.minX - crownWidth*crownBotLeftPct, y: scoreView.frame.minY-crownHeight*crownBotRightPct, width: crownWidth, height: crownHeight)
+                    crownView.contentMode = .scaleAspectFill
+                    
+                    self.view.addSubview(crownView)
+                    winTileAchieved = true
+                }
+                
                 deleteOldTiles()
             }
             isReversed = false

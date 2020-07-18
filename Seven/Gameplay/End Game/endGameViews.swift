@@ -43,7 +43,7 @@ class EndGamePopupView : UIView {
         popupView.layer.cornerRadius = 15
         
         if newHighScore == true {
-            popupLabel.text = "🎉🎉🎉 Nice! You just got a new high score! 🎉🎉🎉"
+            popupLabel.text = "Nice! 🎉🎉 You just got a new high score! "
         } else {
             popupLabel.text = "Nooo - you're out of moves :'( "
 

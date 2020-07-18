@@ -441,18 +441,6 @@ func canBeCombined(v1: Int, v2: Int) -> Bool {
     return false
 }
 
-func canBeCombined2(v1: Int, v2: Int) -> (Bool, String) {
-    if (v1 == 2 && v2 == 5) || (v1 == 5 && v2 == 2) { // 5+2 makes 7
-        return (true, "case 1")
-    } else if (v1 == 3 && v2 == 4) || (v1 == 4 && v2 == 3) { // 3+4 makes 7
-        return (true, "case 2")
-    } else if v1 == 2 && v2 == 2 { // 2+2 makes 4
-        return (true, "case 3")
-    } else if (v1 != 5 && v1 != 3 && v1 != 4) && v1==v2 {
-        return (true, "case 4")
-    }
-    return (false, "nocase")
-}
 
 func calculateScores(tileValueBoard: Gameboard<Int>, scoreDict: [Int:Int]) -> Int{
     var score : Int = 0

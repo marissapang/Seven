@@ -134,20 +134,28 @@ class MenuTileCountView : UIView {
         titleLabel.textColor = UIColor.white
         titleLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
-        // let row112 = TileCountRowView(width: width, height: height, rowIndex: 0, tileValue: 112, tileCount: tileCountDict[112]!)
         let row224 = TileCountRowView(width: width, height: height, rowIndex: 0, tileValue: 224, tileCount: tileCountDict[224]!)
         let row448 = TileCountRowView(width: width, height: height, rowIndex: 1, tileValue: 448, tileCount: tileCountDict[448]!)
         let row896 = TileCountRowView(width: width, height: height, rowIndex: 2, tileValue: 896, tileCount: tileCountDict[896]!)
         let row1792 = TileCountRowView(width: width, height: height, rowIndex: 3, tileValue: 1792, tileCount: tileCountDict[1792]!)
         let row3584 = TileCountRowView(width: width, height: height, rowIndex: 4, tileValue: 3584, tileCount: tileCountDict[3584]!)
         
+        let crownBotLeftPct : CGFloat = 0.33
+        let crownBotRightPct : CGFloat = 4.8/8
+        let crownView = UIImageView(image: UIImage(named: "crownImage"))
+        let crownHeight = row3584.frame.height*0.75
+        let crownWidth = crownHeight*2642/2048
+        
+        crownView.frame = CGRect(x: row3584.frame.minX - crownWidth*crownBotLeftPct, y: row3584.frame.minY-crownHeight*crownBotRightPct, width: crownWidth, height: crownHeight)
+        crownView.contentMode = .scaleAspectFill
+        
         addSubview(titleLabel)
-        // addSubview(row112)
         addSubview(row224)
         addSubview(row448)
         addSubview(row896)
         addSubview(row1792)
         addSubview(row3584)
+        addSubview(crownView)
     }
     
     
@@ -173,8 +181,6 @@ class MenuFooterView : UIView {
         clearHistoryButton.titleLabel?.textColor = UIColor.white
         clearHistoryButton.backgroundColor = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
         clearHistoryButton.layer.cornerRadius = 10
-        // clearHistoryButton.addTarget(self, action:#selector(clearHistoryWarning), for: .touchUpInside)
-        
         contactUsButton.setTitle("Contact Us", for: [])
         contactUsButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 16)!
         contactUsButton.titleLabel?.textColor = UIColor.white
@@ -191,14 +197,6 @@ class MenuFooterView : UIView {
         super.init(coder: aDecoder)
     }
     
-//    @objc func clearHistoryWarning(){
-//        print("inside clear history warning")
-//        let clearHistoryViewController = ClearHistoryViewController()
-//        clearHistoryViewController.modalPresentationStyle = .fullScreen
-//        // menuViewController.modalTransitionStyle = .flipHorizontal
-//
-//        present(clearHistoryViewController, animated: true, completion: nil)
-//    }
 }
 
 
