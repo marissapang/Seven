@@ -50,6 +50,10 @@ enum Direction {
     case up, down, left, right, undefined
 }
 
+enum GameMode {
+    case tutorial, regular, challenger
+}
+
 struct swipeTracker {
     var directionAtStart: Direction
     var fractionComplete: CGFloat
@@ -64,6 +68,7 @@ struct PropertyKey {
     static let tileCount = "tileCount"
     static let runningStats = "runningStats"
     static let tileValueList = "tileValueList"
+    static let gameMode = "gameMode"
 
 }
 
@@ -78,7 +83,8 @@ class ScoreBoard: NSObject, NSCoding {
     
     // Initialization
     required init(coder aDecoder: NSCoder){
-        runningStats = aDecoder.decodeObject(forKey: PropertyKey.runningStats) as? [String : Int] ?? ["highScore":0, "totalGamesPlayed":0]
+        // have gameMode = 0 to correspond tutorial, 1 to regular, 2 to challenger
+        runningStats = aDecoder.decodeObject(forKey: PropertyKey.runningStats) as? [String : Int] ?? ["highScore":0, "totalGamesPlayed":0, "gameMode":0]
         
         tileCount = aDecoder.decodeObject(forKey: PropertyKey.tileCount) as? [Int:Int] ?? [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0]
         
@@ -86,16 +92,43 @@ class ScoreBoard: NSObject, NSCoding {
 
     override init (){
         self.tileCount = [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0]
-        self.runningStats = ["highScore":0, "totalGamesPlayed":0]
+        // have gameMode = 0 to correspond tutorial, 1 to regular, 2 to challenger
+        self.runningStats = ["highScore":0, "totalGamesPlayed":0, "gameMode":0]
     }
     
     // NSCoding
-    
     func encode(with aCoder: NSCoder) {
         aCoder.encode(tileCount, forKey: PropertyKey.tileCount)
         aCoder.encode(runningStats, forKey: PropertyKey.runningStats)
     }
 }
+
+class GameModeStorage: NSObject, NSCoding {
+    // Properties
+    // var gameMode: [String : GameMode]
+    var gameMode: [String : Int]
+    
+    // Archiving Paths
+    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let ArchiveURL = DocumentsDirectory.appendingPathComponent("gameModeStorage")
+    
+    // Initialization
+    required init(coder aDecoder: NSCoder){
+        // have gameMode = 0 to correspond tutorial, 1 to regular, 2 to challenger
+        // gameMode = aDecoder.decodeObject(forKey: PropertyKey.gameMode) as? [String:GameMode] ?? ["mode":.tutorial]
+        gameMode = aDecoder.decodeObject(forKey: PropertyKey.gameMode) as? [String:Int] ?? ["mode":0]
+    }
+
+    override init (){
+        self.gameMode = ["mode":0]
+    }
+    
+    // NSCoding
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(gameMode, forKey: PropertyKey.gameMode)
+    }
+}
+
 
 class GameboardStorage: NSObject, NSCoding {
     // Properties

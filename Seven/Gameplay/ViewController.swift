@@ -19,15 +19,16 @@ class ViewController: UIViewController {
     var sizeAndPositionsDict = [String:CGFloat]()
     
     /* Next tile generation */
-    let initialFreq : [Int: Double] = [2: 0.06, 5: 0.04, 3: 0.06, 4: 0.04]
+    
     // Currently scores above 28 are calculated based on the rounded value of log base 21 of (7^x) where x is the x such that 2x*7 = score
     let scoreDict : [Int: Int] = [0: 0, 2: 2, 3: 3, 4: 4, 5: 5, 7:7, 14: 18, 28: 36, 56: 107, 112: 286, 224: 716, 448: 1718, 896: 4009, 1792: 9163, 3584: 20616, 7168: 45814, 14336: 100792, 28672: 219909, 57344: 476469, 114688: 1026242]
     var freqTracking : [Int: Int] = [2: 0, 3: 0, 4: 0, 5: 0]
-    var twoPlusTwoEvent: Int = 0
     var nextTileValue : Int = 7
     var nextNextTileValue : Int = 7
+    var lensView = LensView(sizeAndPositionsDict: ["tileWidth":100, "tileHeight":100, "gameboardWidth":1000, "gameboardHeight":1000, "gameboardX":0, "gameboardY":0, "tileX":0, "tileY":0, "spacing":10], imageName: "lensImage")
+    var lensFrameView = LensView(sizeAndPositionsDict: ["tileWidth":100, "tileHeight":100, "gameboardWidth":1000, "gameboardHeight":1000, "gameboardX":0, "gameboardY":0, "tileX":0, "tileY":0, "spacing":10], imageName: "lensOutline")
     
-    /* Gameboard-tracking */
+    /* Gameboard Tracking */
     var tileValueList = [Int]()
     var tileValueBoard : Gameboard<Int>
     var tileViewBoard : Gameboard<TileView?>
@@ -42,6 +43,17 @@ class ViewController: UIViewController {
     
     var viewsToBeDeleted = [TileView]()
     
+    /* Game Level Tracking */
+    var gameMode : Int = 0
+    var newGameMode : Int = 0
+    let tutorialInitialFreq : [Int : Double] = [2: 0.2, 5: 0.2, 3: 0.2, 4: 0.2]
+    let regularInitialFreq : [Int : Double] = [2: 0.04, 5: 0.04, 3: 0.04, 4: 0.04]
+    let challengerInitialFreq : [Int : Double] = [2: 0.1, 5: 0.1, 3: 0.1, 4: 0.1]
+    var initialFreq : [Int : Double] = [2: 0.04, 5: 0.04, 3: 0.04, 4: 0.04]
+    var newInitialFreq : [Int : Double] = [2: 0.04, 5: 0.04, 3: 0.04, 4: 0.04]
+    var modeChangeWarning = ModeChangeWarning(superviewWidth: 100, superviewHeight: 100, selectedMode: 0)
+    
+    
     /* Swipe */
     var fractionComplete : CGFloat = 0.0
     var isReversed : Bool = false
@@ -51,7 +63,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer!
     
     /* Other game features*/
-    var tileTrackingList = [SmallTileView?]()
+    var tileTrackingList = [LensTileView?]()
     
     var score : Int = 0
     var scoreView = ScoreView(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
@@ -113,15 +125,71 @@ class ViewController: UIViewController {
         let helpButton = HelpButton(sizeAndPositionsDict: sizeAndPositionsDict)
         helpButton.addTarget(self, action: #selector(helpButtonClicked), for: .touchUpInside)
         
-        let tileTrackingStrip = TileTrackingStrip(sizeAndPositionsDict: sizeAndPositionsDict, superviewWidth: self.view.frame.width, smallTileScale: smallTileScale)
+        // let tileTrackingStrip = TileTrackingStrip(sizeAndPositionsDict: sizeAndPositionsDict, superviewWidth: self.view.frame.width, smallTileScale: smallTileScale)
+        
+        lensView = LensView(sizeAndPositionsDict: sizeAndPositionsDict, imageName: "lensImage")
+        lensFrameView = LensView(sizeAndPositionsDict: sizeAndPositionsDict, imageName: "lensOutline")
+        
+        let modeView = ModeView(sizeAndPositionsDict: sizeAndPositionsDict)
+        modeView.tutorialButton.addTarget(self, action:#selector(tutorialModeSelected), for: .touchUpInside)
+        modeView.regularButton.addTarget(self, action:#selector(regularModeSelected), for: .touchUpInside)
+        modeView.challengerButton.addTarget(self, action:#selector(challengerModeSelected), for: .touchUpInside)
+        
+        switch gameMode {
+        case 0:
+            modeView.tutorialButton.backgroundColor = modeView.backgroundColor
+            modeView.regularButton.backgroundColor = .clear
+            modeView.challengerButton.backgroundColor = .clear
+        case 1:
+            modeView.tutorialButton.backgroundColor = .clear
+            modeView.regularButton.backgroundColor = modeView.backgroundColor
+            modeView.challengerButton.backgroundColor = .clear
+        case 2:
+            modeView.tutorialButton.backgroundColor = .clear
+            modeView.regularButton.backgroundColor = .clear
+            modeView.challengerButton.backgroundColor = modeView.backgroundColor
+        default:
+            modeView.tutorialButton.backgroundColor = .clear
+            modeView.regularButton.backgroundColor = modeView.backgroundColor
+            modeView.challengerButton.backgroundColor = .clear
+        }
         
         self.view.addSubview(gameboardView)
         self.view.addSubview(scoreView)
+        self.view.addSubview(lensView)
+        self.view.addSubview(lensFrameView)
         self.view.addSubview(restartButton)
         self.view.addSubview(menuButton)
-        self.view.addSubview(helpButton)
-        self.view.addSubview(tileTrackingStrip)
+        // self.view.addSubview(helpButton)
+        self.view.addSubview(modeView)
+        self.view.addSubview(modeView.tutorialButton)
+        self.view.addSubview(modeView.regularButton)
+        self.view.addSubview(modeView.challengerButton)
         
+        // self.view.addSubview(tileTrackingStrip)
+        
+    }
+    
+    
+    
+    func setGameMode(){
+        // get game mode
+        if let savedGameMode = loadMode() {
+            gameMode = savedGameMode.gameMode["mode"]!
+        } else {
+            gameMode = 0
+        }
+        
+        switch gameMode {
+        case 0:
+            initialFreq = tutorialInitialFreq
+        case 1:
+            initialFreq = regularInitialFreq
+        case 2:
+            initialFreq = challengerInitialFreq
+        default:
+            ()
+        }
     }
     
     func startGame(){
@@ -129,11 +197,18 @@ class ViewController: UIViewController {
         let superviewHeight = self.view.frame.size.height
         sizeAndPositionsDict = calculateViewSizeAndPositions(dimensions: dimensions, superviewWidth: superviewWidth, superviewHeight: superviewHeight, spacing: tileSpacing)
         
+        
+        setGameMode()
         drawGameboard(sizeAndPositionsDict: sizeAndPositionsDict)
+        
+        
+        
         addSmallTile()
         
-        let smallTileHighlight = SmallTileHighlight(sizeAndPositionsDict: sizeAndPositionsDict, smallTileScale: smallTileScale)
-        self.view.addSubview(smallTileHighlight)
+        // let smallTileHighlight = SmallTileHighlight(sizeAndPositionsDict: sizeAndPositionsDict, smallTileScale: smallTileScale)
+        // self.view.addSubview(smallTileHighlight)
+        
+
         
         // if there is a preivous gameboard saved, use that; if not start a new gameboard
         if let savedGameboard = loadTileValueList() {
@@ -256,7 +331,7 @@ class ViewController: UIViewController {
         
         // after creating the view generate the next-up tile value
         nextTileValue = nextNextTileValue
-        nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard, nextTileValue: nextTileValue, initialFreq: initialFreq, freqTracking: freqTracking)
+        nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard, nextTileValue: nextTileValue, initialFreq: initialFreq, freqTracking: freqTracking, gameMode: gameMode)
         
         let trackedFreqs : [Int] = [2,3,4,5]
         if trackedFreqs.contains(nextNextTileValue) {
@@ -547,6 +622,19 @@ class ViewController: UIViewController {
         return NSKeyedUnarchiver.unarchiveObject(withFile: ScoreBoard.ArchiveURL.path) as? ScoreBoard
     }
     
+    private func saveMode() {
+        print("inside saveMode")
+        let gameModeStorage = GameModeStorage()
+        gameModeStorage.gameMode = ["mode": gameMode]
+        print(gameModeStorage.gameMode)
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(gameModeStorage, toFile: GameModeStorage.ArchiveURL.path)
+        print("is succesful save is: \(isSuccessfulSave)")
+    }
+    
+    private func loadMode() -> GameModeStorage? {
+        return NSKeyedUnarchiver.unarchiveObject(withFile: GameModeStorage.ArchiveURL.path) as? GameModeStorage
+    }
+    
     private func saveTileValueList() {
         let gameboardStorage = GameboardStorage()
         gameboardStorage.tileValueList = ["tileValueList":tileValueList]
@@ -584,7 +672,6 @@ class ViewController: UIViewController {
         
         
         
-        
         // **** reassign propertiies to initial state ****
         tileValueBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         tileViewBoard = Gameboard<TileView?>(d: dimensions, initialValue: nil)
@@ -598,12 +685,13 @@ class ViewController: UIViewController {
         newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         
         freqTracking = [2: 0, 3: 0, 4: 0, 5: 0]
+    
         
         tileValueList = [0]
         saveTileValueList()
         
         // Properties used to keep track of gameboard hint
-        tileTrackingList = [SmallTileView?]()
+        tileTrackingList = [LensTileView?]()
         nextTileValue = 7
         nextNextTileValue  = 7
         scoreView.score = 0
@@ -611,6 +699,7 @@ class ViewController: UIViewController {
         // Properties used to keep track of everything not on gameboard
         viewsToBeDeleted = [TileView]()
         direction = Direction.undefined
+        winTileAchieved = false
         
         // Swipe properties
         fractionComplete = 0.0
@@ -624,6 +713,85 @@ class ViewController: UIViewController {
     
     
     //MARK: Tile Tracking functions
+    
+    
+    func addSmallTile(){
+        // calculate how many small tiles can fit on the bottom, keep that much length + 1 (+1 bc we want the last tile to slide off the screen before getting deleted) in the list before removing
+        let numSmallTiles : Int = 3
+        
+        // if list is empty, add nextNextTile as 0, nextTile as 1. these should be views
+        if tileTrackingList.count == 0 { // if tileTrackingList is empty
+            tileTrackingList = Array(repeating: nil, count: numSmallTiles)
+            
+            tileTrackingList[0] = LensTileView(tileValue: nextNextTileValue, lensWidth: lensView.frame.width/2, lensX: lensView.frame.minX + lensView.frame.width/2/4, lensY: lensView.frame.minY)
+            tileTrackingList[1] = LensTileView(tileValue: nextTileValue, lensWidth: lensView.frame.width/2, lensX: lensView.frame.minX + lensView.frame.width/2/4, lensY: lensView.frame.minY)
+            
+            self.view.addSubview(tileTrackingList[0]!)
+            self.view.addSubview(tileTrackingList[1]!)
+        } else { // if the list is non-empty, shift everything by 1 to the right
+            
+            // except for the last one, which gets deleted
+            if let lastTrackingTile = tileTrackingList[numSmallTiles - 1] {
+                lastTrackingTile.removeFromSuperview()
+            }
+            
+            for i in stride(from: numSmallTiles - 2, through: 0, by: -1){
+                tileTrackingList[i+1] = tileTrackingList[i]
+            }
+            
+            // lastly, add nextNextTile to the first position
+            tileTrackingList[0] = LensTileView(tileValue: nextNextTileValue, lensWidth: lensView.frame.width/2, lensX: lensView.frame.minX + lensView.frame.width/2/4, lensY: lensView.frame.minY)
+            
+            self.view.addSubview(tileTrackingList[0]!)
+        }
+        lensFrameView.removeFromSuperview()
+        scoreView.removeFromSuperview()
+        self.view.addSubview(lensFrameView)
+        self.view.addSubview(scoreView)
+        
+        
+        
+        //after update, animate: y position of view shifts to be a multiple of the index number
+        // also animate to make tiles a little smaller when they have arrived
+        // for the updated list, add greyness to text for everythng after position 1
+
+        var animator : UIViewPropertyAnimator
+        var xShift: CGFloat, yShift: CGFloat
+        var positionTrans: CGAffineTransform, shrinkTrans: CGAffineTransform
+        var transformScale: CGFloat = 1
+        for i in 0..<numSmallTiles {
+            if let subview = tileTrackingList[i] { // if tracking tile exists
+                xShift = lensView.frame.width/3.7 * CGFloat(i) // + tileSpacing * CGFloat(i)
+                
+                yShift = 0
+                
+                
+                switch i {
+                case 0:
+                    transformScale = 0.9
+                case 1:
+                    transformScale = 1
+                case 2..<numSmallTiles:
+                    transformScale = 0.9
+                default:
+                    transformScale = 1
+                }
+                
+                shrinkTrans = CGAffineTransform(scaleX: transformScale, y: transformScale)
+                positionTrans = CGAffineTransform(translationX: xShift, y: yShift)
+                
+                
+                animator = UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut, animations: {
+                    subview.transform = shrinkTrans.concatenating(positionTrans)
+                })
+                
+                
+                animator.startAnimation()
+            }
+        }
+    }
+    
+    /*
     func addSmallTile(){
         // calculate how many small tiles can fit on the bottom, keep that much length + 1 (+1 bc we want the last tile to slide off the screen before getting deleted) in the list before removing
         let numSmallTiles : Int = Int(ceil(self.view.frame.width / (sizeAndPositionsDict["tileWidth"]! * smallTileScale + tileSpacing) - 0.5)) + Int(1)
@@ -699,7 +867,7 @@ class ViewController: UIViewController {
             }
         }
     }
-    
+*/
     
 
     
@@ -749,6 +917,95 @@ class ViewController: UIViewController {
         present(tutorialViewController, animated: false, completion: nil)
     }
     
+    func countNumTiles() -> Int {
+        var countTiles : Int = 0
+        for i in 0..<dimensions {
+            for j in 0..<dimensions {
+                if tileValueBoard[i,j] != 0 {
+                    countTiles += 1
+                }
+            }
+        }
+        return countTiles
+    }
+    
+    @objc func tutorialModeSelected(){
+        print("in tutorial mode")
+        let numTiles = countNumTiles()
+        if numTiles <= 2{
+            gameMode = 0
+            initialFreq = tutorialInitialFreq
+            saveMode()
+            restartGame()
+        } else {
+            newGameMode = 0
+            newInitialFreq = tutorialInitialFreq
+            modeChangeWarning = ModeChangeWarning(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height, selectedMode: newGameMode)
+            
+            modeChangeWarning.noButton.addTarget(self, action: #selector(closeModeChangeWarning), for: .touchUpInside)
+            modeChangeWarning.yesButton.addTarget(self, action: #selector(confirmModeChangeWarning), for: .touchUpInside)
+            self.view.addSubview(modeChangeWarning)
+            self.view.addSubview(modeChangeWarning.noButton)
+            self.view.addSubview(modeChangeWarning.yesButton)
+        }
+    }
+    
+    @objc func regularModeSelected(){
+        print("in regular mode")
+        let numTiles = countNumTiles()
+        if numTiles <= 2{
+            gameMode = 1
+            initialFreq = regularInitialFreq
+            saveMode()
+            restartGame()
+        } else {
+            newGameMode = 1
+            newInitialFreq = regularInitialFreq
+            modeChangeWarning = ModeChangeWarning(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height, selectedMode: newGameMode)
+            
+            modeChangeWarning.noButton.addTarget(self, action: #selector(closeModeChangeWarning), for: .touchUpInside)
+            modeChangeWarning.yesButton.addTarget(self, action: #selector(confirmModeChangeWarning), for: .touchUpInside)
+            self.view.addSubview(modeChangeWarning)
+            self.view.addSubview(modeChangeWarning.noButton)
+            self.view.addSubview(modeChangeWarning.yesButton)
+        }
+    }
+    
+    @objc func challengerModeSelected(){
+        print("in challenger mode")
+        let numTiles = countNumTiles()
+        if numTiles <= 2{
+            gameMode = 2
+            initialFreq = challengerInitialFreq
+            saveMode()
+            restartGame()
+        } else {
+            newGameMode = 2
+            newInitialFreq = challengerInitialFreq
+            modeChangeWarning = ModeChangeWarning(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height, selectedMode: newGameMode)
+            
+            modeChangeWarning.noButton.addTarget(self, action: #selector(closeModeChangeWarning), for: .touchUpInside)
+            modeChangeWarning.yesButton.addTarget(self, action: #selector(confirmModeChangeWarning), for: .touchUpInside)
+            self.view.addSubview(modeChangeWarning)
+            self.view.addSubview(modeChangeWarning.noButton)
+            self.view.addSubview(modeChangeWarning.yesButton)
+        }
+    }
+    
+    @objc func closeModeChangeWarning(){
+        modeChangeWarning.removeFromSuperview()
+        modeChangeWarning.yesButton.removeFromSuperview()
+        modeChangeWarning.noButton.removeFromSuperview()
+    }
+    
+    @objc func confirmModeChangeWarning(){
+        gameMode = newGameMode
+        initialFreq = newInitialFreq
+        saveMode()
+        restartGame()
+    }
+    
+    
     
     //MARK: Swipe-related functions
     
@@ -762,7 +1019,7 @@ class ViewController: UIViewController {
             direction = directionFromVelocity(recognizer.velocity(in: self.view))
             directionForEndState = direction
 
-            (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard, twoPlusTwoEvent) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
+            (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
             
             animateTiles(direction: direction, tileViewBoard: newTileViewBoard, rowIndexPositionBoard: newRowIndexPositionBoard, colIndexPositionBoard: newColIndexPositionBoard)
 
@@ -818,11 +1075,6 @@ class ViewController: UIViewController {
                 viewsToBeDeleted = newViewsToBeDeleted
                 rowIndexPositionBoard = newRowIndexPositionBoard
                 colIndexPositionBoard = newColIndexPositionBoard
-                
-                if twoPlusTwoEvent > 0 {
-                    freqTracking[2] = freqTracking[2]! - 2*twoPlusTwoEvent
-                    freqTracking[4] = freqTracking[4]! + twoPlusTwoEvent
-                }
                 
                 // if gameboard didn't change it means we swiped in an un-viable way so a new tile shouldn't be added
                 if gameboardChanged != 0 {

@@ -75,18 +75,18 @@ func calculateHighestTileValue(tileValueBoard: Gameboard<Int>) -> Int {
     return highestValue
 }
 
-func generateRandTileValue(tileValueBoard: Gameboard<Int>, nextTileValue: Int, initialFreq: [Int: Double], freqTracking: [Int: Int]) -> Int {
+func generateRandTileValue(tileValueBoard: Gameboard<Int>, nextTileValue: Int, initialFreq: [Int: Double], freqTracking: [Int: Int], gameMode: Int) -> Int {
     // first normalize freq tracking so out of 2 and 5 one is 0, and so on
     let normalizedFreqTracking = normalizeFreqTracking(freqTracking: freqTracking)
     let highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
     
     // the adjusted frequency will be different depending on the highestTileValue
-    var (adjustedFreq, freqSum) = adjustInitialFreq(initialFreq: initialFreq, normalizedFreqTracking: normalizedFreqTracking, highestTileValue: highestTileValue)
+    var (adjustedFreq, freqSum) = adjustInitialFreq(initialFreq: initialFreq, normalizedFreqTracking: normalizedFreqTracking, highestTileValue: highestTileValue, gameMode: gameMode)
         
     // adjustedFreq contains frequencies (as decimal probablities) for 2, 5, 3, 4. We will take the leftover probability and spread it along 7, and higher tiles depending on what the current highest tile is
     let leftoverProb = 1 - freqSum
     
-    let highTileFreq = calculateHighTileFreq(leftOverProb: leftoverProb, highestTileValue: highestTileValue)
+    let highTileFreq = calculateHighTileFreq(leftOverProb: leftoverProb, highestTileValue: highestTileValue, gameMode: gameMode)
     
     let freq = adjustedFreq.merging(highTileFreq) { (current, _) in current }
       
@@ -133,7 +133,6 @@ func generateRandTileValue(tileValueBoard: Gameboard<Int>, nextTileValue: Int, i
         newTileValue = 7 // anything else we generate 7
     }
     
-    // let newTileValue = 7
     return newTileValue
 }
 
@@ -149,18 +148,14 @@ func normalizeFreqTracking(freqTracking: [Int: Int]) -> [Int: Int]{
     normalizedFreqTracking[2]! -= min25
     normalizedFreqTracking[5]! -= min25
     
-    // compare 3 and 2's at a ratio if there is any left over
-    let min23 = min(normalizedFreqTracking[3]!, Int(floor(CGFloat(normalizedFreqTracking[2]!/2))))
-    normalizedFreqTracking[2]! -= min23 * 2
-    normalizedFreqTracking[3]! -= min23
-    
     return normalizedFreqTracking
 }
 
-func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int: Int], highestTileValue: Int) -> ([Int: Double], Double) {
+func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int: Int], highestTileValue: Int, gameMode: Int) -> ([Int: Double], Double) {
+    
     var adjustedFreq = initialFreq
     
-    if highestTileValue < 896 {
+    if gameMode == 1 { // in regular mode
         if normalizedFreqTracking[4]! > 0 {
             adjustedFreq[3] =  min(initialFreq[3]! * Double(2*(2+normalizedFreqTracking[4]!)), 0.9)
             adjustedFreq[4] = initialFreq[4]! / Double(normalizedFreqTracking[4]!*2)
@@ -180,7 +175,7 @@ func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int:
             adjustedFreq[5] = min(initialFreq[5]! * Double(2*(2+normalizedFreqTracking[2]!)), 0.9)
             adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!*2)
         }
-    } else if highestTileValue >= 896 {
+    } else if gameMode == 0 { // game should be easier in tutorial mode
         // first make the probability for a 2,3,4,5 to appear much smaller
         for (key, value) in adjustedFreq {
             adjustedFreq[key] = value/1.75
@@ -207,6 +202,26 @@ func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int:
             adjustedFreq[5] = min(initialFreq[5]! * Double(8*(2+normalizedFreqTracking[2]!)), 0.9)
             adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!*2)
         }
+    } else if gameMode == 2 {// game should be harder in challenger mode
+        if normalizedFreqTracking[4]! > 0 {
+            adjustedFreq[3] =  min(initialFreq[3]! * Double(2*(normalizedFreqTracking[4]!)), 0.9)
+            adjustedFreq[4] = initialFreq[4]! / Double(normalizedFreqTracking[4]!*2)
+        }
+        
+        if normalizedFreqTracking[5]! > 0 {
+            adjustedFreq[2] = min(initialFreq[2]! * Double(2*(normalizedFreqTracking[5]!)), 0.9)
+            adjustedFreq[5] = initialFreq[5]! / Double(normalizedFreqTracking[5]!*2)
+        }
+        
+        if normalizedFreqTracking[3]! > 0 {
+            adjustedFreq[4] = min(initialFreq[4]! * Double(2*(normalizedFreqTracking[3]!)), 0.9)
+            adjustedFreq[3] = initialFreq[3]! / Double(normalizedFreqTracking[3]!*2)
+        }
+        
+        if normalizedFreqTracking[2]! > 0 {
+            adjustedFreq[5] = min(initialFreq[5]! * Double(2*(normalizedFreqTracking[2]!)), 0.9)
+            adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!*2)
+        }
     }
     
     // if the sums of the adjusted frequencies are too large (i.e. almost over 1) then lower it down proportionally across the board
@@ -224,7 +239,7 @@ func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int:
     return (adjustedFreq, adjustedFreqSum)
 }
 
-func calculateHighTileFreq(leftOverProb: Double, highestTileValue: Int) -> [Int: Double]{
+func calculateHighTileFreq(leftOverProb: Double, highestTileValue: Int, gameMode: Int) -> [Int: Double]{
     
     var highTileFreq : [Int: Double] = [7: 0, 14: 0, 28: 0, 56: 0, 112: 0, 224: 0, 448: 0]
         
@@ -233,33 +248,71 @@ func calculateHighTileFreq(leftOverProb: Double, highestTileValue: Int) -> [Int:
     case let highestTileValue where highestTileValue <= 112:
         () // change nothing if we are early on in the game
     case let highestTileValue where highestTileValue <= 224:
-        highTileFreq[14] = 0.03
-        highTileFreq[28] = 0.02
-        highTileFreq[56] = 0.005
+        if gameMode == 0 || gameMode == 1 {
+            highTileFreq[14] = 0.03
+            highTileFreq[28] = 0.02
+            highTileFreq[56] = 0.005
+        } else if gameMode == 2 {
+            highTileFreq[14] = 0.06
+            highTileFreq[28] = 0.04
+            highTileFreq[56] = 0.01
+        }
     case let highestTileValue where highestTileValue <= 448:
-        highTileFreq[14] = 0.035
-        highTileFreq[28] = 0.03
-        highTileFreq[56] = 0.01
+        if gameMode == 0 || gameMode == 1 {
+            highTileFreq[14] = 0.035
+            highTileFreq[28] = 0.03
+            highTileFreq[56] = 0.01
+        } else if gameMode == 2 {
+            highTileFreq[14] = 0.06
+            highTileFreq[28] = 0.05
+            highTileFreq[56] = 0.01
+        }
     case let highestTileValue where highestTileValue <= 896:
-        highTileFreq[14] = 0.015
-        highTileFreq[28] = 0.01
-        highTileFreq[56] = 0.01
-        highTileFreq[112] = 0.005
-        highTileFreq[224] = 0.005
+        if gameMode == 0 || gameMode == 1 {
+            highTileFreq[14] = 0.015
+            highTileFreq[28] = 0.01
+            highTileFreq[56] = 0.01
+            highTileFreq[112] = 0.005
+            highTileFreq[224] = 0.005
+        } else if gameMode == 2 {
+            highTileFreq[14] = 0.015
+            highTileFreq[28] = 0.04
+            highTileFreq[56] = 0.06
+            highTileFreq[112] = 0.01
+            highTileFreq[224] = 0.005
+        }
     case let highestTileValue where highestTileValue <= 1792:
-        highTileFreq[14] = 0.01
-        highTileFreq[28] = 0.01
-        highTileFreq[56] = 0.01
-        highTileFreq[112] = 0.005
-        highTileFreq[224] = 0.003
-        highTileFreq[448] = 0.003
+        if gameMode == 0 || gameMode == 1 {
+            highTileFreq[14] = 0.01
+            highTileFreq[28] = 0.01
+            highTileFreq[56] = 0.01
+            highTileFreq[112] = 0.005
+            highTileFreq[224] = 0.003
+            highTileFreq[448] = 0.003
+        } else if gameMode == 2 {
+            highTileFreq[14] = 0.01
+            highTileFreq[28] = 0.01
+            highTileFreq[56] = 0.02
+            highTileFreq[112] = 0.01
+            highTileFreq[224] = 0.003
+            highTileFreq[448] = 0.003
+        }
     default:
-        highTileFreq[14] = 0.01
-        highTileFreq[28] = 0.01
-        highTileFreq[56] = 0.007
-        highTileFreq[112] = 0.005
-        highTileFreq[224] = 0.003
-        highTileFreq[448] = 0.003
+        if gameMode == 0 || gameMode == 1 {
+            highTileFreq[14] = 0.01
+            highTileFreq[28] = 0.01
+            highTileFreq[56] = 0.007
+            highTileFreq[112] = 0.005
+            highTileFreq[224] = 0.003
+            highTileFreq[448] = 0.003
+        } else if gameMode == 2 {
+            highTileFreq[14] = 0.01
+            highTileFreq[28] = 0.01
+            highTileFreq[56] = 0.03
+            highTileFreq[112] = 0.02
+            highTileFreq[224] = 0.01
+            highTileFreq[448] = 0.005
+        }
     }
     
     let none7Freq = highTileFreq[14]! + highTileFreq[28]! + highTileFreq[56]! + highTileFreq[112]! + highTileFreq[224]! + highTileFreq[448]!
@@ -346,7 +399,7 @@ func addTile(direction: Direction, tileValueBoard: Gameboard<Int>) -> (Int, Int)
 }
 
 //MARK: Update After Swipe
-func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard: Gameboard<Int>, tileViewBoard: Gameboard<TileView?>, viewsToBeDeleted: [TileView], rowIndexPositionBoard: Gameboard<Int>, colIndexPositionBoard: Gameboard<Int>) -> (Gameboard<Int>, Gameboard<TileView?>, [TileView], Gameboard<Int>, Gameboard<Int>, Int) {
+func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard: Gameboard<Int>, tileViewBoard: Gameboard<TileView?>, viewsToBeDeleted: [TileView], rowIndexPositionBoard: Gameboard<Int>, colIndexPositionBoard: Gameboard<Int>) -> (Gameboard<Int>, Gameboard<TileView?>, [TileView], Gameboard<Int>, Gameboard<Int>) {
     let (startIndex, endIndex, increment) = getStartStopIndicesForSwipeFunctions(dimensions: dimensions, direction: direction)
     
     var tileMovementBoard = Gameboard(d: tileValueBoard.dimension, initialValue: Movement.stay)
@@ -356,8 +409,6 @@ func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard:
     var newViewsToBeDeleted = viewsToBeDeleted
     var newRowIndexPositionBoard = rowIndexPositionBoard
     var newColIndexPositionBoard = colIndexPositionBoard
-    
-    var twoPlusTwoEvent: Int = 0
     
     var row : Int, col : Int, nextRow : Int, nextCol : Int
     let rowIndexIncr: Int, colIndexIncr : Int
@@ -405,9 +456,6 @@ func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard:
                 
                 newTileValueBoard[nextRow, nextCol] = newTileValueBoard[row, col] + newTileValueBoard[nextRow, nextCol]
                 
-                if newTileValueBoard[nextRow, nextCol] == 4 {
-                    twoPlusTwoEvent += 1
-                }
                 newTileValueBoard[row, col] = 0
                 
                 newRowIndexPositionBoard[nextRow, nextCol] = max(min(newRowIndexPositionBoard[row, col] + rowIndexIncr, dimensions), 1)
@@ -424,7 +472,7 @@ func updateGameAfterSwipe(dimensions: Int, direction: Direction, tileValueBoard:
         }
     }
     
-    return (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard, twoPlusTwoEvent)
+    return (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard)
 }
 
 //MARK: Game logic helpers
@@ -433,9 +481,9 @@ func canBeCombined(v1: Int, v2: Int) -> Bool {
         return true
     } else if (v1 == 3 && v2 == 4) || (v1 == 4 && v2 == 3) { // 3+4 makes 7
         return true
-    } else if v1 == 2 && v2 == 2 { // 2+2 makes 4
-        return true
-    } else if (v1 != 5 && v1 != 3 && v1 != 4) && v1==v2 {
+    // } else if v1 == 2 && v2 == 2 { // 2+2 makes 4
+        // return true
+    } else if (v1 != 5 && v1 != 3 && v1 != 4 && v1 != 2) && v1==v2 {
         return true
     }
     return false

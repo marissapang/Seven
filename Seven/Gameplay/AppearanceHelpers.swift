@@ -14,7 +14,7 @@ func calculateViewSizeAndPositions(dimensions: Int, superviewWidth: CGFloat, sup
     let numTiles = CGFloat(dimensions)
     let numTileGapWidth : CGFloat = 1
     let numTileGapHeight : CGFloat = 5
-    let verticalShift : CGFloat = 0.6
+    let verticalShift : CGFloat = 0.7
     
     // find dimensions of a tile
     
@@ -99,6 +99,21 @@ class Appearance {
         }
     }
     
+    func smallTileImage(_ value: Int) -> UIImageView{
+        switch value {
+        case 2, 5:
+            return UIImageView(image: UIImage(named: "smallTile-pink"))
+        case 3, 4:
+            return UIImageView(image: UIImage(named: "smallTile-blue"))
+        case 224, 448:
+            return UIImageView(image: UIImage(named: "smallTile-grayBorder"))
+        case 896:
+            return UIImageView(image: UIImage(named: "smallTile-blueBorder1"))
+        default:
+            return UIImageView(image: UIImage(named: "smallTile-white"))
+        }
+    }
+    
     func font(_ value: Int) -> UIFont {
         return UIFont(name: "TallBasic30-Regular", size: 42)!
     }
@@ -115,6 +130,8 @@ class Appearance {
             return UIFont(name: "TallBasic30-Regular", size: 28)!
         }
     }
+    
+
     
     
 }
