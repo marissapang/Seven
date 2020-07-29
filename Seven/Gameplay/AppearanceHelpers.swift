@@ -89,13 +89,17 @@ class Appearance {
     func tileInactiveColor(_ value: Int) -> UIColor{
         switch value {
         case 0: // when empty
-            return UIColor.init(red: 183.0/255.0, green: 232.0/255.0, blue: 248.0/255.0, alpha: 0.85)
+            // return UIColor.init(red: 183.0/255.0, green: 232.0/255.0, blue: 248.0/255.0, alpha: 0.85)
+            return UIColor.init(red: 235.0/255.0, green: 230/255.0, blue: 231/255.0, alpha: 0.85)
         case 2, 5:
-            return UIColor.init(red: 246.0/255.0, green: 179.0/255.0, blue: 162.0/255.0, alpha: 0.85)
+            // return UIColor.init(red: 246.0/255.0, green: 179.0/255.0, blue: 162.0/255.0, alpha: 0.85)
+            return UIColor.init(red: 255.0/255.0, green: 204/255.0, blue: 191/255.0, alpha: 0.55)
         case 3, 4:
-            return UIColor.init(red: 183.0/255.0, green: 232.0/255.0, blue: 248.0/255.0, alpha: 0.85)
+            // return UIColor.init(red: 183.0/255.0, green: 232.0/255.0, blue: 248.0/255.0, alpha: 0.85)
+            return UIColor.init(red: 232.0/255.0, green: 246/255.0, blue: 255/255.0, alpha: 0.8)
         default:
-            return UIColor.init(red: 254.0/255.0, green: 241.0/255.0, blue: 235.0/255.0, alpha: 0.85)
+            // return UIColor.init(red: 254.0/255.0, green: 241.0/255.0, blue: 235.0/255.0, alpha: 0.85)
+            return UIColor.init(red: 254.0/255.0, green: 241/255.0, blue: 235/255.0, alpha: 0.8)
         }
     }
     
@@ -106,13 +110,13 @@ class Appearance {
     func fontSmallTile(_ value: Int) -> UIFont {
         switch value {
         case 10..<100:
-            return UIFont(name: "TallBasic30-Regular", size: 24)!
-        case 100..<1000:
-            return UIFont(name: "TallBasic30-Regular", size: 18)!
-        case 1000..<10000:
-            return UIFont(name: "TallBasic30-Regular", size: 12)!
-        default:
             return UIFont(name: "TallBasic30-Regular", size: 28)!
+        case 100..<1000:
+            return UIFont(name: "TallBasic30-Regular", size: 24)!
+        case 1000..<10000:
+            return UIFont(name: "TallBasic30-Regular", size: 18)!
+        default:
+            return UIFont(name: "TallBasic30-Regular", size: 32)!
         }
     }
     

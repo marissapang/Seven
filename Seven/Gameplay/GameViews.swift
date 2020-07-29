@@ -109,12 +109,14 @@ class TileTrackingStrip: UIView {
 
         // create frame parameters
         let tileHeight = sizeAndPositionsDict["tileHeight"]! * smallTileScale
-        let y = (sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.75)
+        let y = (sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65)
         
         // create frame
-        super.init(frame: CGRect(x: 0, y: y*0.95, width: superviewWidth, height: tileHeight + y * 0.08))
+        super.init(frame: CGRect(x: 0, y: y*0.95, width: superviewWidth, height: tileHeight*5))
         
         backgroundColor = UIColor.init(red: 10.0/255.0, green: 86.0/255.0, blue: 111.0/255.0, alpha: 0.3)
+        backgroundColor = UIColor.init(red: 198.0/255.0, green: 193.0/255.0, blue: 194.0/255.0, alpha: 0.9)
+        backgroundColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 0.7)
     }
     
     required init?(coder aDecoder: NSCoder){
@@ -149,8 +151,8 @@ class SmallTileView: UIView {
         // create frame parameters
         let tileWidth = sizeAndPositionsDict["tileWidth"]! * smallTileScale
         let tileHeight = sizeAndPositionsDict["tileHeight"]! * smallTileScale
-        let x = -tileWidth*0.75 // start at the very right of frame with tile only partially showing
-        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.75
+        let x = -tileWidth*0.65 // start at the very right of frame with tile only partially showing
+        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65
         
         // create and format lbel
         label = UILabel(frame: CGRect(x: 0, y: 0, width: tileWidth, height: tileHeight))
@@ -188,7 +190,7 @@ class SmallTileHighlight : UIView {
         let tileHeight = sizeAndPositionsDict["tileHeight"]! * smallTileScale
         let x = tileWidth*0.25 + sizeAndPositionsDict["spacing"]!/2 // start at the very right of frame with tile only partially showing
         
-        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.75 - sizeAndPositionsDict["spacing"]!/2
+        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65 - sizeAndPositionsDict["spacing"]!/2
     
 
         
@@ -200,14 +202,17 @@ class SmallTileHighlight : UIView {
         label.textAlignment = .center
         label.text = "Next Tile"
         label.textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
-        label.font = UIFont(name: "TallBasic30-Regular", size: 28)!
+        label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.65)
+        label.font = UIFont(name: "TallBasic30-Regular", size: 24)!
         label.adjustsFontSizeToFitWidth = true
         
         
         backgroundColor = UIColor.clear
         layer.borderWidth = 4
-        // layer.borderColor = UIColor.init(red: 244.0/255.0, green: 181.0/255.0, blue: 80.0/255.0, alpha: 1).cgColor
+
         layer.borderColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1).cgColor
+       layer.borderColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.65).cgColor
+        layer.borderColor = UIColor.clear.cgColor
         layer.cornerRadius = 6.0 * smallTileScale * 1.1
     
         addSubview(label)

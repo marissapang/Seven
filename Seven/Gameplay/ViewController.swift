@@ -14,8 +14,8 @@ class ViewController: UIViewController {
     
     /* Appearance */
     let dimensions : Int = 4
-    let tileSpacing : CGFloat = 15
-    let smallTileScale : CGFloat = 0.75
+    let tileSpacing : CGFloat = 12
+    let smallTileScale : CGFloat = 0.92
     var sizeAndPositionsDict = [String:CGFloat]()
     
     /* Next tile generation */
@@ -679,7 +679,7 @@ class ViewController: UIViewController {
                 case 0:
                     transformScale = 0.9
                 case 1:
-                    transformScale = 1
+                    transformScale = 1.1
                 case 2..<numSmallTiles:
                     transformScale = 0.9
                 default:
