@@ -196,9 +196,7 @@ class SmallTileHighlight : UIView {
         let tileHeight = sizeAndPositionsDict["tileHeight"]! * smallTileScale
         let x = tileWidth*0.25 + sizeAndPositionsDict["spacing"]! // start at the very right of frame with tile only partially showing
         
-        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65 // - sizeAndPositionsDict["spacing"]!/2
-    
-
+        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65 
         
         // create frame
         super.init(frame: CGRect(x: x, y: y, width: tileWidth + sizeAndPositionsDict["spacing"]!, height: tileHeight + sizeAndPositionsDict["spacing"]!))
@@ -318,6 +316,78 @@ class HelpButton : UIButton {
         super.init(coder: aDecoder)
     }
 }
+
+class TutorialButton : UIButton {
+    init(sizeAndPositionsDict: [String: CGFloat]){
+        let width : CGFloat = sizeAndPositionsDict["tileWidth"]! * 1
+        let height: CGFloat = sizeAndPositionsDict["tileHeight"]! * 0.3
+        let x = sizeAndPositionsDict["gameboardX"]! + sizeAndPositionsDict["gameboardWidth"]! - width - 3
+        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + 2
+        super.init(frame: CGRect(x:x, y:y, width: width, height: height))
+        backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        layer.cornerRadius = 5
+        titleEdgeInsets = UIEdgeInsets(top: 3,left: 5,bottom: 0,right: 5)
+        setTitle("Tutorial", for: [])
+        titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!
+        titleLabel?.adjustsFontSizeToFitWidth = true
+        titleLabel?.textColor = UIColor.white
+    }
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
+
+class TutorialBlock : UIView {
+    var label = UILabel(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+    var closeButton = UIButton(frame: CGRect(x: 0, y:0, width: 10, height: 10))
+    
+    init(sizeAndPositionsDict: [String: CGFloat], labelText: String){
+        let height = sizeAndPositionsDict["gameboardY"]! * 0.7
+        let width = sizeAndPositionsDict["gameboardWidth"]!
+        let y = (sizeAndPositionsDict["gameboardY"]! - height)*0.75
+        let x = sizeAndPositionsDict["gameboardX"]!
+        
+        super.init(frame: CGRect(x:x, y:y, width: width, height: height))
+        backgroundColor = UIColor.init(red: 207.0/255.0, green: 233.0/255.0, blue: 240.0/255.0, alpha: 1)
+        layer.cornerRadius = 15
+        
+        let labelHeight = height * 0.7
+        let labelWidth = width * 0.8
+        let labelY = (height - labelHeight)*0.75
+        let labelX = (width - labelWidth)/2
+        label = UILabel(frame: CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight))
+        label.text = "\(labelText)"
+        label.font = UIFont(name: "TallBasic30-Regular", size: 40)!
+        label.adjustsFontSizeToFitWidth = true
+        label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        
+        let buttonHeight = labelY * 0.9
+        let buttonY : CGFloat = 10 //(labelY-buttonHeight)/2
+        let buttonWidth = width*0.3
+        let buttonX = width - 10 - buttonWidth // label.frame.maxX - buttonWidth
+        closeButton = UIButton(frame: CGRect(x: buttonX, y:buttonY, width: buttonWidth, height: buttonHeight))
+        
+        closeButton.titleEdgeInsets = UIEdgeInsets(top: 3, left:5, bottom: 0, right: 5)
+        closeButton.setTitle("Exit Tutorial", for: [])
+        closeButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 24)!
+        closeButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        closeButton.titleLabel?.textColor = UIColor.white
+        closeButton.backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        closeButton.layer.cornerRadius = 5
+        
+        addSubview(label)
+        addSubview(closeButton)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
+
 
 
 

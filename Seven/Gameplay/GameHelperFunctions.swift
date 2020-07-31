@@ -515,6 +515,17 @@ func processIJs(dimensions: Int, direction: Direction, increment: Int, i: Int, j
     return (row, col, nextRow, nextCol)
 }
 
+func boardContains(dimensions: Int, tileValueBoard: Gameboard<Int>, value: Int) -> Bool{
+    for i in 0..<dimensions {
+        for j in 0..<dimensions {
+            if tileValueBoard[i,j] == value {
+                return true
+            }
+        }
+    }
+    return false
+}
+
 
 
 

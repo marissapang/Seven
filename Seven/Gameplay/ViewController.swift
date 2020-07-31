@@ -28,6 +28,22 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     var nextTileValue : Int = 7
     var nextNextTileValue : Int = 7
     
+    /* Tutorial */
+    var tutorialActive : Bool = false
+    var manualTutorialRequest : Bool = false
+    var tutorialPaused : Bool = false
+    var tutorialBlock = TutorialBlock(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15], labelText: "")
+    var tutorialIndex : Int = 0
+    var tutorialStuckCounter : Int = 0
+    let tutorialSequence : [Int] = [7, 7, 7, 7, 7, 3, 4, 7, 7, 2, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7]
+    let tutorialIntroComments: [String] = ["Welcome to SEVEN!", "7s are the building blocks of the game - swipe until you make 14!"]
+    var tutorialWaitpoints: [Int:Bool] = [0: false, 2: false, 8: false]
+    // achievements: 0: complete 14, 2: complete 28, 5: complete 3+4,
+    var playTutorialWarningView = ClearHistoryPopupView(superviewWidth: 100, superviewHeight: 100)
+
+    let tutorialComments: [Int:String] = [0: "Nice! Keep swipin'", 1: "Can you make 28?", 2: "Awesome!", 3: "Ready for a challenge?", 4: "Ready for a challenge?", 5: "3s only combine with 4s..", 6: "3s only combine with 4s..", 7: "Try combining them!", 8: "Woo - you now have a 7!", 9: "Woo - you now have a 7!",10: "Similarly, 2s only combine with 5s", 11: "Similarly, 2s only combine with 5s", 12: "Similarly, 2s only combine with 5s", 13: "Similarly, 2s only combine with 5s", 14: "Similarly, 2s only combine with 5s", 15: "You're doing great!", 16: "You're doing great!", 19: "Use the Next Tile hints at the bottom to help you!", 24: "Have fun playing!"]
+    
+    
     /* Gameboard-tracking */
     var tileValueList = [Int]()
     var tileValueBoard : Gameboard<Int>
@@ -120,18 +136,23 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         let helpButton = HelpButton(sizeAndPositionsDict: sizeAndPositionsDict)
         helpButton.addTarget(self, action: #selector(helpButtonClicked), for: .touchUpInside)
         
+        let playTutorialButton = TutorialButton(sizeAndPositionsDict: sizeAndPositionsDict)
+        playTutorialButton.addTarget(self, action: #selector(playTutorialButtonClicked), for: .touchUpInside)
+        
         let tileTrackingStrip = TileTrackingStrip(sizeAndPositionsDict: sizeAndPositionsDict, superviewWidth: self.view.frame.width, smallTileScale: smallTileScale)
         
         self.view.addSubview(gameboardView)
         self.view.addSubview(scoreView)
         self.view.addSubview(restartButton)
         self.view.addSubview(menuButton)
-        self.view.addSubview(helpButton)
+        // self.view.addSubview(helpButton)
+        self.view.addSubview(playTutorialButton)
         self.view.addSubview(tileTrackingStrip)
         
     }
     
     func startGame(){
+        /* Appearance, sizes, etc */
         let superviewWidth = self.view.frame.size.width
         let superviewHeight = self.view.frame.size.height
         sizeAndPositionsDict = calculateViewSizeAndPositions(dimensions: dimensions, superviewWidth: superviewWidth, superviewHeight: superviewHeight, spacing: tileSpacing)
@@ -142,6 +163,8 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         let smallTileHighlight = SmallTileHighlight(sizeAndPositionsDict: sizeAndPositionsDict, smallTileScale: smallTileScale)
         self.view.addSubview(smallTileHighlight)
         
+        
+        /* Look for previous gameboards */
         // if there is a preivous gameboard saved, use that; if not start a new gameboard
         if let savedGameboard = loadTileValueList() {
             tileValueList = savedGameboard.tileValueList["tileValueList"]!
@@ -171,6 +194,38 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
             }
         }
         
+        /* See if tutorial mode should be true */
+        
+        var totalGamesPlayed : Int
+        if let savedScoreBoard = loadScores() {
+            totalGamesPlayed = savedScoreBoard.runningStats["totalGamesPlayed"]!
+        } else {
+            totalGamesPlayed = 0
+        }
+        
+        if totalGamesPlayed == 0 && prevSavedBoard == false {
+            tutorialActive = true
+        } else if manualTutorialRequest {
+            tutorialActive = true
+        } else {
+            tutorialActive = false
+        }
+    
+        
+        if tutorialActive == true {
+            tutorialBlock = TutorialBlock(sizeAndPositionsDict: sizeAndPositionsDict, labelText: tutorialIntroComments[0])
+            tutorialBlock.closeButton.addTarget(self, action:#selector(closeTutorialButtonClicked), for: .touchUpInside)
+            
+            self.view.addSubview(self.tutorialBlock)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.tutorialBlock.label.text = self.tutorialIntroComments[1]
+                self.tutorialBlock.label.font = UIFont(name: "TallBasic30-Regular", size: 30)!
+            }
+            
+        }
+        
+        /* Add first tiles */
         (rowIndexPositionBoard, colIndexPositionBoard) = initialUpdateOfIndexPositionBoards(dimensions: dimensions, tileValueBoard : tileValueBoard, rowIndexPositionBoard : rowIndexPositionBoard, colIndexPositionBoard : colIndexPositionBoard)
         
         var animator : UIViewPropertyAnimator, rowInd : Int, colInd : Int, xShift : CGFloat, yShift : CGFloat
@@ -256,7 +311,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         viewsToBeDeleted = [TileView]()
     }
     
-    func addNextTileView() -> TileView {
+    func addNextTileView(override: Bool, overrideValue: Int) -> TileView {
         // endGame()
         // resetAnimationBugFix()
         // generate a tile view based on the value generate for the next time, this tile is currently hidden at (0,0)
@@ -264,7 +319,15 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         
         // after creating the view generate the next-up tile value
         nextTileValue = nextNextTileValue
-        nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard, nextTileValue: nextTileValue, initialFreq: initialFreq, freqTracking: freqTracking)
+        
+        if override {
+            nextNextTileValue = overrideValue
+        } else if tutorialActive == false {
+            nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard, nextTileValue: nextTileValue, initialFreq: initialFreq, freqTracking: freqTracking)
+        } else if tutorialActive == true {
+            nextNextTileValue = tutorialSequence[tutorialIndex]
+        }
+        
         
         let trackedFreqs : [Int] = [2,3,4,5]
         if trackedFreqs.contains(nextNextTileValue) {
@@ -622,6 +685,16 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         return NSKeyedUnarchiver.unarchiveObject(withFile: ScoreBoard.ArchiveURL.path) as? ScoreBoard
     }
     
+//    private func saveMisc() {
+//        let object = MiscStorage()
+//        object.tutorialMode = tutorialActive
+//        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(object, toFile: MiscStorage.ArchiveURL.path)
+//    }
+//
+//    private func loadMisc() -> ScoreBoard? {
+//        return NSKeyedUnarchiver.unarchiveObject(withFile: MiscStorage.ArchiveURL.path) as? MiscStorage
+//    }
+//
     private func saveTileValueList() {
         let gameboardStorage = GameboardStorage()
         gameboardStorage.tileValueList = ["tileValueList":tileValueList]
@@ -654,11 +727,8 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     
     func restartGame(){
         // ***** delete all views *****
+        panGestureRecognizer.isEnabled = true
         self.view.subviews.forEach({ $0.removeFromSuperview() })
-        
-        
-        
-        
         
         // **** reassign propertiies to initial state ****
         tileValueBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
@@ -833,6 +903,64 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         present(tutorialViewController, animated: false, completion: nil)
     }
     
+    @objc func closeTutorialButtonClicked(){
+        print("inside closeTutorialButtonClicked function")
+        UIView.animate(withDuration: 1.0, animations: {self.tutorialBlock.alpha = 0.0},
+        completion: {(value: Bool) in
+            self.tutorialBlock.removeFromSuperview()
+                    })
+        // tutorialBlock.removeFromSuperview()
+        tutorialActive = false
+        manualTutorialRequest = false
+        tutorialWaitpoints = [0: false, 2: false, 8: false]
+        tutorialIndex = 0
+        tutorialStuckCounter = 0
+    }
+    
+    @objc func playTutorialButtonClicked() {
+        // have them click confirm or deny
+        if scoreView.score > 14 {
+            
+            playTutorialWarningView = ClearHistoryPopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
+            playTutorialWarningView.warningMessage.text = "Are you sure you want to switch to a new tutorial game?"
+            playTutorialWarningView.backgroundColor = UIColor.init(red: 255.0/255.0, green: 220.0/255.0, blue: 205.0/255.0, alpha: 0.9)
+            playTutorialWarningView.warningMessage.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.9)
+            
+            playTutorialWarningView.yesDeleteButton.setTitle("YES", for: [])
+            playTutorialWarningView.yesDeleteButton.backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.8)
+            playTutorialWarningView.noKeepButton.backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.8)
+            playTutorialWarningView.noKeepButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 34)!
+            playTutorialWarningView.yesDeleteButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 34)!
+            
+            playTutorialWarningView.noKeepButton.titleEdgeInsets = UIEdgeInsets(top: 5, left:5, bottom: 0, right: 5)
+            playTutorialWarningView.yesDeleteButton.titleEdgeInsets = UIEdgeInsets(top: 5, left:5, bottom: 0, right: 5)
+            
+            playTutorialWarningView.yesDeleteButton.addTarget(self, action: #selector(confirmPlayTutorial), for: .touchUpInside)
+            playTutorialWarningView.noKeepButton.addTarget(self, action: #selector(rejectPlayTutorial), for: .touchUpInside)
+            
+            
+            self.view.addSubview(playTutorialWarningView)
+            panGestureRecognizer.isEnabled = false
+            
+        } else {
+            manualTutorialRequest = true
+            restartGame()
+        }
+        
+    }
+    
+    @objc func confirmPlayTutorial() {
+        manualTutorialRequest = true
+        panGestureRecognizer.isEnabled = true
+        restartGame()
+    }
+    
+    @objc func rejectPlayTutorial() {
+        playTutorialWarningView.removeFromSuperview()
+        panGestureRecognizer.isEnabled = true
+    }
+    
+    
     
     //MARK: Swipe-related functions
     
@@ -897,16 +1025,134 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
                     }
                 }
                 
+                // TUTORIAL: count 3s and 4s in old vs new board to see if any 3 and 4s have merged
+                var merged34 = false
+                if tutorialActive && tutorialIndex == 8 {
+                    var count3Old : Int = 0
+                    var count4Old : Int = 0
+                    var count3New : Int = 0
+                    var count4New : Int = 0
+                    for i in 0..<dimensions {
+                        for j in 0..<dimensions {
+                            if tileValueBoard[i,j] == 3 {
+                                count3Old += 1
+                            } else if tileValueBoard[i,j] == 4 {
+                                count4Old += 1
+                            }
+                            
+                            if newTileValueBoard[i,j] == 3 {
+                                count3New += 1
+                            } else if newTileValueBoard[i,j] == 4 {
+                                count4New += 1
+                            }
+                        }
+                    }
+
+                    
+                    if count3Old > count3New || count4Old > count4New {
+                        merged34 = true
+                    }
+                }
+                
+                
+                
+                
                 tileValueBoard = newTileValueBoard
                 tileViewBoard = newTileViewBoard
                 viewsToBeDeleted = newViewsToBeDeleted
                 rowIndexPositionBoard = newRowIndexPositionBoard
                 colIndexPositionBoard = newColIndexPositionBoard
                 
+                for i in 0..<dimensions {
+                    for j in 0..<dimensions {
+                        if let tileView = tileViewBoard[i,j]{
+                            tileView.value = tileValueBoard[i,j]
+                        }
+                    }
+                }
+                
                 // if gameboard didn't change it means we swiped in an un-viable way so a new tile shouldn't be added
                 if gameboardChanged != 0 {
-                    let nextTileView : TileView = addNextTileView()
-                    addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                    // check to see if new tiles should be paused if we are in tutorial:
+                    if tutorialActive == true {
+                        print("tutorialIndex is \(tutorialIndex)")
+                        print("tutorialPaused is \(tutorialPaused)")
+                        print("tutorialActive is \(tutorialActive)")
+                        if let waitpoint = tutorialWaitpoints[tutorialIndex]{
+                            // if we are at a waitpoint index, and the waitpoint index has not yet been changed to true
+                            if waitpoint == false {
+                                tutorialPaused = true
+                            }
+                        }
+                    }
+                    
+                    
+                    if tutorialActive == true && tutorialPaused == true {
+                        // if tutorial is paused we want to see when we can resume
+                        switch tutorialIndex {
+                        case 0 where boardContains(dimensions: dimensions, tileValueBoard: tileValueBoard, value: 14):
+                            tutorialWaitpoints[tutorialIndex] = true
+                            tutorialPaused = false
+                            tutorialStuckCounter = 0
+                        case 2 where boardContains(dimensions: dimensions, tileValueBoard: tileValueBoard, value: 28):
+                            tutorialWaitpoints[tutorialIndex] = true
+                            tutorialPaused = false
+                            tutorialStuckCounter = 0
+                        case 8 where merged34:
+                            tutorialWaitpoints[tutorialIndex] = true
+                            tutorialPaused = false
+                            tutorialStuckCounter = 0
+                        default:
+                            tutorialStuckCounter += 1
+                        }
+                    }
+                    
+                    if tutorialActive && tutorialPaused && tutorialStuckCounter > 4 {
+                        // if tutorial is stuck for too long, we need to add some more tiles
+                        switch tutorialIndex {
+                        case 0:
+                            let nextTileView : TileView = addNextTileView(override: true, overrideValue: 7)
+                            addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                        case 2:
+                            let nextTileView : TileView = addNextTileView(override: true, overrideValue: 7)
+                            addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                        case 8:
+                            if tutorialStuckCounter % 4 == 0 {
+                                let nextTileView : TileView = addNextTileView(override: true, overrideValue: 3)
+                                addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                            } else if tutorialStuckCounter % 4 == 1{
+                                let nextTileView : TileView = addNextTileView(override: true, overrideValue: 4)
+                                addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                            }
+                        default:
+                            ()
+                        }
+                    }
+                    
+                    
+                    if tutorialActive == true && tutorialIndex >= tutorialSequence.count-1 {
+                        closeTutorialButtonClicked()
+                        let nextTileView : TileView = addNextTileView(override: false, overrideValue: 0)
+                        addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                    }
+                    
+                    // during tutorial mode we sometimes do not add new tiles
+                    if tutorialActive == true && tutorialPaused == false {
+                        tutorialIndex += 1
+                        let nextTileView : TileView = addNextTileView(override: false, overrideValue: 0)
+                        addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                    } else if tutorialActive == false {
+                        let nextTileView : TileView = addNextTileView(override: false, overrideValue: 0)
+                        addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                    }
+                    
+                    if tutorialActive {
+                        if let labelText = tutorialComments[tutorialIndex-1]
+                        {
+                            tutorialBlock.label.text = labelText
+                        }
+                    }
+                    
                     
                 }
                 scoreView.score = calculateScores(tileValueBoard: tileValueBoard, scoreDict: scoreDict)

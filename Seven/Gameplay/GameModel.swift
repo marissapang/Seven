@@ -40,6 +40,7 @@ struct Gameboard<T> {
             }
         }
     }
+
 }
 
 enum Movement {
@@ -94,6 +95,29 @@ class ScoreBoard: NSObject, NSCoding {
     func encode(with aCoder: NSCoder) {
         aCoder.encode(tileCount, forKey: PropertyKey.tileCount)
         aCoder.encode(runningStats, forKey: PropertyKey.runningStats)
+    }
+}
+
+class MiscStorage: NSObject, NSCoding {
+    // Properties
+    var tutorialMode : Bool = false
+    
+    // Archiving Paths
+    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let ArchiveURL = DocumentsDirectory.appendingPathComponent("miscStorage")
+    
+    // Initialization
+    required init(coder aDecoder: NSCoder){
+        tutorialMode = aDecoder.decodeObject(forKey: "tutorialMode") as? Bool ?? true
+    }
+    
+    override init(){
+        self.tutorialMode = true
+    }
+    
+    // NSCoding
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(tutorialMode, forKey: "tutorialMode")
     }
 }
 
