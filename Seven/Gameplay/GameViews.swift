@@ -114,9 +114,9 @@ class TileTrackingStrip: UIView {
         // create frame
         super.init(frame: CGRect(x: 0, y: y*0.95, width: superviewWidth, height: tileHeight*5))
         
-        backgroundColor = UIColor.init(red: 10.0/255.0, green: 86.0/255.0, blue: 111.0/255.0, alpha: 0.3)
-        backgroundColor = UIColor.init(red: 198.0/255.0, green: 193.0/255.0, blue: 194.0/255.0, alpha: 0.9)
-        backgroundColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 0.7)
+//        backgroundColor = UIColor.init(red: 10.0/255.0, green: 86.0/255.0, blue: 111.0/255.0, alpha: 0.3)
+//        backgroundColor = UIColor.init(red: 198.0/255.0, green: 193.0/255.0, blue: 194.0/255.0, alpha: 0.9)
+//        backgroundColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 0.7)
     }
     
     required init?(coder aDecoder: NSCoder){
@@ -169,6 +169,12 @@ class SmallTileView: UIView {
         layer.cornerRadius = 6.0 * smallTileScale
         layer.borderWidth = 4.0
         layer.borderColor = appearance.borderColor(value)
+        
+        layer.shadowColor = UIColor.lightGray.cgColor
+        layer.shadowOpacity = 0.7
+        layer.shadowOffset = CGSize(width: 1.3, height: 2)
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 0.5
     
         addSubview(label)
     }
@@ -188,9 +194,9 @@ class SmallTileHighlight : UIView {
         // create frame parameters
         let tileWidth = sizeAndPositionsDict["tileWidth"]! * smallTileScale
         let tileHeight = sizeAndPositionsDict["tileHeight"]! * smallTileScale
-        let x = tileWidth*0.25 + sizeAndPositionsDict["spacing"]!/2 // start at the very right of frame with tile only partially showing
+        let x = tileWidth*0.25 + sizeAndPositionsDict["spacing"]! // start at the very right of frame with tile only partially showing
         
-        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65 - sizeAndPositionsDict["spacing"]!/2
+        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65 // - sizeAndPositionsDict["spacing"]!/2
     
 
         
@@ -202,19 +208,14 @@ class SmallTileHighlight : UIView {
         label.textAlignment = .center
         label.text = "Next Tile"
         label.textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
-        label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.65)
+        label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.75)
         label.font = UIFont(name: "TallBasic30-Regular", size: 24)!
         label.adjustsFontSizeToFitWidth = true
         
-        
-        backgroundColor = UIColor.clear
-        layer.borderWidth = 4
-
-        layer.borderColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1).cgColor
-       layer.borderColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.65).cgColor
-        layer.borderColor = UIColor.clear.cgColor
-        layer.cornerRadius = 6.0 * smallTileScale * 1.1
-    
+        label.layer.shadowColor = UIColor.white.cgColor
+        label.layer.shadowRadius = 3.0
+        label.layer.shadowOpacity = 1.0
+            
         addSubview(label)
     }
     

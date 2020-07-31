@@ -14,10 +14,6 @@ class TutorialViewController: UIViewController {
         super.viewDidLoad()
         drawTutorial()
         
-        
-        
-        
-        
     }
     
 
@@ -32,14 +28,14 @@ class TutorialViewController: UIViewController {
         let closeButtonWidth = width * 0.1
         let labelWidth = width * 0.9
         
-        let topPaddingPct : CGFloat = 0.01
+        let topPaddingPct : CGFloat = 0.05
         let titleLabelPct : CGFloat = 0.1
-        let secondPaddingPct : CGFloat = 0.01
+        let secondPaddingPct : CGFloat = 0.03
         let descriptionLabel1Pct : CGFloat = 0.1
         let thirdPaddingPct : CGFloat = 0.01
-        let descriptionLabel2Pct : CGFloat = 0.1
-        let fourthPaddingPct : CGFloat = 0.03
-        let bottomPaddingPct : CGFloat = 0.03
+        let descriptionLabel2Pct : CGFloat = 0.2
+        let fourthPaddingPct : CGFloat = 0.025
+        let bottomPaddingPct : CGFloat = 0.05
         let tileRulesPct : CGFloat = 1 - (topPaddingPct + titleLabelPct + secondPaddingPct + descriptionLabel1Pct + thirdPaddingPct + descriptionLabel2Pct + fourthPaddingPct + bottomPaddingPct)
         
         guard tileRulesPct > 0 else{

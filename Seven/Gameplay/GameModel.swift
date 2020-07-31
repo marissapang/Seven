@@ -78,7 +78,7 @@ class ScoreBoard: NSObject, NSCoding {
     
     // Initialization
     required init(coder aDecoder: NSCoder){
-        runningStats = aDecoder.decodeObject(forKey: PropertyKey.runningStats) as? [String : Int] ?? ["highScore":0, "totalGamesPlayed":0]
+        runningStats = aDecoder.decodeObject(forKey: PropertyKey.runningStats) as? [String : Int] ?? ["highScore":0, "lowScore":0, "totalGamesPlayed":0]
         
         tileCount = aDecoder.decodeObject(forKey: PropertyKey.tileCount) as? [Int:Int] ?? [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0]
         
@@ -86,7 +86,7 @@ class ScoreBoard: NSObject, NSCoding {
 
     override init (){
         self.tileCount = [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0]
-        self.runningStats = ["highScore":0, "totalGamesPlayed":0]
+        self.runningStats = ["highScore":0, "lowScore": 0, "totalGamesPlayed":0]
     }
     
     // NSCoding

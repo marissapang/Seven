@@ -8,8 +8,10 @@
 
 import UIKit
 import os.log
+import GameKit
 
-class ViewController: UIViewController {
+
+class ViewController: UIViewController, GKGameCenterControllerDelegate {
     //MARK: Properties
     
     /* Appearance */
@@ -19,11 +21,10 @@ class ViewController: UIViewController {
     var sizeAndPositionsDict = [String:CGFloat]()
     
     /* Next tile generation */
-    let initialFreq : [Int: Double] = [2: 0.06, 5: 0.04, 3: 0.06, 4: 0.04]
+    let initialFreq : [Int: Double] = [2: 0.05, 5: 0.05, 3: 0.04, 4: 0.04]
     // Currently scores above 28 are calculated based on the rounded value of log base 21 of (7^x) where x is the x such that 2x*7 = score
     let scoreDict : [Int: Int] = [0: 0, 2: 2, 3: 3, 4: 4, 5: 5, 7:7, 14: 18, 28: 36, 56: 107, 112: 286, 224: 716, 448: 1718, 896: 4009, 1792: 9163, 3584: 20616, 7168: 45814, 14336: 100792, 28672: 219909, 57344: 476469, 114688: 1026242]
     var freqTracking : [Int: Int] = [2: 0, 3: 0, 4: 0, 5: 0]
-    var twoPlusTwoEvent: Int = 0
     var nextTileValue : Int = 7
     var nextNextTileValue : Int = 7
     
@@ -61,6 +62,12 @@ class ViewController: UIViewController {
     var scoreBoard = ScoreBoard()
     var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, newHighScore: false)
     var closeEndGameButton = CloseEndGameButton(superviewWidth: 100, superviewHeight: 100)
+    
+    var gcEnabled = Bool()
+    var gcDefaultLeaderboard = String ()
+    let LEADERBOARD_ID = "highScoreLeaderboard"
+    let LOWSCORE_ID = "lowScoreLeaderboard"
+    
     
     //MARK: Initialization
     init(){
@@ -250,6 +257,7 @@ class ViewController: UIViewController {
     }
     
     func addNextTileView() -> TileView {
+        // endGame()
         // resetAnimationBugFix()
         // generate a tile view based on the value generate for the next time, this tile is currently hidden at (0,0)
         let nextTileView = TileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: nextTileValue)
@@ -382,6 +390,70 @@ class ViewController: UIViewController {
     
     }
     
+    //MARK: Game Center Functions
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
+    }
+    
+    func authenticateLocalPlayer() {
+        let localPlayer: GKLocalPlayer = GKLocalPlayer.local
+        
+        localPlayer.authenticateHandler = {(ViewController, error) -> Void in
+            if ((ViewController) != nil) {
+                // 1. Show login if player is not logged in
+                self.present(ViewController!, animated: true, completion: nil)
+                
+            } else if (localPlayer.isAuthenticated){
+                // 2. Player is already authenticated & logged in, load game center
+                self.gcEnabled = true
+                // Get the default leaderboard ID
+                localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
+                    if error != nil {
+                        print("inside the print error statement")
+                        print(error)
+                    } else {
+                        self.gcDefaultLeaderboard = leaderboardIdentifier!
+                    }
+                })
+            } else {
+                // 3. Game center is not enabled on the user's device
+                self.gcEnabled = false
+                print("Local player could not be authenticated")
+                print(error)
+            }
+        }
+    }
+    
+    func submitHighScoreToGC() {
+        // let highScore = scoreBoard.runningStats["highScore"]!
+        // let lowScore = scoreBoard.runningStats["lowScore"]!
+        let score = scoreView.score
+        
+        // submit score to GC Leaderboard
+        let bestScoreInt = GKScore(leaderboardIdentifier: LEADERBOARD_ID)
+        bestScoreInt.value = Int64(score)
+        GKScore.report([bestScoreInt]) {(error) in
+            if error != nil {
+                print(error!.localizedDescription)
+            } else {
+                print("High Score is submitted to your Leaderboard")
+            }
+        }
+        
+        if score != 0 {
+            let lowScoreInt = GKScore(leaderboardIdentifier: LOWSCORE_ID)
+            lowScoreInt.value = Int64(score)
+            GKScore.report([lowScoreInt]) {(error) in
+                if error != nil {
+                    print(error!.localizedDescription)
+                } else {
+                    print("low score value is \(score)")
+                    print("Low Score is submitted to your Leaderboard")
+                }
+            }
+        }
+    }
+    
     
     //MARK: End-game functions
     func gameShouldEnd() -> Bool {
@@ -426,7 +498,7 @@ class ViewController: UIViewController {
            }
         return false
     }
-       
+    
     func endGame() {
         
         // delete saved gameboard value
@@ -448,15 +520,18 @@ class ViewController: UIViewController {
             newHighScore = true
         }
         
+        if scoreView.score < scoreBoard.runningStats["lowScore"]! || scoreBoard.runningStats["lowScore"]! == 0 {
+            scoreBoard.runningStats["lowScore"]! = scoreView.score
+        }
+        
         // update highest tile value if the highest tile is equal or greater than 112
         let highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
         if highestTileValue >= 112 {
             scoreBoard.tileCount[highestTileValue]! += 1
         }
         
-        
-        
         saveScores()
+        submitHighScoreToGC()
         
         // create endGame view
         endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height,  newHighScore: newHighScore )
@@ -611,6 +686,7 @@ class ViewController: UIViewController {
         // Properties used to keep track of everything not on gameboard
         viewsToBeDeleted = [TileView]()
         direction = Direction.undefined
+        winTileAchieved = false
         
         // Swipe properties
         fractionComplete = 0.0
@@ -627,7 +703,7 @@ class ViewController: UIViewController {
     func addSmallTile(){
         // calculate how many small tiles can fit on the bottom, keep that much length + 1 (+1 bc we want the last tile to slide off the screen before getting deleted) in the list before removing
         let numSmallTiles : Int = Int(ceil(self.view.frame.width / (sizeAndPositionsDict["tileWidth"]! * smallTileScale + tileSpacing) - 0.5)) + Int(1)
-        
+
         
         // if list is empty, add nextNextTile as 0, nextTile as 1. these should be views
         if tileTrackingList.count == 0 { // if tileTrackingList is empty
@@ -690,7 +766,7 @@ class ViewController: UIViewController {
                 positionTrans = CGAffineTransform(translationX: xShift, y: yShift)
                 
                 
-                animator = UIViewPropertyAnimator(duration: 0.1, curve: .easeInOut, animations: {
+                animator = UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut, animations: {
                     subview.transform = shrinkTrans.concatenating(positionTrans)
                 })
                 
@@ -707,6 +783,8 @@ class ViewController: UIViewController {
     
     // restart
     @objc func restartAtEnd(sender: UIButton!) {
+        // authenticateLocalPlayer()
+        // submitHighScoreToGC()
         restartGame()
     }
     
@@ -721,6 +799,12 @@ class ViewController: UIViewController {
     
     @objc func restartButtonClicked(){
         restartGame()
+    }
+    
+    @objc func gcButtonClicked() {
+        print("inside gcButtonClicked")
+        authenticateLocalPlayer()
+        submitHighScoreToGC()
     }
     
     @objc func closeEndGameButtonClicked(){
@@ -762,7 +846,7 @@ class ViewController: UIViewController {
             direction = directionFromVelocity(recognizer.velocity(in: self.view))
             directionForEndState = direction
 
-            (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard, twoPlusTwoEvent) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
+            (newTileValueBoard, newTileViewBoard, newViewsToBeDeleted, newRowIndexPositionBoard, newColIndexPositionBoard) = updateGameAfterSwipe(dimensions: dimensions, direction: direction, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard, viewsToBeDeleted: viewsToBeDeleted, rowIndexPositionBoard: rowIndexPositionBoard, colIndexPositionBoard: colIndexPositionBoard)
             
             animateTiles(direction: direction, tileViewBoard: newTileViewBoard, rowIndexPositionBoard: newRowIndexPositionBoard, colIndexPositionBoard: newColIndexPositionBoard)
 
@@ -818,11 +902,6 @@ class ViewController: UIViewController {
                 viewsToBeDeleted = newViewsToBeDeleted
                 rowIndexPositionBoard = newRowIndexPositionBoard
                 colIndexPositionBoard = newColIndexPositionBoard
-                
-                if twoPlusTwoEvent > 0 {
-                    freqTracking[2] = freqTracking[2]! - 2*twoPlusTwoEvent
-                    freqTracking[4] = freqTracking[4]! + twoPlusTwoEvent
-                }
                 
                 // if gameboard didn't change it means we swiped in an un-viable way so a new tile shouldn't be added
                 if gameboardChanged != 0 {

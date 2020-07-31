@@ -29,6 +29,7 @@
 		18BD88E524B6F34300926B67 /* confettiModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BD88E424B6F34300926B67 /* confettiModel.swift */; };
 		18D67CB024AC860D0085E116 /* MenuViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D67CAF24AC860D0085E116 /* MenuViews.swift */; };
 		18EEF46D24A7624C00D129B8 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EEF46C24A7624C00D129B8 /* MenuViewController.swift */; };
+		18F4964224D266740060D7AA /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F4964124D266740060D7AA /* GameKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,8 @@
 		18BD88E424B6F34300926B67 /* confettiModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = confettiModel.swift; sourceTree = "<group>"; };
 		18D67CAF24AC860D0085E116 /* MenuViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViews.swift; sourceTree = "<group>"; };
 		18EEF46C24A7624C00D129B8 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		18F4964124D266740060D7AA /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		18F4964324D266880060D7AA /* Seven.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Seven.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18F4964224D266740060D7AA /* GameKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +98,7 @@
 				185FF8DA249375F700FD52A0 /* Seven */,
 				185FF8F1249375FF00FD52A0 /* SevenTests */,
 				185FF8D9249375F700FD52A0 /* Products */,
+				18F4964024D266730060D7AA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,15 +114,16 @@
 		185FF8DA249375F700FD52A0 /* Seven */ = {
 			isa = PBXGroup;
 			children = (
+				18F4964324D266880060D7AA /* Seven.entitlements */,
 				185FF8DB249375F700FD52A0 /* AppDelegate.swift */,
 				185FF8DD249375F700FD52A0 /* SceneDelegate.swift */,
 				188F8B7824AF543100C908B7 /* Gameplay */,
 				188F8B7724AF541F00C908B7 /* Tutorial */,
 				188F8B7924AF545700C908B7 /* Menu */,
 				185FF8E1249375F700FD52A0 /* Main.storyboard */,
+				185FF8E9249375FE00FD52A0 /* Info.plist */,
 				185FF8E4249375FE00FD52A0 /* Assets.xcassets */,
 				185FF8E6249375FE00FD52A0 /* LaunchScreen.storyboard */,
-				185FF8E9249375FE00FD52A0 /* Info.plist */,
 				188F8B6924ACB1C000C908B7 /* Fonts */,
 			);
 			path = Seven;
@@ -182,6 +188,14 @@
 				18BD88E424B6F34300926B67 /* confettiModel.swift */,
 			);
 			path = "End Game";
+			sourceTree = "<group>";
+		};
+		18F4964024D266730060D7AA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				18F4964124D266740060D7AA /* GameKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -462,6 +476,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Seven/Seven.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 46BZ4537VY;
@@ -482,6 +497,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Seven/Seven.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 46BZ4537VY;

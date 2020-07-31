@@ -58,7 +58,7 @@ class TutorialTileRulesView : UIView {
         let label1Pct : CGFloat = 0.1
         let label2Pct : CGFloat = 0.1
         let gapPct : CGFloat = 0.05
-        let numRules : CGFloat = 4
+        let numRules : CGFloat = 3
         let rowPct = (1 - (label1Pct + label2Pct + gapPct * (numRules-1)))/numRules
         
         let label1 = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: label1Pct*height))
@@ -77,7 +77,7 @@ class TutorialTileRulesView : UIView {
         
         let row2 = TutorialTileRulesRowView(y: row1.frame.maxY+gapPct*height+label2Pct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 2, tileValue2: 5)
         let row3 = TutorialTileRulesRowView(y: row2.frame.maxY+gapPct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 3, tileValue2: 4)
-        let row4 = TutorialTileRulesRowView(y: row3.frame.maxY+gapPct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 2, tileValue2: 2)
+       //  let row4 = TutorialTileRulesRowView(y: row3.frame.maxY+gapPct*height, width: width, height: rowPct*height, gapHeight: gapPct*height, tileValue1: 2, tileValue2: 2)
 
         // add views
         addSubview(label1)
@@ -85,7 +85,7 @@ class TutorialTileRulesView : UIView {
         addSubview(row1)
         addSubview(row2)
         addSubview(row3)
-        addSubview(row4)
+        // addSubview(row4)
     }
     
     
