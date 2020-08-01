@@ -113,9 +113,7 @@ class TileTrackingStrip: UIView {
         
         // create frame
         super.init(frame: CGRect(x: 0, y: y*0.95, width: superviewWidth, height: tileHeight*5))
-        
-//        backgroundColor = UIColor.init(red: 10.0/255.0, green: 86.0/255.0, blue: 111.0/255.0, alpha: 0.3)
-//        backgroundColor = UIColor.init(red: 198.0/255.0, green: 193.0/255.0, blue: 194.0/255.0, alpha: 0.9)
+
 //        backgroundColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 0.7)
     }
     
@@ -302,20 +300,7 @@ class navButton : UIButton {
     }
 }
 
-class HelpButton : UIButton {
-    init(sizeAndPositionsDict: [String: CGFloat]){
-        let width : CGFloat = 65
-        let height: CGFloat = 65
-        let x = sizeAndPositionsDict["gameboardX"]! + sizeAndPositionsDict["gameboardWidth"]! - width/2
-        let y = sizeAndPositionsDict["gameboardY"]! - height*1.05
-        super.init(frame: CGRect(x:x, y:y, width: width, height: height))
-        setImage(UIImage(named:"helpButton"), for: [])
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-}
+//MARK: Tutorial
 
 class TutorialButton : UIButton {
     init(sizeAndPositionsDict: [String: CGFloat]){
@@ -386,6 +371,31 @@ class TutorialBlock : UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
+}
+
+class TutorialWarningView : ClearHistoryPopupView {
+    
+    override init(superviewWidth: CGFloat, superviewHeight: CGFloat){
+        super.init(superviewWidth: superviewWidth, superviewHeight: superviewHeight)
+        
+        self.warningMessage.text = "Are you sure you want to switch to a new tutorial game?"
+        self.backgroundColor = UIColor.init(red: 255.0/255.0, green: 220.0/255.0, blue: 205.0/255.0, alpha: 0.9)
+        self.warningMessage.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.9)
+        
+        self.yesDeleteButton.setTitle("YES", for: [])
+        self.yesDeleteButton.backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.8)
+        self.noKeepButton.backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.8)
+        self.noKeepButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 34)!
+        self.yesDeleteButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 34)!
+        
+        self.noKeepButton.titleEdgeInsets = UIEdgeInsets(top: 5, left:5, bottom: 0, right: 5)
+        self.yesDeleteButton.titleEdgeInsets = UIEdgeInsets(top: 5, left:5, bottom: 0, right: 5)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
 }
 
 

@@ -22,8 +22,6 @@
 		18602AFC24B0A1BA003EF531 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18602AFB24B0A1BA003EF531 /* ContactViewController.swift */; };
 		188F8B7224ADECEF00C908B7 /* ClearHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7124ADECEF00C908B7 /* ClearHistoryViewController.swift */; };
 		188F8B7424ADED0A00C908B7 /* AlertViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7324ADED0A00C908B7 /* AlertViews.swift */; };
-		188F8B7624AF540900C908B7 /* TutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7524AF540900C908B7 /* TutorialViewController.swift */; };
-		188F8B7B24AF54A800C908B7 /* TutorialViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7A24AF54A800C908B7 /* TutorialViews.swift */; };
 		18BC1E7C24B46CF600E5BF13 /* TallBasic30-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */; };
 		18BD88E324B6F2D900926B67 /* endGameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BD88E224B6F2D800926B67 /* endGameViews.swift */; };
 		18BD88E524B6F34300926B67 /* confettiModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BD88E424B6F34300926B67 /* confettiModel.swift */; };
@@ -62,8 +60,6 @@
 		18602AFB24B0A1BA003EF531 /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
 		188F8B7124ADECEF00C908B7 /* ClearHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearHistoryViewController.swift; sourceTree = "<group>"; };
 		188F8B7324ADED0A00C908B7 /* AlertViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViews.swift; sourceTree = "<group>"; };
-		188F8B7524AF540900C908B7 /* TutorialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialViewController.swift; sourceTree = "<group>"; };
-		188F8B7A24AF54A800C908B7 /* TutorialViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialViews.swift; sourceTree = "<group>"; };
 		18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "TallBasic30-Regular.ttf"; path = "Fonts/TallBasic30-Regular.ttf"; sourceTree = SOURCE_ROOT; };
 		18BD88E224B6F2D800926B67 /* endGameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = endGameViews.swift; sourceTree = "<group>"; };
 		18BD88E424B6F34300926B67 /* confettiModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = confettiModel.swift; sourceTree = "<group>"; };
@@ -118,7 +114,6 @@
 				185FF8DB249375F700FD52A0 /* AppDelegate.swift */,
 				185FF8DD249375F700FD52A0 /* SceneDelegate.swift */,
 				188F8B7824AF543100C908B7 /* Gameplay */,
-				188F8B7724AF541F00C908B7 /* Tutorial */,
 				188F8B7924AF545700C908B7 /* Menu */,
 				185FF8E1249375F700FD52A0 /* Main.storyboard */,
 				185FF8E9249375FE00FD52A0 /* Info.plist */,
@@ -145,15 +140,6 @@
 				18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */,
 			);
 			path = Fonts;
-			sourceTree = "<group>";
-		};
-		188F8B7724AF541F00C908B7 /* Tutorial */ = {
-			isa = PBXGroup;
-			children = (
-				188F8B7524AF540900C908B7 /* TutorialViewController.swift */,
-				188F8B7A24AF54A800C908B7 /* TutorialViews.swift */,
-			);
-			path = Tutorial;
 			sourceTree = "<group>";
 		};
 		188F8B7824AF543100C908B7 /* Gameplay */ = {
@@ -313,9 +299,7 @@
 				185FF8DE249375F700FD52A0 /* SceneDelegate.swift in Sources */,
 				18EEF46D24A7624C00D129B8 /* MenuViewController.swift in Sources */,
 				18BD88E524B6F34300926B67 /* confettiModel.swift in Sources */,
-				188F8B7624AF540900C908B7 /* TutorialViewController.swift in Sources */,
 				18BD88E324B6F2D900926B67 /* endGameViews.swift in Sources */,
-				188F8B7B24AF54A800C908B7 /* TutorialViews.swift in Sources */,
 				188F8B7424ADED0A00C908B7 /* AlertViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
