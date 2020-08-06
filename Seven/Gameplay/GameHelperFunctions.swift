@@ -166,71 +166,89 @@ func adjustInitialFreq(initialFreq: [Int: Double], normalizedFreqTracking: [Int:
             adjustedFreq[key] = value/3
         }
         if normalizedFreqTracking[4]! > 0 {
-            adjustedFreq[3] =  0.85
+            adjustedFreq[3] =  0.9
             adjustedFreq[4] = 0
         }
         if normalizedFreqTracking[5]! > 0 {
-            adjustedFreq[2] = 0.85
+            adjustedFreq[2] = 0.9
             adjustedFreq[5] = 0
         }
         if normalizedFreqTracking[3]! > 0 {
-            adjustedFreq[4] = 0.85
+            adjustedFreq[4] = 0.9
             adjustedFreq[3] = 0
         }
         if normalizedFreqTracking[2]! > 0 {
-            adjustedFreq[5] = 0.85
+            adjustedFreq[5] = 0.9
             adjustedFreq[2] = 0
         }
-    } else { //if highestTileValue < 896 {
+    } else if highestTileValue <= 896 { //if highestTileValue < 896 {
         if normalizedFreqTracking[4]! > 0 {
-            adjustedFreq[3] =  min(initialFreq[3]! * Double(2*(2+normalizedFreqTracking[4]!)), 0.9)
+            adjustedFreq[3] =  min(initialFreq[3]! * Double(4*(2+normalizedFreqTracking[4]!)), 0.9)
             adjustedFreq[4] = initialFreq[4]! / Double(normalizedFreqTracking[4]!*2)
         }
         
         if normalizedFreqTracking[5]! > 0 {
-            adjustedFreq[2] = min(initialFreq[2]! * Double(2*(2+normalizedFreqTracking[5]!)), 0.9)
+            adjustedFreq[2] = min(initialFreq[2]! * Double(4*(2+normalizedFreqTracking[5]!)), 0.9)
             adjustedFreq[5] = initialFreq[5]! / Double(normalizedFreqTracking[5]!*2)
         }
         
         if normalizedFreqTracking[3]! > 0 {
-            adjustedFreq[4] = min(initialFreq[4]! * Double(2*(2+normalizedFreqTracking[3]!)), 0.9)
+            adjustedFreq[4] = min(initialFreq[4]! * Double(4*(2+normalizedFreqTracking[3]!)), 0.9)
             adjustedFreq[3] = initialFreq[3]! / Double(normalizedFreqTracking[3]!*2)
         }
         
         if normalizedFreqTracking[2]! > 0 {
-            adjustedFreq[5] = min(initialFreq[5]! * Double(2*(2+normalizedFreqTracking[2]!)), 0.9)
+            adjustedFreq[5] = min(initialFreq[5]! * Double(4*(2+normalizedFreqTracking[2]!)), 0.9)
             adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!*2)
         }
-    } /* else if highestTileValue >= 896 {
+    } else if highestTileValue <= 1792 { //if highestTileValue < 896 {
+        if normalizedFreqTracking[4]! > 0 {
+            adjustedFreq[3] =  min(initialFreq[3]! * Double(5*(2+normalizedFreqTracking[4]!)), 0.9)
+            adjustedFreq[4] = initialFreq[4]! / Double(normalizedFreqTracking[4]!*2)
+        }
+        
+        if normalizedFreqTracking[5]! > 0 {
+            adjustedFreq[2] = min(initialFreq[2]! * Double(5*(2+normalizedFreqTracking[5]!)), 0.9)
+            adjustedFreq[5] = initialFreq[5]! / Double(normalizedFreqTracking[5]!*2)
+        }
+        
+        if normalizedFreqTracking[3]! > 0 {
+            adjustedFreq[4] = min(initialFreq[4]! * Double(5*(2+normalizedFreqTracking[3]!)), 0.9)
+            adjustedFreq[3] = initialFreq[3]! / Double(normalizedFreqTracking[3]!*2)
+        }
+        
+        if normalizedFreqTracking[2]! > 0 {
+            adjustedFreq[5] = min(initialFreq[5]! * Double(5*(2+normalizedFreqTracking[2]!)), 0.9)
+            adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!*2)
+        }
+    } else if highestTileValue > 1792 {
         // first make the probability for a 2,3,4,5 to appear much smaller
         for (key, value) in adjustedFreq {
             adjustedFreq[key] = value/1.75
         }
         
         // at the same time, if one of 2,3,4,5 does appear, a complement number appears much more quickly
-        
         if normalizedFreqTracking[4]! > 0 {
-            adjustedFreq[3] =  min(initialFreq[3]! * Double(8*(2+normalizedFreqTracking[4]!)), 0.9)
+            adjustedFreq[3] =  min(initialFreq[3]! * Double(6*(2+normalizedFreqTracking[4]!)), 0.9)
             adjustedFreq[4] = initialFreq[4]! / Double(normalizedFreqTracking[4]!*2)
         }
         
         if normalizedFreqTracking[5]! > 0 {
-            adjustedFreq[2] = min(initialFreq[2]! * Double(8*(2+normalizedFreqTracking[5]!)), 0.9)
+            adjustedFreq[2] = min(initialFreq[2]! * Double(6*(2+normalizedFreqTracking[5]!)), 0.9)
             adjustedFreq[5] = initialFreq[5]! / Double(normalizedFreqTracking[5]!*2)
         }
         
         if normalizedFreqTracking[3]! > 0 {
-            adjustedFreq[4] = min(initialFreq[4]! * Double(8*(2+normalizedFreqTracking[3]!)), 0.9)
+            adjustedFreq[4] = min(initialFreq[4]! * Double(6*(2+normalizedFreqTracking[3]!)), 0.9)
             adjustedFreq[3] = initialFreq[3]! / Double(normalizedFreqTracking[3]!*2)
         }
         
         if normalizedFreqTracking[2]! > 0 {
-            adjustedFreq[5] = min(initialFreq[5]! * Double(8*(2+normalizedFreqTracking[2]!)), 0.9)
+            adjustedFreq[5] = min(initialFreq[5]! * Double(6*(2+normalizedFreqTracking[2]!)), 0.9)
             adjustedFreq[2] = initialFreq[2]! / Double(normalizedFreqTracking[2]!*2)
         }
     }
- */
-    
+
     // if the sums of the adjusted frequencies are too large (i.e. almost over 1) then lower it down proportionally across the board
     let freqSum = adjustedFreq[2]! + adjustedFreq[5]! + adjustedFreq[3]! + adjustedFreq[4]!
      
@@ -255,15 +273,12 @@ func calculateHighTileFreq(leftOverProb: Double, highestTileValue: Int) -> [Int:
         () // change nothing if we are early on in the game
     case let highestTileValue where highestTileValue <= 224:
         ()
-//        highTileFreq[14] = 0.03
-//        highTileFreq[28] = 0.02
-//        highTileFreq[56] = 0.005
     case let highestTileValue where highestTileValue <= 448:
-        highTileFreq[14] = 0.035
-        highTileFreq[28] = 0.03
-        highTileFreq[56] = 0.01
+        highTileFreq[14] = 0.01
+        highTileFreq[28] = 0.005
+        highTileFreq[56] = 0.005
     case let highestTileValue where highestTileValue <= 896:
-        highTileFreq[14] = 0.02
+        highTileFreq[14] = 0.005
         highTileFreq[28] = 0.01
         highTileFreq[56] = 0.01
         highTileFreq[112] = 0.005

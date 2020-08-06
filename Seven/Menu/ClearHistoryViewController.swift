@@ -45,7 +45,6 @@ class ClearHistoryViewController: UIViewController {
             os_log("Failed to clear scoreboard D:", log: OSLog.default, type: .error)
         }
         dismiss(animated: false, completion: nil)
-           
     }
     
 

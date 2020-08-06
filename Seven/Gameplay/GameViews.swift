@@ -59,6 +59,7 @@ class TileView: UIView {
             backgroundColor = appearance.tileColor(value)
             label.font = appearance.font(value)
             layer.borderColor = appearance.borderColor(value)
+            label.frame = CGRect(x: label.frame.minX, y: appearance.tileTextAlign(value), width: label.frame.width, height:  label.frame.height)
         }
     }
 
@@ -67,7 +68,7 @@ class TileView: UIView {
         value = tileValue
         
         let labelWidth = sizeAndPositionsDict["tileWidth"]!*0.75
-        label = UILabel(frame: CGRect(x: (sizeAndPositionsDict["tileWidth"]!-labelWidth)/2, y: 3, width: labelWidth, height: sizeAndPositionsDict["tileHeight"]!))
+        label = UILabel(frame: CGRect(x: (sizeAndPositionsDict["tileWidth"]!-labelWidth)/2, y: appearance.tileTextAlign(value), width: labelWidth, height: sizeAndPositionsDict["tileHeight"]!))
         label.textAlignment = .center
         label.text = "\(tileValue)"
         label.font = appearance.font(value)
@@ -132,6 +133,7 @@ class SmallTileView: UIView {
             backgroundColor = appearance.tileColor(value)
             label.font = appearance.font(value)
             layer.borderColor = appearance.borderInactiveColor(value)
+            label.frame = CGRect(x: label.frame.minX, y: appearance.smallTileTextAlign(value), width: label.frame.width, height:  label.frame.height)
         }
     }
     var color : UIColor {
@@ -153,7 +155,7 @@ class SmallTileView: UIView {
         let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65
         
         // create and format lbel
-        label = UILabel(frame: CGRect(x: 0, y: 0, width: tileWidth, height: tileHeight))
+        label = UILabel(frame: CGRect(x: 0, y: appearance.smallTileTextAlign(value), width: tileWidth, height: tileHeight))
         label.textAlignment = .center
         label.text = "\(tileValue)"
         label.font = appearance.fontSmallTile(value)
@@ -194,23 +196,19 @@ class SmallTileHighlight : UIView {
         let tileHeight = sizeAndPositionsDict["tileHeight"]! * smallTileScale
         let x = tileWidth*0.25 + sizeAndPositionsDict["spacing"]! // start at the very right of frame with tile only partially showing
         
-        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65 
+        let y = sizeAndPositionsDict["gameboardY"]! + sizeAndPositionsDict["gameboardHeight"]! + tileHeight*0.65
         
         // create frame
         super.init(frame: CGRect(x: x, y: y, width: tileWidth + sizeAndPositionsDict["spacing"]!, height: tileHeight + sizeAndPositionsDict["spacing"]!))
         
         // create and format label
-        let label = UILabel(frame: CGRect(x: -self.frame.width*0.25, y: -tileHeight*0.45+3, width: self.frame.width*1.5, height: tileHeight*0.45))
+        let label = UILabel(frame: CGRect(x: -self.frame.width*0.25, y: -tileHeight*0.45+1, width: self.frame.width*1.5, height: tileHeight*0.45))
         label.textAlignment = .center
         label.text = "Next Tile"
-        label.textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.75)
+        label.textColor = UIColor.init(red: 109.0/255.0, green: 99.0/255.0, blue: 101.0/255.0, alpha: 1.0)
         label.font = UIFont(name: "TallBasic30-Regular", size: 24)!
         label.adjustsFontSizeToFitWidth = true
-        
-        label.layer.shadowColor = UIColor.white.cgColor
-        label.layer.shadowRadius = 3.0
-        label.layer.shadowOpacity = 1.0
             
         addSubview(label)
     }
@@ -344,11 +342,11 @@ class TutorialBlock : UIView {
         let labelX = (width - labelWidth)/2
         label = UILabel(frame: CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight))
         label.text = "\(labelText)"
-        label.font = UIFont(name: "TallBasic30-Regular", size: 40)!
+        label.font = UIFont(name: "TallBasic30-Regular", size: 45)!
         label.adjustsFontSizeToFitWidth = true
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        label.lineBreakMode = .byWordWrapping
-        label.numberOfLines = 0
+        label.lineBreakMode = .byTruncatingTail
+        label.numberOfLines = 3
         
         let buttonHeight = labelY * 0.9
         let buttonY : CGFloat = 10 //(labelY-buttonHeight)/2

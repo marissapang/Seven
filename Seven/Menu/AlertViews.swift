@@ -58,16 +58,13 @@ class ClearHistoryPopupView : UIView {
         
         // create "No, Keep my data" button
         noKeepButton = UIButton(frame: CGRect(x: buttonXLeft, y: buttonY, width: buttonWidth, height: buttonHeight))
-        // noKeepButton.backgroundColor = UIColor.init(red: 88.0/255.0, green: 140.0/255.0, blue: 178.0/255.0, alpha: 1.0)
         noKeepButton.backgroundColor = UIColor.init(red: 14.0/255.0, green: 120.0/255.0, blue: 155.0/255.0, alpha: 1.0)
         noKeepButton.setTitle("NO", for: [])
         noKeepButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!
         noKeepButton.titleLabel?.textColor = UIColor.white
         noKeepButton.layer.cornerRadius = 18
         
-        
         yesDeleteButton = UIButton(frame: CGRect(x: buttonXRight, y: buttonY, width: buttonWidth, height: buttonHeight))
-
         yesDeleteButton.backgroundColor  = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
         yesDeleteButton.setTitle("YES, DELETE", for: [])
         yesDeleteButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!

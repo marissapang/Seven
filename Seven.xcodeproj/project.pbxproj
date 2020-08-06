@@ -20,6 +20,7 @@
 		185FF904249665E800FD52A0 /* AppearanceHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185FF903249665E800FD52A0 /* AppearanceHelpers.swift */; };
 		18602AFA24B08407003EF531 /* TallBasic20-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18602AF924B08407003EF531 /* TallBasic20-Regular.ttf */; };
 		18602AFC24B0A1BA003EF531 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18602AFB24B0A1BA003EF531 /* ContactViewController.swift */; };
+		186CB83E24D565BC0024088F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 186CB83D24D565BC0024088F /* GoogleService-Info.plist */; };
 		188F8B7224ADECEF00C908B7 /* ClearHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7124ADECEF00C908B7 /* ClearHistoryViewController.swift */; };
 		188F8B7424ADED0A00C908B7 /* AlertViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7324ADED0A00C908B7 /* AlertViews.swift */; };
 		18BC1E7C24B46CF600E5BF13 /* TallBasic30-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */; };
@@ -58,6 +59,7 @@
 		185FF903249665E800FD52A0 /* AppearanceHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceHelpers.swift; sourceTree = "<group>"; };
 		18602AF924B08407003EF531 /* TallBasic20-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "TallBasic20-Regular.ttf"; path = "Fonts/TallBasic20-Regular.ttf"; sourceTree = SOURCE_ROOT; };
 		18602AFB24B0A1BA003EF531 /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
+		186CB83D24D565BC0024088F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		188F8B7124ADECEF00C908B7 /* ClearHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearHistoryViewController.swift; sourceTree = "<group>"; };
 		188F8B7324ADED0A00C908B7 /* AlertViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViews.swift; sourceTree = "<group>"; };
 		18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "TallBasic30-Regular.ttf"; path = "Fonts/TallBasic30-Regular.ttf"; sourceTree = SOURCE_ROOT; };
@@ -117,6 +119,7 @@
 				188F8B7924AF545700C908B7 /* Menu */,
 				185FF8E1249375F700FD52A0 /* Main.storyboard */,
 				185FF8E9249375FE00FD52A0 /* Info.plist */,
+				186CB83D24D565BC0024088F /* GoogleService-Info.plist */,
 				185FF8E4249375FE00FD52A0 /* Assets.xcassets */,
 				185FF8E6249375FE00FD52A0 /* LaunchScreen.storyboard */,
 				188F8B6924ACB1C000C908B7 /* Fonts */,
@@ -270,6 +273,7 @@
 				185FF8E5249375FE00FD52A0 /* Assets.xcassets in Resources */,
 				185FF8E3249375F700FD52A0 /* Main.storyboard in Resources */,
 				18602AFA24B08407003EF531 /* TallBasic20-Regular.ttf in Resources */,
+				186CB83E24D565BC0024088F /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,6 +467,7 @@
 				CODE_SIGN_ENTITLEMENTS = Seven/Seven.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 46BZ4537VY;
 				INFOPLIST_FILE = Seven/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -484,6 +489,7 @@
 				CODE_SIGN_ENTITLEMENTS = Seven/Seven.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 46BZ4537VY;
 				INFOPLIST_FILE = Seven/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

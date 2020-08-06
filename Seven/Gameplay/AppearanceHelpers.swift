@@ -69,6 +69,36 @@ class Appearance {
         }
     }
     
+    func tileTextAlign(_ value: Int) -> CGFloat {
+        switch value {
+        case 0..<10:
+            return 3.5
+        case 10..<113:
+            return 3.0
+        case 113..<1000:
+            return 0.5
+        case 1000..<10000:
+            return -1.0
+        case 10000..<100000:
+            return -3.5
+        default:
+            return 0.0
+        }
+    }
+    
+    func smallTileTextAlign(_ value: Int) -> CGFloat {
+        switch value {
+        case 0..<10:
+            return 1.0
+        case 10..<113:
+            return 0.5
+        case 113..<1000:
+            return 0.1
+        default:
+            return 0.0
+        }
+    }
+    
     func borderInactiveColor(_ value: Int) -> CGColor {
         switch value {
         case 224:

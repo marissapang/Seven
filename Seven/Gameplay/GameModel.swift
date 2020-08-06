@@ -81,12 +81,12 @@ class ScoreBoard: NSObject, NSCoding {
     required init(coder aDecoder: NSCoder){
         runningStats = aDecoder.decodeObject(forKey: PropertyKey.runningStats) as? [String : Int] ?? ["highScore":0, "lowScore":0, "totalGamesPlayed":0]
         
-        tileCount = aDecoder.decodeObject(forKey: PropertyKey.tileCount) as? [Int:Int] ?? [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0]
+        tileCount = aDecoder.decodeObject(forKey: PropertyKey.tileCount) as? [Int:Int] ?? [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0, 28672: 0]
         
     }
 
     override init (){
-        self.tileCount = [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0]
+        self.tileCount = [112: 0, 224: 0, 448: 0, 896: 0, 1792: 0, 3584: 0, 7168: 0, 14336: 0, 28672: 0]
         self.runningStats = ["highScore":0, "lowScore": 0, "totalGamesPlayed":0]
     }
     
@@ -95,29 +95,6 @@ class ScoreBoard: NSObject, NSCoding {
     func encode(with aCoder: NSCoder) {
         aCoder.encode(tileCount, forKey: PropertyKey.tileCount)
         aCoder.encode(runningStats, forKey: PropertyKey.runningStats)
-    }
-}
-
-class MiscStorage: NSObject, NSCoding {
-    // Properties
-    var tutorialMode : Bool = false
-    
-    // Archiving Paths
-    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    static let ArchiveURL = DocumentsDirectory.appendingPathComponent("miscStorage")
-    
-    // Initialization
-    required init(coder aDecoder: NSCoder){
-        tutorialMode = aDecoder.decodeObject(forKey: "tutorialMode") as? Bool ?? true
-    }
-    
-    override init(){
-        self.tutorialMode = true
-    }
-    
-    // NSCoding
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(tutorialMode, forKey: "tutorialMode")
     }
 }
 

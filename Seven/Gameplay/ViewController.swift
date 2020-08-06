@@ -11,9 +11,18 @@ import os.log
 import GameKit
 
 
+/*
+ // ADS NOTES
+ // at 7:00 on https://www.youtube.com/watch?v=dWnLUH3qCE0 admob youtube video
+ // opened addmob and firebase account
+ // with ads, need to add a buy premium version
+ */
+
 class ViewController: UIViewController, GKGameCenterControllerDelegate {
+    
     //MARK: Properties
     
+    var numberCalls: Int = 0
     /* Appearance */
     let dimensions : Int = 4
     let tileSpacing : CGFloat = 12
@@ -72,8 +81,8 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     let LOWSCORE_ID = "lowScoreLeaderboard"
     
     /* End game */
-    var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, newHighScore: false)
-    var closeEndGameButton = CloseEndGameButton(superviewWidth: 100, superviewHeight: 100)
+    var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, newHighScore: false, secret7168Achievement: false, secret14336Achievement: false)
+    // var closeEndGameButton = CloseEndGameButton(superviewWidth: 100, superviewHeight: 100)
     
     /* Swipe */
     var fractionComplete : CGFloat = 0.0
@@ -172,6 +181,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         } else { // if there is a stored gameboard (game must have crashed) we restore what was saved
             
             // make gameboard list into new tile value board
+            // tileValueList = [7, 14, 28, 56, 112, 224, 448, 896, 1792, 3584, 7168, 0, 0, 0, 0, 0]
             tileValueBoard = turnTileValueListToBoard(tileValueList: tileValueList)
             
             // update the tileViewBoard accorrding to the tileValueBoard
@@ -272,6 +282,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     
     func addNextTileView(override: Bool, overrideValue: Int) -> TileView {
         // generate a tile view based on the value generate for the next time, this tile is currently hidden at (0,0)
+        
         let nextTileView = TileView(sizeAndPositionsDict: sizeAndPositionsDict, tileValue: nextTileValue)
         
         // after creating the view generate the next-up tile value
@@ -282,6 +293,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         } else if tutorialActive == false {
             nextNextTileValue = generateRandTileValue(tileValueBoard: tileValueBoard, nextTileValue: nextTileValue, initialFreq: initialFreq, freqTracking: freqTracking)
         } else if tutorialActive == true {
+            print("in addNextTileView: tutorial is active, and index is \(tutorialIndex)")
             nextNextTileValue = tutorialSequence[tutorialIndex]
         }
         
@@ -295,6 +307,23 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     func addNextTileOntoBoard(direction: Direction, nextTileView: TileView) {
+        var x : Int = 0
+        var y: Int = 0
+        for i in 0..<dimensions {
+            for j in 0..<dimensions {
+                if tileValueBoard[i,j] != 0 {
+                    x += 1
+                }
+                if let _ = tileViewBoard[i,j] {
+                    y += 1
+                }
+            }
+        }
+        //print("tileValueBoard has \(x) values")
+        //print("tileViewBoard has \(y) views")
+        //print("views to be deleted is \(viewsToBeDeleted.count) long")
+        //print(self.view.subviews.count - 6 - 6)
+        
         // 1. figure out which index the new tile should be added based on the swipe direction
         let (newTileRow, newTileCol) = addTile(direction: direction, tileValueBoard: tileValueBoard)
         
@@ -581,6 +610,35 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         gameCenterViewController.dismiss(animated: true, completion: nil)
     }
     
+    func authenticateLocalPlayer() {
+        let localPlayer: GKLocalPlayer = GKLocalPlayer.local
+        
+        localPlayer.authenticateHandler = {(ViewController, error) -> Void in
+            if ((ViewController) != nil) {
+                // 1. Show login if player is not logged in
+                self.present(ViewController!, animated: true, completion: nil)
+                
+            } else if (localPlayer.isAuthenticated){
+                // 2. Player is already authenticated & logged in, load game center
+                self.gcEnabled = true
+                // Get the default leaderboard ID
+                localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
+                    if error != nil {
+                        print("inside the print error statement")
+                        print(error as Any)
+                    } else {
+                        self.gcDefaultLeaderboard = leaderboardIdentifier!
+                    }
+                })
+            } else {
+                // 3. Game center is not enabled on the user's device
+                self.gcEnabled = false
+                print("Local player could not be authenticated")
+                print(error as Any)
+            }
+        }
+    }
+    
     func submitHighScoreToGC() {
         // let highScore = scoreBoard.runningStats["highScore"]!
         // let lowScore = scoreBoard.runningStats["lowScore"]!
@@ -677,33 +735,60 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
             newHighScore = true
         }
         
-        if scoreView.score < scoreBoard.runningStats["lowScore"]! || scoreBoard.runningStats["lowScore"]! == 0 {
-            scoreBoard.runningStats["lowScore"]! = scoreView.score
+        
+        // show SECRET popup if they get a super high score
+        let highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
+        
+        var secret7168Achievement = false
+        if (scoreBoard.tileCount[7168] == 0 &&
+            scoreBoard.tileCount[14336] == 0 &&
+            highestTileValue == 7168) { // if it's their first time getting the 7168 tile
+            secret7168Achievement = true
         }
         
+        var secret14336Achievement = false
+        if (scoreBoard.tileCount[14336] == 0 && highestTileValue == 14336){ // if it's first time geeting the 14336 tile
+            secret14336Achievement = true
+        }
+        
+        guard !(secret7168Achievement && secret14336Achievement) else {
+            fatalError("both 7168 an 14336 achievements are true")
+        }
+        
+        if let s = scoreBoard.runningStats["lowScore"] {
+            if scoreView.score < s || s != 0 {
+                scoreBoard.runningStats["lowScore"] = scoreView.score
+            }
+        } else {
+            scoreBoard.runningStats["lowScore"] = scoreView.score
+        }
+        
+        
         // update highest tile value if the highest tile is equal or greater than 112
-        let highestTileValue = calculateHighestTileValue(tileValueBoard: tileValueBoard)
+        
         if highestTileValue >= 112 {
             scoreBoard.tileCount[highestTileValue]! += 1
         }
         
         saveScores()
+        authenticateLocalPlayer()
         submitHighScoreToGC()
         
         // create endGame view
-        endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height,  newHighScore: newHighScore )
+        endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height,  newHighScore: newHighScore,  secret7168Achievement:  secret7168Achievement, secret14336Achievement:  secret14336Achievement)
         self.view.addSubview(endGamePopupView)
     
-        closeEndGameButton = CloseEndGameButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
+        // closeEndGameButton = CloseEndGameButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
         
         endGamePopupView.restartButton.addTarget(self, action: #selector(restartAtEnd), for: .touchUpInside)
-        closeEndGameButton.addTarget(self, action: #selector(closeEndGameButtonClicked), for: .touchUpInside)
+        endGamePopupView.closeEndGameButton.addTarget(self, action: #selector(closeEndGameButtonClicked), for: .touchUpInside)
+        // closeEndGameButton.addTarget(self, action: #selector(closeEndGameButtonClicked), for: .touchUpInside)
         
         self.view.addSubview(endGamePopupView)
-        self.view.addSubview(closeEndGameButton)
+        self.view.addSubview(endGamePopupView.closeEndGameButton)
         
         // add confetti if it's a new high score
-        if newHighScore == true {
+        if (newHighScore || secret7168Achievement || secret14336Achievement) {
             let confettiTypes: [ConfettiType] = {
                 let confettiColors = [
                     (r:149,g:58,b:255), (r:255,g:195,b:41), (r:255,g:101,b:26),
@@ -727,10 +812,10 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
 
                     cell.scaleRange = 0.1
                     cell.beginTime = 0.00001
-                    cell.birthRate = 70
+                    cell.birthRate = 80
                     cell.contents = confettiType.image.cgImage
                     cell.emissionRange = CGFloat(Double.pi)
-                    cell.lifetime = 7
+                    cell.lifetime = 5
                     cell.spin = 4
                     cell.spinRange = 8
                     cell.velocity = 400
@@ -758,12 +843,14 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
 
                 emitterLayer.beginTime = CACurrentMediaTime()
                 emitterLayer.lifetime = 2.0
+                
                 return emitterLayer
             }()
             
             
             endGamePopupView.layer.addSublayer(confettiLayer)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                // confettiCells.cell.birthRate = 10
                 confettiLayer.birthRate = 0
             }
         }
@@ -772,7 +859,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     //MARK: Save and load functions
     
     private func saveScores() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(scoreBoard, toFile: ScoreBoard.ArchiveURL.path)
+        let _ = NSKeyedArchiver.archiveRootObject(scoreBoard, toFile: ScoreBoard.ArchiveURL.path)
     }
     
     private func loadScores() -> ScoreBoard? {
@@ -782,7 +869,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     private func saveTileValueList() {
         let gameboardStorage = GameboardStorage()
         gameboardStorage.tileValueList = ["tileValueList":tileValueList]
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(gameboardStorage, toFile: GameboardStorage.ArchiveURL.path)
+        let _ = NSKeyedArchiver.archiveRootObject(gameboardStorage, toFile: GameboardStorage.ArchiveURL.path)
     }
     
     private func loadTileValueList() -> GameboardStorage? {
@@ -813,6 +900,11 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         // ***** delete all views *****
         panGestureRecognizer.isEnabled = true
         self.view.subviews.forEach({ $0.removeFromSuperview() })
+        tutorialActive = false
+        tutorialWaitpoints = [0: false, 2: false, 8: false]
+        tutorialIndex = 0
+        tutorialStuckCounter = 0
+        playTutorialButton.isEnabled = true
         
         // **** reassign propertiies to initial state ****
         tileValueBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
@@ -864,7 +956,8 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     
     @objc func closeEndGameButtonClicked(){
         endGamePopupView.removeFromSuperview()
-        closeEndGameButton.removeFromSuperview()
+        endGamePopupView.closeEndGameButton.removeFromSuperview()
+        // closeEndGameButton.removeFromSuperview()
         panGestureRecognizer.isEnabled = false
     }
     
@@ -877,6 +970,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     @objc func closeTutorialButtonClicked(){
+        print("closeTutorialButtonClicked is called")
         UIView.animate(withDuration: 1.0, animations: {self.tutorialBlock.alpha = 0.0},
         completion: { (value: Bool) in self.tutorialBlock.removeFromSuperview() })
         tutorialActive = false
@@ -885,9 +979,11 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         tutorialIndex = 0
         tutorialStuckCounter = 0
         playTutorialButton.isEnabled = true
+        print(playTutorialButton.isEnabled)
     }
     
     @objc func playTutorialButtonClicked() {
+        print("play Tutorial button is clicke")
         if scoreView.score > 14 { // if player is in game, make sure they're okay with deleting progress
             playTutorialButton.isEnabled = false
             playTutorialWarningView = TutorialWarningView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
@@ -915,12 +1011,12 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         panGestureRecognizer.isEnabled = true
         playTutorialButton.isEnabled = true
     }
+
     
     
     //MARK: Swipe-related functions
     
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
-        
         var direction : Direction
         var animator : UIViewPropertyAnimator
         
@@ -955,7 +1051,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
                 }
             }
         case .ended, .cancelled:
-             if fractionComplete < 0.2 {
+             if fractionComplete < 0.25 {
                  isReversed = true
              } else {
                  isReversed = false
@@ -1005,8 +1101,14 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
                 if gameboardChanged != 0 {
                     /* TUTORIAL */
                     //pause and unpause new tiles in tutorial when applicable (tutorialPaused=true/false)
-                    if tutorialActive { tutorialShouldNewTilesBePaused() }
-                    if tutorialActive && tutorialPaused { tutorialShouldNewTilesBeResumed(merged34: merged34) } // also increments stuckCounter if not unpaused
+                    if tutorialActive {
+                        tutorialShouldNewTilesBePaused()
+                        print("tutorialIndex is \(tutorialIndex)")
+                    }
+                    if tutorialActive && tutorialPaused {
+                        print("tutorial is active and paused!")
+                        tutorialShouldNewTilesBeResumed(merged34: merged34)
+                    } // also increments stuckCounter if not unpaused
                     
                     // add new tiles that are of helpful values if stuck counter is too high
                     if tutorialActive && tutorialPaused && tutorialStuckCounter > 4 {
@@ -1017,8 +1119,9 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
                     // End tutorial when tutorial is over
                     if tutorialActive && tutorialIndex >= tutorialSequence.count-1 {
                         closeTutorialButtonClicked()
-                        let nextTileView : TileView = addNextTileView(override: false, overrideValue: 0)
-                        addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
+                
+                        // let nextTileView : TileView = addNextTileView(override: false, overrideValue: 0)
+                        // addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
                     }
                     
                     // Add new tiles both when tutorial is not paused and when not in tutorial
@@ -1053,9 +1156,12 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
                     self.view.addSubview(crownView)
                     winTileAchieved = true
                 }
+                numberCalls += 1
+
                 
                 deleteOldTiles()
             }
+             
             isReversed = false
         default:
             ()

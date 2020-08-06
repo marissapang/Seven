@@ -34,7 +34,7 @@ class MenuViewController: UIViewController, GKGameCenterControllerDelegate {
         }
         
         authenticateLocalPlayer()
-        submitHighScoreToGC()
+        // submitHighScoreToGC()
         
         // Create Menu high score view
         drawMenu()
@@ -55,7 +55,7 @@ class MenuViewController: UIViewController, GKGameCenterControllerDelegate {
                 localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
                     if error != nil {
                         print("inside the print error statement")
-                        print(error)
+                        print(error as Any)
                     } else {
                         self.gcDefaultLeaderboard = leaderboardIdentifier!
                     }
@@ -64,7 +64,7 @@ class MenuViewController: UIViewController, GKGameCenterControllerDelegate {
                 // 3. Game center is not enabled on the user's device
                 self.gcEnabled = false
                 print("Local player could not be authenticated")
-                print(error)
+                print(error as Any)
             }
         }
     }
@@ -152,6 +152,7 @@ class MenuViewController: UIViewController, GKGameCenterControllerDelegate {
         let gcButton = UIButton(frame: CGRect(x: self.view.frame.width - 10 - gcButtonWidth, y: backButton.frame.minY, width: gcButtonWidth, height: gcButtonHeight))
         gcButton.backgroundColor = UIColor.init(red: 10.0/255.0, green: 86.0/255.0, blue: 111.0/255.0, alpha: 1)
         gcButton.setTitle("Leaderboard", for: [])
+        gcButton.titleEdgeInsets = UIEdgeInsets(top: 3, left:5, bottom: 0, right: 5)
         gcButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!
         gcButton.titleLabel?.adjustsFontSizeToFitWidth = true
         gcButton.titleLabel?.textColor = UIColor.white
