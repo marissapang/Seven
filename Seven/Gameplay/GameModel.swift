@@ -65,6 +65,8 @@ struct PropertyKey {
     static let tileCount = "tileCount"
     static let runningStats = "runningStats"
     static let tileValueList = "tileValueList"
+    static let freqTracking = "freqTracking"
+    static let adCounter = "adCounter"
 
 }
 
@@ -101,6 +103,7 @@ class ScoreBoard: NSObject, NSCoding {
 class GameboardStorage: NSObject, NSCoding {
     // Properties
     var tileValueList: [String: [Int]]
+    var freqTracking: [Int: Int]
     
     // Archiving Paths
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -110,18 +113,42 @@ class GameboardStorage: NSObject, NSCoding {
     // Initialization
     required init(coder aDecoder: NSCoder){
         
-        tileValueList = aDecoder.decodeObject(forKey: PropertyKey.tileValueList) as? [String: [Int]] ?? ["tileValueList": [0]]
+        tileValueList = aDecoder.decodeObject(forKey: PropertyKey.tileValueList) as? [String: [Int]] ?? ["tileValueList": [0], "nextTileValue": [7], "nextNextTileValue": [7]]
+        freqTracking = aDecoder.decodeObject(forKey: PropertyKey.freqTracking) as? [Int: Int] ?? [2: 0, 3: 0, 4: 0, 5: 0]
     }
     
     override init (){
-        
-        self.tileValueList = ["tileValueList": [0]]
+        self.tileValueList = ["tileValueList": [0], "nextTileValue": [7], "nextNextTileValue": [7]]
+        self.freqTracking = [2: 0, 3: 0, 4: 0, 5: 0]
     }
     
     // NSCoding
     func encode(with aCoder: NSCoder) {
         aCoder.encode(tileValueList, forKey: PropertyKey.tileValueList)
+        aCoder.encode(freqTracking, forKey: PropertyKey.freqTracking)
+    }
+}
+
+class AdCounterStorage: NSObject, NSCoding {
+    // Properties
+    var adCounter: [String: Int]
+    
+    // Archiving Paths
+    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let ArchiveURL = DocumentsDirectory.appendingPathComponent("adCounterStorage")
+    
+    // Initialization
+    required init(coder aDecoder: NSCoder){
+        adCounter = aDecoder.decodeObject(forKey: PropertyKey.adCounter) as? [String: Int] ?? ["adCounter":7]
     }
     
+    override init (){
+        self.adCounter = ["adCounter":7]
+    }
+    
+    // NSCoding
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(adCounter, forKey: PropertyKey.adCounter)
+    }
 }
 

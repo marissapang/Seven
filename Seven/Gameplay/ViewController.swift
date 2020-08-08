@@ -9,7 +9,8 @@
 import UIKit
 import os.log
 import GameKit
-
+// import GoogleMobileAds
+import Firebase
 
 /*
  // ADS NOTES
@@ -18,7 +19,7 @@ import GameKit
  // with ads, need to add a buy premium version
  */
 
-class ViewController: UIViewController, GKGameCenterControllerDelegate {
+class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewardedAdDelegate {
     
     //MARK: Properties
     
@@ -70,6 +71,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     /* Scoreboard */
     var score : Int = 0
     var scoreView = ScoreView(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
+    var restartButton = navButton(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15], x: 10, labelText: "RESET")
     var winTileAchieved : Bool = false
     let winTileValue : Int = 3584
     var scoreBoard = ScoreBoard()
@@ -80,9 +82,18 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     let LEADERBOARD_ID = "highScoreLeaderboard"
     let LOWSCORE_ID = "lowScoreLeaderboard"
     
+    
     /* End game */
-    var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, newHighScore: false, secret7168Achievement: false, secret14336Achievement: false)
+    var endGamePopupView = EndGamePopupView(superviewWidth: 10, superviewHeight: 10, adCounter: 7, newHighScore: false, secret7168Achievement: false, secret14336Achievement: false)
     // var closeEndGameButton = CloseEndGameButton(superviewWidth: 100, superviewHeight: 100)
+    
+    /* Ads */
+    var rewardedAd: GADRewardedAd?
+    var adCounter : Int = 7 {
+        didSet {
+            restartButton.setTitle("RESET(\(adCounter))", for: [])
+        }
+    }
     
     /* Swipe */
     var fractionComplete : CGFloat = 0.0
@@ -124,8 +135,22 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        startGame()
+        
+        startGame(calledInViewDidLoad: true)
+        
+        // ads
+
+//        self.view.addSubview(rewardButton)
+//        rewardedAd?.load(GADRequest()) { error in
+//          if let error = error {
+//            print("ad didnt load")
+//          } else {
+//            print("ad successfully loaded")
+//          }
+//        }
+
     }
+
     
     //MARK: Set-up game functions
     
@@ -133,7 +158,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         let gameboardView = GameboardView(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict)
         scoreView = ScoreView(sizeAndPositionsDict: sizeAndPositionsDict)
         
-        let restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: "RESET")
+        restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: "RESET(\(adCounter))")
         restartButton.addTarget(self, action:#selector(restartButtonClicked), for: .touchUpInside)
         
         let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.2, labelText: "STATS")
@@ -152,34 +177,56 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         self.view.addSubview(tileTrackingStrip)
     }
     
-    func startGame(){
+    func startGame(calledInViewDidLoad: Bool){
+        rewardedAd = loadRewardedAd()
+        
         /* Appearance, sizes, etc */
         let superviewWidth = self.view.frame.size.width
         let superviewHeight = self.view.frame.size.height
         sizeAndPositionsDict = calculateViewSizeAndPositions(dimensions: dimensions, superviewWidth: superviewWidth, superviewHeight: superviewHeight, spacing: tileSpacing)
         
-        drawGameboard(sizeAndPositionsDict: sizeAndPositionsDict)
-        addSmallTile()
         
         let smallTileHighlight = SmallTileHighlight(sizeAndPositionsDict: sizeAndPositionsDict, smallTileScale: smallTileScale)
         self.view.addSubview(smallTileHighlight)
         
+        /* Ad counter */
+        if let a = loadAdCounter() {
+            print("adCounter was loaded")
+            adCounter = a.adCounter["adCounter"]!
+        } else {
+            print("adCounter was not loaded so is set to 7")
+            adCounter = 7
+        }
+        
+        // increment ad tracker
+        if !calledInViewDidLoad {
+            adCounter -= 1
+            adCounter = max(adCounter, 0)
+            saveAdCounter()
+        }
         
         /* Look for previous gameboards */
         // if there is a preivous gameboard saved, use that; if not start a new gameboard
         if let savedGameboard = loadTileValueList() {
             tileValueList = savedGameboard.tileValueList["tileValueList"]!
+            freqTracking = savedGameboard.freqTracking
+            nextTileValue = savedGameboard.tileValueList["nextTileValue"]![0]
+            nextNextTileValue = savedGameboard.tileValueList["nextNextTileValue"]![0]
         } else {
             tileValueList = [0]
+            freqTracking = [2: 0, 3: 0, 4: 0, 5: 0]
         }
         
         // if prevSavedBoard is not of length dxd it's the dummy generated by the code
         let prevSavedBoard : Bool = tileValueList.count == dimensions * dimensions ? true : false
         
         if prevSavedBoard == false { // if we are starting new board this is what we do
+            freqTracking = [2: 0, 3: 0, 4: 0, 5: 0]
+            nextTileValue = 7
+            nextNextTileValue = 7
             (tileValueBoard, tileViewBoard) = addFirstTiles(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict, tileValueBoard: tileValueBoard, tileViewBoard: tileViewBoard)
         } else { // if there is a stored gameboard (game must have crashed) we restore what was saved
-            
+                        
             // make gameboard list into new tile value board
             // tileValueList = [7, 14, 28, 56, 112, 224, 448, 896, 1792, 3584, 7168, 0, 0, 0, 0, 0]
             tileValueBoard = turnTileValueListToBoard(tileValueList: tileValueList)
@@ -195,6 +242,9 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
                 }
             }
         }
+        
+        drawGameboard(sizeAndPositionsDict: sizeAndPositionsDict)
+        addSmallTile()
         
         /* Add first tiles */
         (rowIndexPositionBoard, colIndexPositionBoard) = initialUpdateOfIndexPositionBoards(dimensions: dimensions, tileValueBoard : tileValueBoard, rowIndexPositionBoard : rowIndexPositionBoard, colIndexPositionBoard : colIndexPositionBoard)
@@ -240,6 +290,8 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         if tutorialActive {
             drawTutorialIntro()
         }
+        
+        print("adCounter at startgame is \(adCounter)")
     }
     
     //MARK: In-game functions
@@ -307,23 +359,6 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     func addNextTileOntoBoard(direction: Direction, nextTileView: TileView) {
-        var x : Int = 0
-        var y: Int = 0
-        for i in 0..<dimensions {
-            for j in 0..<dimensions {
-                if tileValueBoard[i,j] != 0 {
-                    x += 1
-                }
-                if let _ = tileViewBoard[i,j] {
-                    y += 1
-                }
-            }
-        }
-        //print("tileValueBoard has \(x) values")
-        //print("tileViewBoard has \(y) views")
-        //print("views to be deleted is \(viewsToBeDeleted.count) long")
-        //print(self.view.subviews.count - 6 - 6)
-        
         // 1. figure out which index the new tile should be added based on the swipe direction
         let (newTileRow, newTileCol) = addTile(direction: direction, tileValueBoard: tileValueBoard)
         
@@ -402,6 +437,10 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
             self.colIndexPositionBoard[newTileRow, newTileCol] = newTileCol + 1
             self.scoreView.score = calculateScores(tileValueBoard: self.tileValueBoard, scoreDict: self.scoreDict)
             
+            // Update the storage of gameboard values so if app crashes we can go back
+            self.tileValueList = self.turnTileValueBoardToList(tileValueBoard: self.tileValueBoard)
+            self.saveTileValueList()
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 animator2.startAnimation()
                 self.view.addSubview(nextTileView)
@@ -412,11 +451,12 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
                 }
             }
             
+            
         }
         
-        // Update the storage of gameboard values so if app crashes we can go back
-        tileValueList = turnTileValueBoardToList(tileValueBoard: tileValueBoard)
-        saveTileValueList()
+//        // Update the storage of gameboard values so if app crashes we can go back
+//        tileValueList = turnTileValueBoardToList(tileValueBoard: tileValueBoard)
+//        saveTileValueList()
         
         // make sure there are no issues by checking # of views = number of values
         var numViews : Int = 0
@@ -716,9 +756,11 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
     
     func endGame() {
         
+        
         // delete saved gameboard value
-        tileValueList = [0]
-        saveTileValueList()
+        // tileValueList = [0]
+        // freqTracking = [2: 0, 3: 0, 4: 0, 5: 0]
+        // saveTileValueList()
         
         // update stats
         if let savedScoreBoard = loadScores() {
@@ -775,12 +817,16 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         submitHighScoreToGC()
         
         // create endGame view
-        endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height,  newHighScore: newHighScore,  secret7168Achievement:  secret7168Achievement, secret14336Achievement:  secret14336Achievement)
+        endGamePopupView = EndGamePopupView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height,  adCounter: adCounter, newHighScore: newHighScore,  secret7168Achievement:  secret7168Achievement, secret14336Achievement:  secret14336Achievement)
         self.view.addSubview(endGamePopupView)
     
         // closeEndGameButton = CloseEndGameButton(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
         
-        endGamePopupView.restartButton.addTarget(self, action: #selector(restartAtEnd), for: .touchUpInside)
+        if adCounter == 0 {
+            endGamePopupView.restartButton.addTarget(self, action: #selector(watchAd), for: .touchUpInside)
+        } else {
+            endGamePopupView.restartButton.addTarget(self, action: #selector(restartAtEnd), for: .touchUpInside)
+        }
         endGamePopupView.closeEndGameButton.addTarget(self, action: #selector(closeEndGameButtonClicked), for: .touchUpInside)
         // closeEndGameButton.addTarget(self, action: #selector(closeEndGameButtonClicked), for: .touchUpInside)
         
@@ -866,9 +912,20 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         return NSKeyedUnarchiver.unarchiveObject(withFile: ScoreBoard.ArchiveURL.path) as? ScoreBoard
     }
     
+    private func saveAdCounter() {
+        let adCounterStorage = AdCounterStorage()
+        adCounterStorage.adCounter = ["adCounter": adCounter]
+        let _ = NSKeyedArchiver.archiveRootObject(adCounterStorage, toFile: AdCounterStorage.ArchiveURL.path)
+    }
+    
+    private func loadAdCounter() -> AdCounterStorage? {
+        return NSKeyedUnarchiver.unarchiveObject(withFile: AdCounterStorage.ArchiveURL.path) as? AdCounterStorage
+    }
+    
     private func saveTileValueList() {
         let gameboardStorage = GameboardStorage()
-        gameboardStorage.tileValueList = ["tileValueList":tileValueList]
+        gameboardStorage.tileValueList = ["tileValueList":tileValueList, "nextTileValue": [nextTileValue], "nextNextTileValue": [nextNextTileValue]]
+        gameboardStorage.freqTracking = freqTracking
         let _ = NSKeyedArchiver.archiveRootObject(gameboardStorage, toFile: GameboardStorage.ArchiveURL.path)
     }
     
@@ -917,17 +974,17 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         newTileViewBoard = Gameboard<TileView?>(d: dimensions, initialValue: nil)
         newRowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
-        
-        freqTracking = [2: 0, 3: 0, 4: 0, 5: 0]
-        
-        tileValueList = [0]
-        saveTileValueList()
-        
+  
         // Properties used to keep track of gameboard hint
         tileTrackingList = [SmallTileView?]()
         nextTileValue = 7
         nextNextTileValue  = 7
         scoreView.score = 0
+        
+        // freqTracking = [2: 0, 3: 0, 4: 0, 5: 0]
+
+        tileValueList = [0]
+        saveTileValueList()
         
         // Properties used to keep track of everything not on gameboard
         viewsToBeDeleted = [TileView]()
@@ -941,17 +998,58 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
         
         // **** re-setup game ****
         panGestureRecognizer.isEnabled = true
-        startGame()
+        startGame(calledInViewDidLoad: false)
     }
         
     //MARK: Click-related functions
     
+    // ads
+    
+    @objc func watchAd() {
+        print("watchAd is called")
+        print("rewardedAd is ready is \(rewardedAd!.isReady)")
+        if rewardedAd?.isReady == true {
+            rewardedAd?.present(fromRootViewController: self, delegate:self)
+        }
+    }
+    
+    func rewardedAd(_ rewardedAd: GADRewardedAd, userDidEarn reward: GADAdReward) {
+        print("Reward is received")
+        print("adCounter used to be \(adCounter)")
+        adCounter += 7
+        print("adCounter is now \(adCounter)")
+        saveAdCounter()
+        restartGame()
+        
+    }
+    
+    func loadRewardedAd() -> GADRewardedAd? {
+        rewardedAd = GADRewardedAd(adUnitID: "ca-app-pub-3940256099942544/1712485313")
+        rewardedAd?.load(GADRequest()) { error in
+            if let error = error {
+                print(error)
+            } else {
+                print("ad succesfully loaded!")
+            }
+        }
+        return rewardedAd
+    }
+        
     @objc func restartAtEnd(sender: UIButton!) {
+        // rewardedAd = loadRewardedAd()
         restartGame()
     }
     
     @objc func restartButtonClicked(){
-        restartGame()
+        // rewardedAd = loadAd()
+        if adCounter != 0 {
+            restartGame()
+        } else {
+            // create a popup that asks someone to watch an ad!
+            watchAd()
+            // restartGame()
+        }
+        
     }
     
     @objc func closeEndGameButtonClicked(){
@@ -1119,9 +1217,6 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate {
                     // End tutorial when tutorial is over
                     if tutorialActive && tutorialIndex >= tutorialSequence.count-1 {
                         closeTutorialButtonClicked()
-                
-                        // let nextTileView : TileView = addNextTileView(override: false, overrideValue: 0)
-                        // addNextTileOntoBoard(direction: directionForEndState, nextTileView: nextTileView)
                     }
                     
                     // Add new tiles both when tutorial is not paused and when not in tutorial

@@ -13,7 +13,7 @@ class EndGamePopupView : UIView {
     var closeEndGameButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var socialMediaView = SocialMediaView(x: 0, y: 0, width: 10, height: 10)
     
-    init(superviewWidth: CGFloat, superviewHeight: CGFloat, newHighScore: Bool, secret7168Achievement: Bool, secret14336Achievement: Bool){
+    init(superviewWidth: CGFloat, superviewHeight: CGFloat, adCounter: Int, newHighScore: Bool, secret7168Achievement: Bool, secret14336Achievement: Bool){
         
         let popupWidth = superviewWidth * 0.95
         var popupHeight = superviewHeight * 0.4
@@ -61,8 +61,18 @@ class EndGamePopupView : UIView {
         restartButton = UIButton(frame: CGRect(x: restartButtonX, y: restartButtonY, width: restartButtonWidth, height: restartButtonHeight))
 
         restartButton.backgroundColor = UIColor.init(red: 250.0/255.0, green: 174.0/255.0, blue: 142.0/255.0, alpha: 1.0)
-        restartButton.setTitle("Play Again!", for: [])
+        
+        if adCounter == 0 {
+            restartButton.setTitle("Watch an ad for 7 more games!", for: [])
+            restartButton.titleLabel?.numberOfLines = 3
+            restartButton.titleLabel?.adjustsFontSizeToFitWidth = true
+            restartButton.titleLabel?.lineBreakMode = .byTruncatingTail
+            restartButton.titleEdgeInsets = UIEdgeInsets(top: 1,left: 3,bottom: 1,right: 3)
+        } else {
+            restartButton.setTitle("Play Again! (\(adCounter))", for: [])
+        }
         restartButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 32)!
+        
         restartButton.titleLabel?.textColor = UIColor.white
         restartButton.layer.cornerRadius = 15
         

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -29,6 +29,8 @@
 		18D67CB024AC860D0085E116 /* MenuViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D67CAF24AC860D0085E116 /* MenuViews.swift */; };
 		18EEF46D24A7624C00D129B8 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EEF46C24A7624C00D129B8 /* MenuViewController.swift */; };
 		18F4964224D266740060D7AA /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F4964124D266740060D7AA /* GameKit.framework */; };
+		51AFF18C43B8A4E21B1E5306 /* Pods_SevenTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F9B04FB42332E787B6B9031 /* Pods_SevenTests.framework */; };
+		A66EBA29BC37F056D1B20678 /* Pods_Seven.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29536F893B882FFE0ABDC1AF /* Pods_Seven.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +71,12 @@
 		18EEF46C24A7624C00D129B8 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		18F4964124D266740060D7AA /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		18F4964324D266880060D7AA /* Seven.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Seven.entitlements; sourceTree = "<group>"; };
+		2197B74C762ED3CFA8B57A24 /* Pods-Seven.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seven.debug.xcconfig"; path = "Target Support Files/Pods-Seven/Pods-Seven.debug.xcconfig"; sourceTree = "<group>"; };
+		29536F893B882FFE0ABDC1AF /* Pods_Seven.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Seven.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		577754EA00814934068ECB53 /* Pods-SevenTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SevenTests.release.xcconfig"; path = "Target Support Files/Pods-SevenTests/Pods-SevenTests.release.xcconfig"; sourceTree = "<group>"; };
+		60EA7A83ADA9D0A8F23C612D /* Pods-SevenTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SevenTests.debug.xcconfig"; path = "Target Support Files/Pods-SevenTests/Pods-SevenTests.debug.xcconfig"; sourceTree = "<group>"; };
+		9F9B04FB42332E787B6B9031 /* Pods_SevenTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SevenTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E597F6E82E2644BE05EF8EA3 /* Pods-Seven.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Seven.release.xcconfig"; path = "Target Support Files/Pods-Seven/Pods-Seven.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +85,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				18F4964224D266740060D7AA /* GameKit.framework in Frameworks */,
+				A66EBA29BC37F056D1B20678 /* Pods_Seven.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51AFF18C43B8A4E21B1E5306 /* Pods_SevenTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +107,7 @@
 				185FF8F1249375FF00FD52A0 /* SevenTests */,
 				185FF8D9249375F700FD52A0 /* Products */,
 				18F4964024D266730060D7AA /* Frameworks */,
+				1C337F2080EF220A36152461 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -183,8 +194,21 @@
 			isa = PBXGroup;
 			children = (
 				18F4964124D266740060D7AA /* GameKit.framework */,
+				29536F893B882FFE0ABDC1AF /* Pods_Seven.framework */,
+				9F9B04FB42332E787B6B9031 /* Pods_SevenTests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1C337F2080EF220A36152461 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2197B74C762ED3CFA8B57A24 /* Pods-Seven.debug.xcconfig */,
+				E597F6E82E2644BE05EF8EA3 /* Pods-Seven.release.xcconfig */,
+				60EA7A83ADA9D0A8F23C612D /* Pods-SevenTests.debug.xcconfig */,
+				577754EA00814934068ECB53 /* Pods-SevenTests.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -194,9 +218,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 185FF8F7249375FF00FD52A0 /* Build configuration list for PBXNativeTarget "Seven" */;
 			buildPhases = (
+				0D74AA47CE37A414B2079F36 /* [CP] Check Pods Manifest.lock */,
 				185FF8D4249375F700FD52A0 /* Sources */,
 				185FF8D5249375F700FD52A0 /* Frameworks */,
 				185FF8D6249375F700FD52A0 /* Resources */,
+				28565DD9700DC9A8E49667B2 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -211,9 +237,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 185FF8FA249375FF00FD52A0 /* Build configuration list for PBXNativeTarget "SevenTests" */;
 			buildPhases = (
+				64E243E02013BCD0C2D56C78 /* [CP] Check Pods Manifest.lock */,
 				185FF8EA249375FF00FD52A0 /* Sources */,
 				185FF8EB249375FF00FD52A0 /* Frameworks */,
 				185FF8EC249375FF00FD52A0 /* Resources */,
+				BF3D2EF8DF6BE04B16C5EBF6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -285,6 +313,87 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0D74AA47CE37A414B2079F36 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Seven-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		28565DD9700DC9A8E49667B2 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Seven/Pods-Seven-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Seven/Pods-Seven-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Seven/Pods-Seven-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		64E243E02013BCD0C2D56C78 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SevenTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BF3D2EF8DF6BE04B16C5EBF6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SevenTests/Pods-SevenTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SevenTests/Pods-SevenTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SevenTests/Pods-SevenTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		185FF8D4249375F700FD52A0 /* Sources */ = {
@@ -462,6 +571,7 @@
 		};
 		185FF8F8249375FF00FD52A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2197B74C762ED3CFA8B57A24 /* Pods-Seven.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Seven/Seven.entitlements;
@@ -469,6 +579,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 46BZ4537VY;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Seven/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -484,6 +596,7 @@
 		};
 		185FF8F9249375FF00FD52A0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E597F6E82E2644BE05EF8EA3 /* Pods-Seven.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Seven/Seven.entitlements;
@@ -491,6 +604,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 46BZ4537VY;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Seven/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -506,6 +621,7 @@
 		};
 		185FF8FB249375FF00FD52A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 60EA7A83ADA9D0A8F23C612D /* Pods-SevenTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -528,6 +644,7 @@
 		};
 		185FF8FC249375FF00FD52A0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 577754EA00814934068ECB53 /* Pods-SevenTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
