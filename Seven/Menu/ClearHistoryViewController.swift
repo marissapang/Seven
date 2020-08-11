@@ -10,7 +10,6 @@ import UIKit
 import os.log
 
 class ClearHistoryViewController: UIViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
         

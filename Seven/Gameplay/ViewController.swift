@@ -55,18 +55,18 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
     var viewsToBeDeleted = [TileView]()
     
     /* Tutorial */
-    var playTutorialButton = TutorialButton(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15])
+    var playTutorialButton = TutorialButton(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15], language: "en")
     var tutorialActive : Bool = false
     var manualTutorialRequest : Bool = false
     var tutorialPaused : Bool = false
-    var tutorialBlock = TutorialBlock(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15], labelText: "")
+    var tutorialBlock = TutorialBlock(sizeAndPositionsDict: ["tileWidth":10, "tileHeight":10, "gameboardWidth":100, "gameboardHeight":100, "gameboardX":50, "gameboardY":50, "tileX":50, "tileY":50, "spacing":15], labelText: "", language: "en")
     var tutorialIndex : Int = 0
     var tutorialStuckCounter : Int = 0
     let tutorialSequence : [Int] = [7, 7, 7, 7, 7, 3, 4, 7, 7, 2, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7]
-    let tutorialIntroComments: [String] = ["Welcome to SEVEN!", "7s are the building blocks of the game - swipe until you make 14!"]
+    var tutorialIntroComments: [String] = ["Welcome to SEVEN!", "7s are the building blocks of the game - swipe until you make 14!"]
     var tutorialWaitpoints: [Int:Bool] = [0: false, 2: false, 8: false] // achievements: 0: complete 14, 2: complete 28, 5: complete 3+4,
     var playTutorialWarningView = ClearHistoryPopupView(superviewWidth: 100, superviewHeight: 100)
-    let tutorialComments: [Int:String] = [0: "Nice! Keep swipin'", 1: "Can you make 28?", 2: "Awesome!", 3: "Ready for a challenge?", 4: "Ready for a challenge?", 5: "3s only combine with 4s..", 6: "3s only combine with 4s..", 7: "Try combining 3 and 4 to make 7!", 8: "Woo - you now have a 7!", 9: "Woo - you now have a 7!",10: "Similarly, 2s only combine with 5s", 11: "Similarly, 2s only combine with 5s", 12: "Similarly, 2s only combine with 5s", 13: "Similarly, 2s only combine with 5s", 14: "Similarly, 2s only combine with 5s", 15: "You're doing great!", 16: "You're doing great!", 19: "Use the Next Tile hints at the bottom to help you!", 24: "Have fun playing!"]
+    var tutorialComments: [Int:String] = [0: "Nice! Keep swipin'", 1: "Can you make 28?", 2: "Awesome!", 3: "Ready for a challenge?", 4: "Ready for a challenge?", 5: "3s only combine with 4s..", 6: "3s only combine with 4s..", 7: "Try combining 3 and 4 to make 7!", 8: "Woo - you now have a 7!", 9: "Woo - you now have a 7!",10: "Similarly, 2s only combine with 5s", 11: "Similarly, 2s only combine with 5s", 12: "Similarly, 2s only combine with 5s", 13: "Similarly, 2s only combine with 5s", 14: "Similarly, 2s only combine with 5s", 15: "You're doing great!", 16: "You're doing great!", 19: "Use the Next Tile hints at the bottom to help you!", 24: "Have fun playing!"]
     
     /* Scoreboard */
     var score : Int = 0
@@ -102,6 +102,10 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
     var direction = Direction.undefined
     @IBOutlet weak var panGestureRecognizer: UIPanGestureRecognizer!
     
+    
+    var language : String = "en"
+    let translator = Translator()
+    
     //MARK: Initialization
     init(){
         tileValueBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
@@ -115,6 +119,10 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
         newRowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         
+        language = NSLocale.current.languageCode ?? "en"
+        print("intialization heappening - language is \(language)")
+        tutorialIntroComments = translator.translateTutorialIntroComments(language)
+        tutorialComments = translator.translateTutorialComments(language)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -130,25 +138,21 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
         newRowIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         newColIndexPositionBoard = Gameboard<Int>(d: dimensions, initialValue: 0)
         
+        language = NSLocale.current.languageCode ?? "en"
+        print("intialization heappening - language is \(language)")
+        tutorialIntroComments = translator.translateTutorialIntroComments(language)
+        tutorialComments = translator.translateTutorialComments(language)
+        
         super.init(coder: aDecoder)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         startGame(calledInViewDidLoad: true)
         
-        // ads
-
-//        self.view.addSubview(rewardButton)
-//        rewardedAd?.load(GADRequest()) { error in
-//          if let error = error {
-//            print("ad didnt load")
-//          } else {
-//            print("ad successfully loaded")
-//          }
-//        }
-
+        let locale = NSLocale.current.languageCode
+        print("language at viewdidload is \(locale)!")
+        print(locale == "zh")
     }
 
     
@@ -158,13 +162,13 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
         let gameboardView = GameboardView(dimensions: dimensions, sizeAndPositionsDict: sizeAndPositionsDict)
         scoreView = ScoreView(sizeAndPositionsDict: sizeAndPositionsDict)
         
-        restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: "RESET(\(adCounter))")
+        restartButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.02, labelText: translator.translateResetButton(language, value: adCounter))
         restartButton.addTarget(self, action:#selector(restartButtonClicked), for: .touchUpInside)
         
         let menuButton = navButton(sizeAndPositionsDict: sizeAndPositionsDict, x: self.view.frame.size.width * 0.98 - sizeAndPositionsDict["gameboardWidth"]!*0.2, labelText: "STATS")
         menuButton.addTarget(self, action:#selector(menuButtonClicked), for: .touchUpInside)
         
-        playTutorialButton = TutorialButton(sizeAndPositionsDict: sizeAndPositionsDict)
+        playTutorialButton = TutorialButton(sizeAndPositionsDict: sizeAndPositionsDict, language: language)
         playTutorialButton.addTarget(self, action: #selector(playTutorialButtonClicked), for: .touchUpInside)
         
         let tileTrackingStrip = TileTrackingStrip(sizeAndPositionsDict: sizeAndPositionsDict, superviewWidth: self.view.frame.width, smallTileScale: smallTileScale)
@@ -558,14 +562,14 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
     
     //MARK: Tutorial Functions
     func drawTutorialIntro() {
-        tutorialBlock = TutorialBlock(sizeAndPositionsDict: sizeAndPositionsDict, labelText: tutorialIntroComments[0])
+        tutorialBlock = TutorialBlock(sizeAndPositionsDict: sizeAndPositionsDict, labelText: tutorialIntroComments[0], language: language)
         tutorialBlock.closeButton.addTarget(self, action:#selector(closeTutorialButtonClicked), for: .touchUpInside)
         
         self.view.addSubview(self.tutorialBlock)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             self.tutorialBlock.label.text = self.tutorialIntroComments[1]
-            self.tutorialBlock.label.font = UIFont(name: "TallBasic30-Regular", size: 30)!
+            self.tutorialBlock.label.font = UIFont(name: self.translator.getLanguageFont(self.language), size: 30)!
         }
     }
     
@@ -1010,6 +1014,12 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
         print("rewardedAd is ready is \(rewardedAd!.isReady)")
         if rewardedAd?.isReady == true {
             rewardedAd?.present(fromRootViewController: self, delegate:self)
+        } else {
+            // present an add for 10 sec, then give option to close!
+            let alert = UIAlertController(title: translator.translateAdWontLoadTitle(language), message: translator.translateAdWontLoadMessage(language), preferredStyle: .alert)
+
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alert, animated: true)
         }
     }
     
@@ -1020,7 +1030,11 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
         print("adCounter is now \(adCounter)")
         saveAdCounter()
         restartGame()
-        
+    }
+    
+    func rewardedAdDidDismiss(_ rewardedAd: GADRewardedAd){
+        print("rewardedAdDidDismiss function is called")
+        loadRewardedAd()
     }
     
     func loadRewardedAd() -> GADRewardedAd? {
@@ -1057,6 +1071,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
         endGamePopupView.closeEndGameButton.removeFromSuperview()
         // closeEndGameButton.removeFromSuperview()
         panGestureRecognizer.isEnabled = false
+        rewardedAd = loadRewardedAd()
     }
     
     @objc func menuButtonClicked(){
@@ -1084,7 +1099,7 @@ class ViewController: UIViewController, GKGameCenterControllerDelegate, GADRewar
         print("play Tutorial button is clicke")
         if scoreView.score > 14 { // if player is in game, make sure they're okay with deleting progress
             playTutorialButton.isEnabled = false
-            playTutorialWarningView = TutorialWarningView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height)
+            playTutorialWarningView = TutorialWarningView(superviewWidth: self.view.frame.width, superviewHeight: self.view.frame.height, language: language)
             playTutorialWarningView.yesDeleteButton.addTarget(self, action: #selector(confirmPlayTutorial), for: .touchUpInside)
             playTutorialWarningView.noKeepButton.addTarget(self, action: #selector(rejectPlayTutorial), for: .touchUpInside)
             

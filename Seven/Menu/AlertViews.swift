@@ -9,11 +9,14 @@
 import UIKit
 
 class ClearHistoryPopupView : UIView {
+    let translator = Translator()
+    var language = "en"
     var warningMessage = UILabel(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var yesDeleteButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var noKeepButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     
     init(superviewWidth: CGFloat, superviewHeight: CGFloat) {
+        language = NSLocale.current.languageCode ?? "en"
         // parameters
         let width : CGFloat = superviewWidth * 0.8
         let height : CGFloat = superviewHeight * 0.3
@@ -49,25 +52,25 @@ class ClearHistoryPopupView : UIView {
 
         // create warning message label
         warningMessage = UILabel(frame: CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight))
-        warningMessage.text = "Whoa, you sure you want to delete all your game history?"
+        warningMessage.text = translator.translateClearHistoryWarning(language)
         warningMessage.textAlignment = .center
         warningMessage.textColor = UIColor.white
-        warningMessage.font = UIFont(name: "TallBasic30-Regular", size: 32)!
+        warningMessage.font = UIFont(name: translator.getLanguageFont(language), size: 32)!
         warningMessage.lineBreakMode = NSLineBreakMode.byWordWrapping
         warningMessage.numberOfLines = 0
         
         // create "No, Keep my data" button
         noKeepButton = UIButton(frame: CGRect(x: buttonXLeft, y: buttonY, width: buttonWidth, height: buttonHeight))
         noKeepButton.backgroundColor = UIColor.init(red: 14.0/255.0, green: 120.0/255.0, blue: 155.0/255.0, alpha: 1.0)
-        noKeepButton.setTitle("NO", for: [])
-        noKeepButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!
+        noKeepButton.setTitle(translator.translateNo(language), for: [])
+        noKeepButton.titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: 22)!
         noKeepButton.titleLabel?.textColor = UIColor.white
         noKeepButton.layer.cornerRadius = 18
         
         yesDeleteButton = UIButton(frame: CGRect(x: buttonXRight, y: buttonY, width: buttonWidth, height: buttonHeight))
         yesDeleteButton.backgroundColor  = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
-        yesDeleteButton.setTitle("YES, DELETE", for: [])
-        yesDeleteButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!
+        yesDeleteButton.setTitle(translator.translateYesDelete(language), for: [])
+        yesDeleteButton.titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: 22)!
         yesDeleteButton.titleLabel?.textColor = UIColor.white
         yesDeleteButton.layer.cornerRadius = 18
         

@@ -9,11 +9,15 @@
 import UIKit
 
 class EndGamePopupView : UIView {
+    let translator = Translator()
+    var language = "en"
     var restartButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var closeEndGameButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var socialMediaView = SocialMediaView(x: 0, y: 0, width: 10, height: 10)
     
     init(superviewWidth: CGFloat, superviewHeight: CGFloat, adCounter: Int, newHighScore: Bool, secret7168Achievement: Bool, secret14336Achievement: Bool){
+        
+        language = NSLocale.current.languageCode ?? "en"
         
         let popupWidth = superviewWidth * 0.95
         var popupHeight = superviewHeight * 0.4
@@ -46,32 +50,33 @@ class EndGamePopupView : UIView {
         popupView.layer.cornerRadius = 15
         
         if newHighScore == true {
-            popupLabel.text = "Nice! 🎉🎉 You just got a new high score! "
+            popupLabel.text = translator.translateNewHighScoreEndGame(language)
         } else {
-            popupLabel.text = "Nooo - you're out of moves :'( "
+            popupLabel.text = translator.translateOutOfMoves(language)
 
         }
     
         popupLabel.textAlignment = .center
         popupLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        popupLabel.font = UIFont(name: "TallBasic30-Regular", size: 32)!
+        popupLabel.font = UIFont(name: translator.getLanguageFont(language), size: 32)!
         popupLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         popupLabel.numberOfLines = 0
         
         restartButton = UIButton(frame: CGRect(x: restartButtonX, y: restartButtonY, width: restartButtonWidth, height: restartButtonHeight))
 
         restartButton.backgroundColor = UIColor.init(red: 250.0/255.0, green: 174.0/255.0, blue: 142.0/255.0, alpha: 1.0)
+        restartButton.titleLabel?.textAlignment = .center
         
         if adCounter == 0 {
-            restartButton.setTitle("Watch an ad for 7 more games!", for: [])
+            restartButton.setTitle(translator.translateWatchAnAd(language), for: [])
             restartButton.titleLabel?.numberOfLines = 3
             restartButton.titleLabel?.adjustsFontSizeToFitWidth = true
             restartButton.titleLabel?.lineBreakMode = .byTruncatingTail
             restartButton.titleEdgeInsets = UIEdgeInsets(top: 1,left: 3,bottom: 1,right: 3)
         } else {
-            restartButton.setTitle("Play Again! (\(adCounter))", for: [])
+            restartButton.setTitle(translator.translatePlayAgain(language, value: adCounter), for: [])
         }
-        restartButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 32)!
+        restartButton.titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: 32)!
         
         restartButton.titleLabel?.textColor = UIColor.white
         restartButton.layer.cornerRadius = 15

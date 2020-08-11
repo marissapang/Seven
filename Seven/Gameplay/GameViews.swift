@@ -188,8 +188,12 @@ class SmallTileView: UIView {
 }
 
 class SmallTileHighlight : UIView {
-
+    let translator = Translator()
+    var language = "en"
+    
     init(sizeAndPositionsDict: [String:CGFloat], smallTileScale: CGFloat){
+        
+        language = NSLocale.current.languageCode ?? "en"
         
         // create frame parameters
         let tileWidth = sizeAndPositionsDict["tileWidth"]! * smallTileScale
@@ -204,10 +208,10 @@ class SmallTileHighlight : UIView {
         // create and format label
         let label = UILabel(frame: CGRect(x: -self.frame.width*0.25, y: -tileHeight*0.45+1, width: self.frame.width*1.5, height: tileHeight*0.45))
         label.textAlignment = .center
-        label.text = "Next Tile"
+        label.text =  translator.translateNextTileLabel(language)
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.75)
         label.textColor = UIColor.init(red: 109.0/255.0, green: 99.0/255.0, blue: 101.0/255.0, alpha: 1.0)
-        label.font = UIFont(name: "TallBasic30-Regular", size: 24)!
+        label.font = UIFont(name: translator.getLanguageFont(language), size: translator.translateNextTileLabelFont(language))!
         label.adjustsFontSizeToFitWidth = true
             
         addSubview(label)
@@ -263,7 +267,11 @@ class ScoreView : UIView {
 
 //MARK: Navigation
 class navButton : UIButton {
+    let translator = Translator()
+    var language = "en"
     init(sizeAndPositionsDict: [String: CGFloat], x: CGFloat, labelText: String){
+        language = NSLocale.current.languageCode ?? "en"
+        
         let y = sizeAndPositionsDict["gameboardY"]! * 0.2
         let width = sizeAndPositionsDict["gameboardWidth"]! * 0.2
         let height = sizeAndPositionsDict["gameboardY"]! * 0.18
@@ -278,10 +286,21 @@ class navButton : UIButton {
             setImage(UIImage(named:"statsIcon"), for: [])
             imageEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8,right: 8)
         } else {
-            titleEdgeInsets = UIEdgeInsets(top: 3,left: 3,bottom: 0,right: 3)
+            if language == "zh" {
+                titleEdgeInsets = UIEdgeInsets(top: translator.getLanguageTextPaddingTop(language),left: 0,bottom: 0,right: 0)
+            } else {
+                titleEdgeInsets = UIEdgeInsets(top: translator.getLanguageTextPaddingTop(language),left: 3,bottom: 0,right: 3)
+            }
+            
             setTitle(labelText, for: [])
-            titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 24)!
-            titleLabel?.adjustsFontSizeToFitWidth = true
+            titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: translator.translateResetButtonFont(language))!
+            
+            if language != "zh" {
+                titleLabel?.adjustsFontSizeToFitWidth = true
+            } else {
+                titleLabel?.adjustsFontSizeToFitWidth = true
+            }
+            titleLabel?.textAlignment = .center
             titleLabel?.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         }
         
@@ -301,7 +320,8 @@ class navButton : UIButton {
 //MARK: Tutorial
 
 class TutorialButton : UIButton {
-    init(sizeAndPositionsDict: [String: CGFloat]){
+    let translator = Translator()
+    init(sizeAndPositionsDict: [String: CGFloat], language: String){
         let width : CGFloat = sizeAndPositionsDict["tileWidth"]! * 1
         let height: CGFloat = sizeAndPositionsDict["tileHeight"]! * 0.3
         let x = sizeAndPositionsDict["gameboardX"]! + sizeAndPositionsDict["gameboardWidth"]! - width - 3
@@ -309,9 +329,15 @@ class TutorialButton : UIButton {
         super.init(frame: CGRect(x:x, y:y, width: width, height: height))
         backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         layer.cornerRadius = 5
-        titleEdgeInsets = UIEdgeInsets(top: 3,left: 5,bottom: 0,right: 5)
-        setTitle("Tutorial", for: [])
-        titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!
+        if language == "zh" {
+            titleEdgeInsets = UIEdgeInsets(top: 0,left: 5,bottom: 0,right: 5)
+            titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: 15)!
+        } else {
+            titleEdgeInsets = UIEdgeInsets(top: 3,left: 5,bottom: 0,right: 5)
+            titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: 22)!
+        }
+        
+        setTitle(translator.translateTutorialButton(language), for: [])
         titleLabel?.adjustsFontSizeToFitWidth = true
         titleLabel?.textColor = UIColor.white
     }
@@ -325,8 +351,9 @@ class TutorialButton : UIButton {
 class TutorialBlock : UIView {
     var label = UILabel(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var closeButton = UIButton(frame: CGRect(x: 0, y:0, width: 10, height: 10))
+    let translator = Translator()
     
-    init(sizeAndPositionsDict: [String: CGFloat], labelText: String){
+    init(sizeAndPositionsDict: [String: CGFloat], labelText: String, language: String){
         let height = sizeAndPositionsDict["gameboardY"]! * 0.7
         let width = sizeAndPositionsDict["gameboardWidth"]!
         let y = (sizeAndPositionsDict["gameboardY"]! - height)*0.75
@@ -336,32 +363,33 @@ class TutorialBlock : UIView {
         backgroundColor = UIColor.init(red: 207.0/255.0, green: 233.0/255.0, blue: 240.0/255.0, alpha: 1)
         layer.cornerRadius = 15
         
-        let labelHeight = height * 0.7
-        let labelWidth = width * 0.8
-        let labelY = (height - labelHeight)*0.75
-        let labelX = (width - labelWidth)/2
-        label = UILabel(frame: CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight))
-        label.text = "\(labelText)"
-        label.font = UIFont(name: "TallBasic30-Regular", size: 45)!
-        label.adjustsFontSizeToFitWidth = true
-        label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        label.lineBreakMode = .byTruncatingTail
-        label.numberOfLines = 3
-        
-        let buttonHeight = labelY * 0.9
-        let buttonY : CGFloat = 10 //(labelY-buttonHeight)/2
+        let buttonHeight = height * 0.2
+        let buttonY : CGFloat = 10
         let buttonWidth = width*0.3
-        let buttonX = width - 10 - buttonWidth // label.frame.maxX - buttonWidth
+        let buttonX = width - 10 - buttonWidth
+
         closeButton = UIButton(frame: CGRect(x: buttonX, y:buttonY, width: buttonWidth, height: buttonHeight))
-        
-        closeButton.titleEdgeInsets = UIEdgeInsets(top: 3, left:5, bottom: 0, right: 5)
-        closeButton.setTitle("Exit Tutorial", for: [])
-        closeButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 24)!
+        closeButton.titleEdgeInsets = UIEdgeInsets(top: translator.getLanguageTextPaddingTop(language), left:5, bottom: 0, right: 5)
+        closeButton.setTitle(translator.translateExitTutorialButton(language), for: [])
+        closeButton.titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: translator.getExitTutorialButtonFontSize(language))!
         closeButton.titleLabel?.adjustsFontSizeToFitWidth = true
         closeButton.titleLabel?.textColor = UIColor.white
         closeButton.backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         closeButton.layer.cornerRadius = 5
         
+        let labelHeight = (height - buttonHeight - buttonY)*0.85
+        let labelWidth = width * 0.9
+        let labelY = closeButton.frame.maxY + ((labelHeight/0.8)*0.1)*0.4
+        let labelX = (width - labelWidth)/2
+        label = UILabel(frame: CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight))
+        label.text = "\(labelText)"
+        label.font = UIFont(name: translator.getLanguageFont(language), size: 45)!
+        label.adjustsFontSizeToFitWidth = true
+        label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
+        label.lineBreakMode = .byTruncatingTail
+        label.numberOfLines = 3
+        
+
         addSubview(label)
         addSubview(closeButton)
     }
@@ -372,22 +400,24 @@ class TutorialBlock : UIView {
 }
 
 class TutorialWarningView : ClearHistoryPopupView {
+    let t = Translator()
     
-    override init(superviewWidth: CGFloat, superviewHeight: CGFloat){
+    init(superviewWidth: CGFloat, superviewHeight: CGFloat, language: String){
         super.init(superviewWidth: superviewWidth, superviewHeight: superviewHeight)
         
-        self.warningMessage.text = "Are you sure you want to switch to a new tutorial game?"
+        self.warningMessage.text = t.translateTutorialWarning(language)
         self.backgroundColor = UIColor.init(red: 255.0/255.0, green: 220.0/255.0, blue: 205.0/255.0, alpha: 0.9)
         self.warningMessage.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.9)
         
-        self.yesDeleteButton.setTitle("YES", for: [])
+        self.yesDeleteButton.setTitle(t.translateTutorialConfirm(language), for: [])
         self.yesDeleteButton.backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.8)
         self.noKeepButton.backgroundColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 0.8)
-        self.noKeepButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 34)!
-        self.yesDeleteButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 34)!
         
-        self.noKeepButton.titleEdgeInsets = UIEdgeInsets(top: 5, left:5, bottom: 0, right: 5)
-        self.yesDeleteButton.titleEdgeInsets = UIEdgeInsets(top: 5, left:5, bottom: 0, right: 5)
+        self.noKeepButton.titleLabel?.font = UIFont(name: t.getLanguageFont(language), size: 34)!
+        self.yesDeleteButton.titleLabel?.font = UIFont(name: t.getLanguageFont(language), size: 34)!
+        
+        self.noKeepButton.titleEdgeInsets = UIEdgeInsets(top: t.getLanguageTextPaddingTop(language), left:5, bottom: 0, right: 5)
+        self.yesDeleteButton.titleEdgeInsets = UIEdgeInsets(top: t.getLanguageTextPaddingTop(language), left:5, bottom: 0, right: 5)
     }
     
     required init?(coder aDecoder: NSCoder) {

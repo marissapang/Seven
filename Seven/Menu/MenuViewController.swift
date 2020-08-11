@@ -18,6 +18,8 @@ class MenuViewController: UIViewController, GKGameCenterControllerDelegate {
     var gcDefaultLeaderboard = String ()
     let LEADERBOARD_ID = "highScoreLeaderboard"
     let LOWSCORE_ID = "lowScoreLeaderboard"
+    let translator = Translator()
+    var language : String = "en"
     
 
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
@@ -27,7 +29,7 @@ class MenuViewController: UIViewController, GKGameCenterControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.init(red: 164/255, green: 215/255, blue: 228/255, alpha: 1)
-        
+        language = NSLocale.current.languageCode ?? "en"
         // Load saved scores, if none, everything should be zero
         if let savedScoreBoard = loadScores() {
             scoreBoard = savedScoreBoard
@@ -151,9 +153,9 @@ class MenuViewController: UIViewController, GKGameCenterControllerDelegate {
         
         let gcButton = UIButton(frame: CGRect(x: self.view.frame.width - 10 - gcButtonWidth, y: backButton.frame.minY, width: gcButtonWidth, height: gcButtonHeight))
         gcButton.backgroundColor = UIColor.init(red: 10.0/255.0, green: 86.0/255.0, blue: 111.0/255.0, alpha: 1)
-        gcButton.setTitle("Leaderboard", for: [])
-        gcButton.titleEdgeInsets = UIEdgeInsets(top: 3, left:5, bottom: 0, right: 5)
-        gcButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 22)!
+        gcButton.setTitle(translator.translateLeaderboard(language), for: [])
+        gcButton.titleEdgeInsets = UIEdgeInsets(top: translator.getLanguageTextPaddingTop(language), left:5, bottom: 0, right: 5)
+        gcButton.titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: translator.translateLeaderboardFont(language))!
         gcButton.titleLabel?.adjustsFontSizeToFitWidth = true
         gcButton.titleLabel?.textColor = UIColor.white
         gcButton.layer.cornerRadius = 5

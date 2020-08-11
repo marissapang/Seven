@@ -9,9 +9,13 @@
 import UIKit
 
 class MenuHighScoreView : UIView {
+    let translator = Translator()
+    var language = "en"
+    
     init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, highScore: Int, totalGamesPlayed: Int) {
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
         
+        language = NSLocale.current.languageCode ?? "en"
         let paddingPct : CGFloat = 0.02
         let titleLabelPct : CGFloat = 0.29
         let highScoreViewPct : CGFloat = 0.55
@@ -22,9 +26,9 @@ class MenuHighScoreView : UIView {
         let highScoreLabel = UILabel(frame: CGRect(x: width*0.15, y: highScoreView.frame.minY+5, width: width*0.65, height: highScoreView.frame.height))
         let commentLabel = UILabel(frame: CGRect(x: width*0.1, y: height*(paddingPct*2 + titleLabelPct + highScoreViewPct), width: width*0.8, height: height*commentLabelPct))
         
-        titleLabel.text = "YOUR HIGH SCORE:"
+        titleLabel.text = translator.translateHighScore(language)
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont(name: "TallBasic30-Regular", size: 46)!
+        titleLabel.font = UIFont(name: translator.getLanguageFont(language), size: translator.translateHighScoreFont(language))!
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         
@@ -37,9 +41,9 @@ class MenuHighScoreView : UIView {
         highScoreLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
         highScoreLabel.adjustsFontSizeToFitWidth = true
         
-        commentLabel.text = "(You've played \(totalGamesPlayed) games of Seven)"
+        commentLabel.text = translator.translateGameCountLabel(language, numGames: totalGamesPlayed)
         commentLabel.textAlignment = .center
-        commentLabel.font = UIFont(name: "TallBasic30-Regular", size: 20)!
+        commentLabel.font = UIFont(name: translator.getLanguageFont(language), size: 20)!
         commentLabel.textColor = UIColor.init(red: 255.0/255.0, green: 121.0/255.0, blue: 123.0/255.0, alpha: 1)
         commentLabel.adjustsFontSizeToFitWidth = true
         
@@ -56,7 +60,10 @@ class MenuHighScoreView : UIView {
 }
 
 class TileCountRowView : UIView {
+    var language = "en"
+    let translator = Translator()
     init(width: CGFloat, height: CGFloat, rowIndex: CGFloat, tileValue: Int, tileCount: Int){
+        language = NSLocale.current.languageCode ?? "en"
         
         // parameters for horizontal positions
         let w : CGFloat = width*0.9
@@ -94,16 +101,17 @@ class TileCountRowView : UIView {
         // Create numberLabel
         let tileCountLabel = UILabel(frame: CGRect(x: tileView.frame.width + w*widthGapPct, y: 0, width: w - w*widthGapPct - widthPctOfHeight*height*rowPct, height: height * rowPct))
         
-        if tileCount == 0 {
-            tileCountLabel.text = "None"
-        } else if tileCount == 1 {
-            tileCountLabel.text = "\(tileCount) game"
-        } else {
-            tileCountLabel.text = "\(tileCount) games"
-        }
+        tileCountLabel.text = translator.translateHighTileCount(language, num: tileCount)
+//        if tileCount == 0 {
+//            tileCountLabel.text = "None"
+//        } else if tileCount == 1 {
+//            tileCountLabel.text = "\(tileCount) game"
+//        } else {
+//            tileCountLabel.text = "\(tileCount) games"
+//        }
         
         tileCountLabel.textAlignment = .left
-        tileCountLabel.font = UIFont(name: "TallBasic30-Regular", size: 34)!
+        tileCountLabel.font = UIFont(name: translator.getLanguageFont(language), size: translator.translateHighTileCountFont(language))!
         tileCountLabel.adjustsFontSizeToFitWidth = true
         tileCountLabel.textColor = UIColor.white
         
@@ -118,18 +126,20 @@ class TileCountRowView : UIView {
 }
 
 class MenuTileCountView : UIView {
-    
+    let translator = Translator()
+    var language = "en"
     init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, tileCountDict: [Int: Int]){
         super.init(frame: CGRect(x: x, y: y, width: width, height: height))
-                
+        language = NSLocale.current.languageCode ?? "en"
+        
         // 1. Make title label
         let w : CGFloat = width*0.9
         let numRows : CGFloat = 5
         let titleLabelPct : CGFloat = 1/(numRows+1) * 0.6
         let titleLabel = UILabel(frame: CGRect(x: (width - w)/2, y: 0, width: width, height: height*titleLabelPct))
-        titleLabel.text = "HIGH-TILE ACHIEVEMENTS:"
+        titleLabel.text = translator.translateHighTileAchievements(language)
         titleLabel.textAlignment = .left
-        titleLabel.font = UIFont(name: "TallBasic30-Regular", size: 34)!
+        titleLabel.font = UIFont(name: translator.getLanguageFont(language), size: 34)!
         titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.textColor = UIColor.white
         titleLabel.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
@@ -167,22 +177,27 @@ class MenuTileCountView : UIView {
 class MenuFooterView : UIView {
     var clearHistoryButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var contactUsButton = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+    let translator = Translator()
+    var language = "en"
+    
     init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat){
         let w : CGFloat = width*0.9
         let h : CGFloat = height*0.8
         let buttonWidthPct : CGFloat = 0.3
         super.init(frame: CGRect(x: (width-w)/2, y: y, width: w, height: height))
         
+        language = NSLocale.current.languageCode ?? "en"
+        
         clearHistoryButton = UIButton(frame: CGRect(x: 0, y: 0, width: w * buttonWidthPct, height: h))
         contactUsButton = UIButton(frame: CGRect(x: w - w*buttonWidthPct, y: 0, width: w * buttonWidthPct, height: h))
         
-        clearHistoryButton.setTitle("Clear history", for: [])
-        clearHistoryButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 16)!
+        clearHistoryButton.setTitle(translator.translateClearHistory(language), for: [])
+        clearHistoryButton.titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: 16)!
         clearHistoryButton.titleLabel?.textColor = UIColor.white
         clearHistoryButton.backgroundColor = UIColor.init(red: 223.0/255.0, green: 0.0/255.0, blue: 4.0/255.0, alpha: 1.0)
         clearHistoryButton.layer.cornerRadius = 10
-        contactUsButton.setTitle("Contact Us", for: [])
-        contactUsButton.titleLabel?.font = UIFont(name: "TallBasic30-Regular", size: 16)!
+        contactUsButton.setTitle(translator.translateContactUs(language), for: [])
+        contactUsButton.titleLabel?.font = UIFont(name: translator.getLanguageFont(language), size: 16)!
         contactUsButton.titleLabel?.textColor = UIColor.white
         contactUsButton.backgroundColor = UIColor.init(red: 14.0/255.0, green: 120.0/255.0, blue: 155.0/255.0, alpha: 1.0)
         contactUsButton.layer.cornerRadius = 10

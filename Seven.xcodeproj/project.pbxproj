@@ -21,8 +21,10 @@
 		18602AFA24B08407003EF531 /* TallBasic20-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18602AF924B08407003EF531 /* TallBasic20-Regular.ttf */; };
 		18602AFC24B0A1BA003EF531 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18602AFB24B0A1BA003EF531 /* ContactViewController.swift */; };
 		186CB83E24D565BC0024088F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 186CB83D24D565BC0024088F /* GoogleService-Info.plist */; };
+		187725F724E120BE0067C56A /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 187725F624E120BE0067C56A /* StoreKit.framework */; };
 		188F8B7224ADECEF00C908B7 /* ClearHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7124ADECEF00C908B7 /* ClearHistoryViewController.swift */; };
 		188F8B7424ADED0A00C908B7 /* AlertViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188F8B7324ADED0A00C908B7 /* AlertViews.swift */; };
+		18AA864F24DE66DD00683266 /* Translator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AA864E24DE66DD00683266 /* Translator.swift */; };
 		18BC1E7C24B46CF600E5BF13 /* TallBasic30-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */; };
 		18BD88E324B6F2D900926B67 /* endGameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BD88E224B6F2D800926B67 /* endGameViews.swift */; };
 		18BD88E524B6F34300926B67 /* confettiModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BD88E424B6F34300926B67 /* confettiModel.swift */; };
@@ -62,8 +64,12 @@
 		18602AF924B08407003EF531 /* TallBasic20-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "TallBasic20-Regular.ttf"; path = "Fonts/TallBasic20-Regular.ttf"; sourceTree = SOURCE_ROOT; };
 		18602AFB24B0A1BA003EF531 /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
 		186CB83D24D565BC0024088F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		187725F624E120BE0067C56A /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		188F8B7124ADECEF00C908B7 /* ClearHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearHistoryViewController.swift; sourceTree = "<group>"; };
 		188F8B7324ADED0A00C908B7 /* AlertViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViews.swift; sourceTree = "<group>"; };
+		18AA864C24DE5E3700683266 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		18AA864D24DE5E3700683266 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		18AA864E24DE66DD00683266 /* Translator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translator.swift; sourceTree = "<group>"; };
 		18BC1E7B24B46CF600E5BF13 /* TallBasic30-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "TallBasic30-Regular.ttf"; path = "Fonts/TallBasic30-Regular.ttf"; sourceTree = SOURCE_ROOT; };
 		18BD88E224B6F2D800926B67 /* endGameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = endGameViews.swift; sourceTree = "<group>"; };
 		18BD88E424B6F34300926B67 /* confettiModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = confettiModel.swift; sourceTree = "<group>"; };
@@ -84,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				187725F724E120BE0067C56A /* StoreKit.framework in Frameworks */,
 				18F4964224D266740060D7AA /* GameKit.framework in Frameworks */,
 				A66EBA29BC37F056D1B20678 /* Pods_Seven.framework in Frameworks */,
 			);
@@ -164,6 +171,7 @@
 				185FF8FD2493761600FD52A0 /* GameModel.swift */,
 				185FF90124937C4300FD52A0 /* GameHelperFunctions.swift */,
 				185FF903249665E800FD52A0 /* AppearanceHelpers.swift */,
+				18AA864E24DE66DD00683266 /* Translator.swift */,
 				18BD88E124B6F2BA00926B67 /* End Game */,
 			);
 			path = Gameplay;
@@ -193,6 +201,7 @@
 		18F4964024D266730060D7AA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				187725F624E120BE0067C56A /* StoreKit.framework */,
 				18F4964124D266740060D7AA /* GameKit.framework */,
 				29536F893B882FFE0ABDC1AF /* Pods_Seven.framework */,
 				9F9B04FB42332E787B6B9031 /* Pods_SevenTests.framework */,
@@ -279,6 +288,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 185FF8CF249375F700FD52A0;
 			productRefGroup = 185FF8D9249375F700FD52A0 /* Products */;
@@ -407,6 +417,7 @@
 				185FF904249665E800FD52A0 /* AppearanceHelpers.swift in Sources */,
 				188F8B7224ADECEF00C908B7 /* ClearHistoryViewController.swift in Sources */,
 				185FF90024937A9600FD52A0 /* GameViews.swift in Sources */,
+				18AA864F24DE66DD00683266 /* Translator.swift in Sources */,
 				185FF8DC249375F700FD52A0 /* AppDelegate.swift in Sources */,
 				18D67CB024AC860D0085E116 /* MenuViews.swift in Sources */,
 				185FF8DE249375F700FD52A0 /* SceneDelegate.swift in Sources */,
@@ -440,6 +451,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				185FF8E2249375F700FD52A0 /* Base */,
+				18AA864C24DE5E3700683266 /* zh-Hans */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -448,6 +460,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				185FF8E7249375FE00FD52A0 /* Base */,
+				18AA864D24DE5E3700683266 /* zh-Hans */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -459,6 +472,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -519,6 +533,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";

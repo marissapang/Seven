@@ -9,10 +9,14 @@
 import UIKit
 
 class ContactViewController: UIViewController {
+    let translator = Translator()
+    var language : String = "en"
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        language = NSLocale.current.languageCode ?? "en"
+        
         // Do any additional setup after loading the view.
         let superviewWidth = self.view.frame.width
         let superviewHeight = self.view.frame.height
@@ -33,13 +37,19 @@ class ContactViewController: UIViewController {
     
         
         let label = UILabel(frame: CGRect(x: (superviewWidth-width)/2, y: (superviewHeight-height)/2, width: width, height: height))
-        label.text = "You can reach us at: \n seventhegame@outlook.com"
-        label.textAlignment = .center
+        label.text = translator.translateContactUsPopup(language)
         label.textColor = UIColor.init(red: 58.0/255.0, green: 44.0/255.0, blue: 47.0/255.0, alpha: 1)
-        label.font = UIFont(name: "TallBasic30-Regular", size: 32)!
-        label.lineBreakMode = NSLineBreakMode.byWordWrapping
-        label.numberOfLines = 2
+        label.font = UIFont(name: translator.getLanguageFont("en"), size: 32)!
         
+        if language == "zh" {
+            label.adjustsFontSizeToFitWidth = true
+            label.textAlignment = .center
+        } else {
+            label.adjustsFontSizeToFitWidth = true
+            label.lineBreakMode = NSLineBreakMode.byTruncatingTail
+            label.numberOfLines = 5
+            label.textAlignment = .left
+        }
         
         self.view.addSubview(backgroundCloseButton)
         self.view.addSubview(view)
